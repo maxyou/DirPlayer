@@ -1,0 +1,49 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" 
+    android:id="@+id/main_window"
+    >
+        
+<android.support.v4.view.ViewPager
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/pager"
+    android:layout_width="match_parent"
+        android:layout_height="0dp"          
+        android:layout_weight="1"      
+    tools:context=".MainActivity" />
+
+	<VideoView 
+        android:id="@+id/videoview"
+        android:layout_width="wrap_content"
+	    android:layout_height="200dp"
+	    android:layout_gravity="center"
+	    android:visibility="gone"
+	    />
+	
+	<!-- 注意，如果下面这个view设置为gone，则检测不到从底端往上滑的手势了
+		也就打不开音量控制器了。原因不明，可能是：
+		1，滑动的手势不能穿透到viewpager
+		2，需要在viewpager里面的fragment里面另外添加滑动手势处理
+		如果不想看到下面这个view，也许可以考虑设置其高度为非常小的dp		
+	 -->
+	 <LinearLayout 
+	    android:layout_width="match_parent"
+    	android:layout_height="wrap_content"
+    	android:orientation="horizontal"
+    	> 
+    	<ImageView
+        android:id="@+id/bottom_icon"
+        android:layout_width="60dp"
+        android:layout_height="20dp"
+        
+         />
+    	<TextView       
+        android:id="@+id/bottom_about"
+        android:layout_width="0dp"
+        android:layout_weight="1"   
+	    android:layout_height="wrap_content"        
+        android:text="@string/bottom_about"		
+        />
+	</LinearLayout>
+</LinearLayout>

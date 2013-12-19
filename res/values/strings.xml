@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">DirPlayer
+    </string>
+    <string name="bottom_about" > 简单播放，简单生活
+    </string>
+    <string name="dealby" >请选择处理程序
+    </string>
+    <string name="about" >DirPlayer ver0.90 hyyou@foxmail.com
+    </string>
+    <string name="action_settings" >no setting
+    </string>
+    <string name="hello_world" >Hello world!
+    </string>
+    
+    
+    <string name="title_section1">左窗口
+    </string>
+    <string name="title_section2">右窗口
+    </string>
+    <string name="title_section3">书签
+    </string>
+
+    <string name="act1" >分享
+    </string>
+    <string name="act2" >接收
+    </string>
+    <string name="act3" >搜索
+    </string>
+    
+    <string name="fl_act1" >全选
+    </string>
+    <string name="fl_act2" >清除
+    </string>
+    <string name="fl_act3" >反选
+    </string>
+    <string name="fl_act4" >书签
+    </string>
+	<string name="fl_act6" >向上
+    </string>
+    <string name="fl_act5" >操作
+    </string>
+
+	<string name="bm_act1" >全选
+    </string>
+    <string name="bm_act2" >清除
+    </string>
+    <string name="bm_act3" >反选
+    </string>
+    <string name="bm_act4" >删除
+    </string>
+	<string name="bm_act5" >修改
+    </string>
+    
+    <string name="bar_b1" >A->B
+    </string>
+    <string name="bar_b2" >A=>B
+    </string>
+    <string name="bar_b3" >B->A
+    </string>
+    <string name="bar_b4" >B=>A
+    </string>
+
+    <string name="prompt" >怎样操作被选择的文件？
+    </string>
+    <string name="negative" >取消
+    </string>
+    <string name="positive" >确定
+    </string>    
+    <string name="mkdir_prompt" >请输入文件夹名称
+    </string>    
+        
+    <string name="progress_prompt" >当前操作进度
+    </string>
+    
+    <string name="left_window_path" >left_window_path
+    </string>
+    <string name="right_window_path" >right_window_path
+    </string>
+    
+    <string name="bookmark_file" >bookmark.txt
+    </string>
+    
+</resources>

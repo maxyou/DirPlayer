@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="cmdList">
+        <item >从左拷贝到右</item>  
+        <item >从左移动到右</item>  
+        <item >从右拷贝到左</item>  
+        <item >从右移动到左</item>  
+        <item >删除当前窗口所选</item>
+        <item >创建文件夹</item>    
+    </string-array>
+    
+    <string-array name="forceOption">
+        <item >文件或文件夹冲突时强制替换</item>  
+    </string-array>
+    
+    <string-array name="videoSuffix">
+        <item >mp4</item>  
+        <item >avi</item>  
+        <item >rmvb</item>  
+        <item >mov</item>  
+        <item >rm</item>
+        <item >dat</item>
+    </string-array>
+    
+    <string-array name="musicSuffix">
+        <item >mp3</item>  
+        <item >wmv</item>  
+        <item >mov</item>  
+        <item >ape</item>
+    </string-array>
+</resources>
