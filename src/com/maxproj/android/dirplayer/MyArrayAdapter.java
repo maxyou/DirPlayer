@@ -16,7 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class MyArrayAdapter extends ArrayAdapter{
-    String DTAG = "FileCmd";
+    String DTAG = "DirPlayer";
     int resource;
     final List<LvRow> listItems;// = new List<LvRow>();
 

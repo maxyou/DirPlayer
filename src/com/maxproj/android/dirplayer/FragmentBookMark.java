@@ -19,7 +19,7 @@ public class FragmentBookMark  extends Fragment {
     BookMarkArrayAdapter listAdapter = null;
     ListView listView = null;
     View fragmentView;
-    final static String DTAG = "FileCmd";
+    final static String DTAG = "DirPlayer";
     Button b1, b2, b3, b4, b5;
 
     public interface FragmentBookMarkInterface{

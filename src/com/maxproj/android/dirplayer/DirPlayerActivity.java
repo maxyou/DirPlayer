@@ -77,7 +77,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 		ActionBar.TabListener, FragmentListview.FragmentListviewInterface,
 		FragmentBookMark.FragmentBookMarkInterface  {
 
-	final static String DTAG = "FileCmd";
+	final static String DTAG = "DirPlayer";
 
 	/**
 	 * 分享菜单 

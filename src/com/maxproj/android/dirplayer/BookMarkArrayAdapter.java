@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 public class BookMarkArrayAdapter extends ArrayAdapter {
 
-	String DTAG = "FileCmd";
+	String DTAG = "DirPlayer";
 	int resource;
 	final List<BookMarkRow> listItems;// = new List<LvRow>();
 

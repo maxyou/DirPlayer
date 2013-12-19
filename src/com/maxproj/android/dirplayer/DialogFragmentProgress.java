@@ -11,7 +11,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class DialogFragmentProgress extends DialogFragment {
-	final static String DTAG = "FileCmd";
+	final static String DTAG = "DirPlayer";
 
 	View v;
 	ProgressBar pb = null;
