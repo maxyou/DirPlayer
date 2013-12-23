@@ -1,0 +1,61 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/pl_b1"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:text="@string/fl_act1" />
+
+        <Button
+            android:id="@+id/pl_b2"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:text="@string/fl_act2" />
+
+        <Button
+            android:id="@+id/pl_b3"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:text="@string/fl_act3" />
+
+        <Button
+            android:id="@+id/pl_b6"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:text="@string/fl_act6" />
+
+        <Button
+            android:id="@+id/pl_b4"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:text="@string/fl_act4" />
+
+        <Button
+            android:id="@+id/pl_b5"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:text="@string/fl_act5" />
+        
+    </LinearLayout>
+    	<ListView 
+        android:id="@+id/fragment_playlist"
+    	android:layout_width="match_parent"
+        android:layout_height="0dp"          
+        android:layout_weight="1"
+        />
+    	
+    <TextView
+        android:id="@+id/play_control"
+        style="@style/lvRowText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>
