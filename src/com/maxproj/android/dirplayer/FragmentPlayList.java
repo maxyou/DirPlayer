@@ -28,7 +28,7 @@ public class FragmentPlayList  extends Fragment {
         void onFragmentPlayListButton2();
         void onFragmentPlayListButton3();
         void onFragmentPlayListButton4();
-        void onFragmentPlayListButton5();
+
     }
     private FragmentPlayListInterface FragmentPlayListInterface = null;
 
@@ -101,13 +101,7 @@ public class FragmentPlayList  extends Fragment {
             	FragmentPlayListInterface.onFragmentPlayListButton4();
             }
         });
-        b5 = (Button)fragmentView.findViewById(R.id.pl_b5);
-        b5.setOnClickListener(new View.OnClickListener() { // 修改
-            @Override
-            public void onClick(View view) {
-            	FragmentPlayListInterface.onFragmentPlayListButton5();
-            }
-        });
+
 
         listView = (ListView)fragmentView.findViewById(R.id.fragment_playlist);
 

@@ -75,7 +75,8 @@ import android.os.Environment;
 
 public class DirPlayerActivity extends FragmentActivity implements
 		ActionBar.TabListener, FragmentListview.FragmentListviewInterface,
-		FragmentBookMark.FragmentBookMarkInterface  {
+		FragmentBookMark.FragmentBookMarkInterface,
+		FragmentPlayList.FragmentPlayListInterface {
 
 	final static String DTAG = "DirPlayer";
 
@@ -120,6 +121,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	final int CMD_DELETE = 3;
 	final int CMD_FRESH = 4;
 	final int CMD_MKDIR = 5;
+	final int CMD_PLAY = 6;
 	
 	int tabCount = 3;
 	private static final String pathRoot = Environment
@@ -138,6 +140,10 @@ public class DirPlayerActivity extends FragmentActivity implements
 	View vBottonControl;
 	VideoView vv;
 	MediaController videoController = null;
+	
+	LinkedList<LvRow> playListItems = new LinkedList<LvRow>();
+	FragmentPlayList fragmentPlayList = FragmentPlayList.newInstance();
+	MyArrayAdapter playListArrayAdapter;
 	
 	/**
 	 * 书签窗口相关定义
@@ -584,6 +590,9 @@ public class DirPlayerActivity extends FragmentActivity implements
 						Log.d(DTAG, "mkdir at tab: " + fc.fresh);
 						mkDir(fc.desPath, fc.force);
 						break;
+					case CMD_PLAY:
+						Log.d(DTAG, "mkdir at tab: " + fc.fresh);
+						//servicePlay();
 					default:
 					}
 
@@ -998,6 +1007,39 @@ public class DirPlayerActivity extends FragmentActivity implements
 			return false;
 	}
 	
+	/**
+	 * 添加一个File到播放列表
+	 * @param file
+	 */
+	private void addToPlayList(File f) {
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy");
+		
+		if (f.isFile()){//file
+			//直接添加;
+			LvRow lr = new LvRow("" + f.getName(), "" + f.length(), ""
+					+ sdf.format(f.lastModified()), f, false, 2, 
+					URLConnection.getFileNameMap().getContentTypeFor(f.getName()));
+			playListItems.add(lr);
+				
+		}else if(f.isDirectory()){//dir
+			File files[] = f.listFiles();
+			for (File subFile : files) {
+				addToPlayList(subFile);
+			}
+		}
+	}
+	
+	private void updatePlayListAdapter()
+	{
+		Log.d(DTAG, "updatePlayListAdapter()");
+		playListArrayAdapter = new MyArrayAdapter(this, R.layout.file_row,
+				playListItems);
+
+		if (fragmentPlayList != null) {
+			fragmentPlayList.setListviewAdapter(playListArrayAdapter);
+		}
+	}
+	
 	/*
 	 * 将用户命令添加到list 
 	 */
@@ -1074,6 +1116,14 @@ public class DirPlayerActivity extends FragmentActivity implements
 		case 5: // 创建文件夹
 			cmdList.add(new FileCmd(null, currentPath[tab], false, CMD_MKDIR, tab));
 			cmdList.add(new FileCmd(null, null, true, CMD_FRESH, tab));
+			Log.d(DTAG, "cmdList.size(): "+cmdList.size());
+			break;
+		case 6: // 添加到播放列表
+			for (LvRow lr : selectedItems[tab]) {
+				addToPlayList(lr.getFile());
+			}
+			updatePlayListAdapter();
+			savePlayList2File();
 			Log.d(DTAG, "cmdList.size(): "+cmdList.size());
 			break;
 
@@ -1155,6 +1205,10 @@ public class DirPlayerActivity extends FragmentActivity implements
 			if (fragmentListview[tab] != null) {
 				fragmentListview[tab].setListviewAdapter(myArrayAdapter[tab],
 						currentPath[tab]);
+				
+				//debug, should be deleted
+				//fragmentPlayList.setListviewAdapter(myArrayAdapter[tab]);
+				
 				Log.d(DTAG,
 						"fragmentListview.setListviewAdapter(myArrayAdapter)!");
 			} else {
@@ -1364,6 +1418,12 @@ public class DirPlayerActivity extends FragmentActivity implements
 		//videoController.setEnabled(true);
 		vv.setMediaController(videoController);
 		vv.setOnTouchListener(vvOnTouchListener);
+		
+		/**
+		 * 播放列表
+		 */
+		getPlayList();
+		updatePlayListAdapter();
 	}
 
 	View.OnTouchListener vvOnTouchListener = new View.OnTouchListener(){
@@ -1599,6 +1659,10 @@ public class DirPlayerActivity extends FragmentActivity implements
 			// Return a DummySectionFragment (defined as a static inner class
 			// below) with the page number as its lone argument.
 
+			if (position == 3) { // 第四个tab为播放列表
+				Log.d(DTAG, "getItem(" + position + ") return fragmentPlayList");
+				return fragmentPlayList;
+			}
 			if (position == 2) { // 第三个tab为标签
 				Log.d(DTAG, "getItem(" + position + ") return fragmentBookMark");
 				return fragmentBookMark;
@@ -1617,7 +1681,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 		@Override
 		public int getCount() {
 			// Show 3 total pages.
-			return 3;
+			return 4;
 		}
 
 		@Override
@@ -1630,6 +1694,8 @@ public class DirPlayerActivity extends FragmentActivity implements
 				return getString(R.string.title_section2).toUpperCase(l);
 			case 2:
 				return getString(R.string.title_section3).toUpperCase(l);
+			case 3:
+				return getString(R.string.title_section4).toUpperCase(l);
 			}
 			return null;
 		}
@@ -1772,4 +1838,121 @@ public class DirPlayerActivity extends FragmentActivity implements
 			}
 		};
     }
+
+	public void onFragmentPlayListClicked(int i) {
+		Log.d(DTAG, "onFragmentPlayListClicked " + i);
+
+
+	}
+
+	public void onFragmentPlayListButton1() {
+		// 全选
+		for (LvRow lr : playListItems) {
+			lr.setSelected(true);
+		}
+		playListArrayAdapter.notifyDataSetChanged();
+	}
+
+	public void onFragmentPlayListButton2() {
+		// 全清
+		for (LvRow lr : playListItems) {
+			lr.setSelected(false);
+		}
+		playListArrayAdapter.notifyDataSetChanged();
+
+	}
+
+	public void onFragmentPlayListButton3() {
+		// 反选
+		for (LvRow lr : playListItems) {
+			if (lr.getSelected() == true)
+				lr.setSelected(false);
+			else
+				lr.setSelected(true);
+		}
+		playListArrayAdapter.notifyDataSetChanged();
+
+	}
+
+	public void onFragmentPlayListButton4() {
+		// 删除
+		Iterator<LvRow> iter = playListItems.iterator();
+		while (iter.hasNext()) {
+			if (iter.next().getSelected() == true)
+				iter.remove();
+		}
+		playListArrayAdapter.notifyDataSetChanged();
+
+		savePlayList2File();
+	}
+
+	/**
+	 * 播放目录用什么格式保存呢？
+	 */
+	private void getPlayList() {
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy");
+		String line;
+		File playlist = new File(getFilesDir(),
+				getString(R.string.playlist_file));
+
+		playListItems.clear();
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(playlist));
+
+			while ((line = br.readLine()) != null) {
+				File f = new File(line);
+				LvRow lr = new LvRow("" + f.getName(), "" + f.length(), ""
+						+ sdf.format(f.lastModified()), f, false, 2, 
+						URLConnection.getFileNameMap().getContentTypeFor(f.getName()));
+				playListItems.add(lr);
+			}
+			br.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * 加在链表的末尾
+	 * 
+	 */
+	private void appendPlayList2File(LvRow lr) {
+
+		File playlist = new File(getFilesDir(),
+				getString(R.string.playlist_file));
+
+		try {
+			BufferedWriter bw = new BufferedWriter(new FileWriter(playlist,
+					true));
+			bw.write(lr.getFile().getPath() + "\n");
+			bw.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * 暂时每次都存
+	 * 以后改成onStop的时候存
+	 */
+	private void savePlayList2File() {
+
+		File playlist = new File(getFilesDir(),
+				getString(R.string.playlist_file));
+
+		try {
+			BufferedWriter bw = new BufferedWriter(new FileWriter(playlist));
+			for (LvRow lr : playListItems) {
+				bw.write(lr.getFile().getPath() + "\n");
+			}
+			bw.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
 }

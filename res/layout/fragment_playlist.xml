@@ -12,37 +12,27 @@
             android:id="@+id/pl_b1"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
-            android:text="@string/fl_act1" />
+            android:text="@string/bm_act1" />
 
         <Button
             android:id="@+id/pl_b2"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
-            android:text="@string/fl_act2" />
+            android:text="@string/bm_act2" />
 
         <Button
             android:id="@+id/pl_b3"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
-            android:text="@string/fl_act3" />
+            android:text="@string/bm_act3" />
 
-        <Button
-            android:id="@+id/pl_b6"
-            android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:text="@string/fl_act6" />
 
         <Button
             android:id="@+id/pl_b4"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
-            android:text="@string/fl_act4" />
+            android:text="@string/bm_act4" />
 
-        <Button
-            android:id="@+id/pl_b5"
-            android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:text="@string/fl_act5" />
         
     </LinearLayout>
     	<ListView 

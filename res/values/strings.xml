@@ -21,6 +21,8 @@
     </string>
     <string name="title_section3">书签
     </string>
+    <string name="title_section4">播放
+    </string>
 
     <string name="act1" >分享
     </string>
@@ -81,5 +83,6 @@
     
     <string name="bookmark_file" >bookmark.txt
     </string>
-    
+    <string name="playlist_file" >playlist.txt
+    </string>
 </resources>
