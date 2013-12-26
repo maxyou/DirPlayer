@@ -402,35 +402,10 @@ public class DirPlayerActivity extends FragmentActivity implements
 			if (mime.startsWith("audio/"))				
 			{
 				Log.d(DTAG, "mediaPlayer: a MP3 file, play ......");
-				try {
-//					if (mediaPlayer != null){					
-//						// stop first
-//					    mediaPlayer.stop();
-//					    mediaPlayer.release();
-//					    mediaPlayer = null;	
-//					    Log.d(DTAG, "mediaPlayer: after clear mediaPlayer()");
-//					}
-//					mediaPlayer = new MediaPlayer();
-//					mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-//					mediaPlayer.setDataSource(getApplicationContext(), Uri.fromFile(f));					
-//					mediaPlayer.prepare();
-//					mediaPlayer.start();
-					mService.playSingle(f);
-					mediaController.show();
-					Log.d(DTAG, "mediaPlayer: after start()");
-				} catch (IllegalArgumentException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (SecurityException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IllegalStateException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				mService.play(f, null);
+				mediaController.show();
+				Log.d(DTAG, "mediaPlayer: after start()");
+
 			}
 			else if (mime.startsWith("video/")){
 				

@@ -18,6 +18,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
@@ -37,7 +38,22 @@ public class PlayService extends Service implements MediaPlayerControl  {
      * 播放列表 
      */    
 	LinkedList<LvRow> playListItemsService = new LinkedList<LvRow>();
-    
+	int currentPlay = 0; //第一首
+	OnCompletionListener listener = new OnCompletionListener() {		
+		@Override
+		public void onCompletion(MediaPlayer mp) {
+			// TODO Auto-generated method stub
+			/**
+			 * 找到下一首歌曲，并调用play()
+			 */
+			currentPlay++;
+			if (currentPlay >= playListItemsService.size()){
+				currentPlay = 0;
+			}
+			play(playListItemsService.get(currentPlay).getFile(), listener);
+		}
+	};
+
     /**
      * 音频播放
      */
@@ -127,16 +143,19 @@ public class PlayService extends Service implements MediaPlayerControl  {
 	 */
 	public void playList(int i) {
 		Log.d(DTAG,"playList: " + i);
+		
 		LvRow lr = playListItemsService.get(i);
-		try {
-			playSingle(lr.getFile());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		if (lr == null)
+			return;
+		
+		currentPlay = i; //更新当前指针
+		
+		play(lr.getFile(), listener);
 	}
+	
 
-	public void playSingle(File f) throws IOException{
+
+	public void play(File f, OnCompletionListener listener) {
 		Log.d(DTAG,"play in service: " + f.getPath());
 		if (mediaPlayer != null){
 			//mediaPlayer.stop();
@@ -147,13 +166,24 @@ public class PlayService extends Service implements MediaPlayerControl  {
 		mediaPlayer = new MediaPlayer();
 		mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 		Log.d(DTAG,"play in service 0");
-		mediaPlayer.setDataSource(getApplicationContext(), Uri.fromFile(f));
-		Log.d(DTAG,"play in service 1");
-		mediaPlayer.prepare();			
+		
+		try {
+			mediaPlayer.setDataSource(getApplicationContext(), Uri.fromFile(f));
+			Log.d(DTAG,"play in service 1");			mediaPlayer.prepare();
+		} catch (IllegalStateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}			
 		Log.d(DTAG,"play in service 2");
 		//mediaPlayer.prepareAsync();										
 		mediaPlayer.start();
 		Log.d(DTAG,"play in service 3");
+		
+		if (listener != null)
+			mediaPlayer.setOnCompletionListener(listener);
 		
 //		String songName;
 //		// assign the song name to songName
