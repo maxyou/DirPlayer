@@ -7,7 +7,7 @@
     </string>
     <string name="dealby" >请选择处理程序
     </string>
-    <string name="about" >DirPlayer ver0.90 hyyou@foxmail.com
+    <string name="about" >DirPlayer ver0.91 hyyou@foxmail.com
     </string>
     <string name="action_settings" >no setting
     </string>
@@ -83,6 +83,10 @@
     
     <string name="bookmark_file" >bookmark.txt
     </string>
+    
     <string name="playlist_file" >playlist.txt
     </string>
+    <string name="pl_path" >当前播放曲目：
+    </string>
+    
 </resources>

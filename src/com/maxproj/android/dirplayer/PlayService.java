@@ -22,6 +22,7 @@ import android.media.MediaPlayer.OnCompletionListener;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.MediaController.MediaPlayerControl;
 
@@ -46,6 +47,11 @@ public class PlayService extends Service implements MediaPlayerControl  {
 			/**
 			 * 找到下一首歌曲，并调用play()
 			 */
+			if(playListItemsService.size() == 0){
+				//没有曲目，停止播放
+				return;
+			}
+			
 			currentPlay++;
 			if (currentPlay >= playListItemsService.size()){
 				currentPlay = 0;
@@ -154,9 +160,22 @@ public class PlayService extends Service implements MediaPlayerControl  {
 	}
 	
 
-
 	public void play(File f, OnCompletionListener listener) {
 		Log.d(DTAG,"play in service: " + f.getPath());
+		String mime = URLConnection.getFileNameMap().getContentTypeFor(f.getName());
+		if (!mime.startsWith("audio/"))				
+		{
+			if(listener == null){
+				//如果单曲播放，不产生任何影响
+				return;
+			}else{
+				//如果是list播放，跳到下一曲
+				//假定list中全是非音乐文件，这里会导致嵌套死循环！！
+				//简单的处理方法是，禁止非音乐文件加入这个list
+				listener.onCompletion(null);
+				return;
+			}
+		}
 		if (mediaPlayer != null){
 			//mediaPlayer.stop();
 			mediaPlayer.release();
@@ -169,7 +188,8 @@ public class PlayService extends Service implements MediaPlayerControl  {
 		
 		try {
 			mediaPlayer.setDataSource(getApplicationContext(), Uri.fromFile(f));
-			Log.d(DTAG,"play in service 1");			mediaPlayer.prepare();
+			Log.d(DTAG,"play in service 1");
+			mediaPlayer.prepare();
 		} catch (IllegalStateException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -182,8 +202,11 @@ public class PlayService extends Service implements MediaPlayerControl  {
 		mediaPlayer.start();
 		Log.d(DTAG,"play in service 3");
 		
-		if (listener != null)
+		if (listener != null){
 			mediaPlayer.setOnCompletionListener(listener);
+		}
+		
+		broadcastInfor();
 		
 //		String songName;
 //		// assign the song name to songName
@@ -287,5 +310,31 @@ public class PlayService extends Service implements MediaPlayerControl  {
 		// TODO Auto-generated method stub
 		return 0;
 	}
-    
+	
+	public final class ServiceConstants {
+	    // Defines a custom Intent action
+	    public static final String BROADCAST_ACTION =
+	        "com.maxproj.android.dirplayer.BROADCAST";
+	    // Defines the key for the status "extra" in an Intent
+	    public static final String EXTENDED_DATA_STATUS =
+	        "com.maxproj.android.dirplayer.STATUS";
+	}
+	
+	/**
+	 * 通过广播发送当前播放曲目的路径和名称
+	 */
+	public void broadcastInfor(){
+		Intent localIntent =
+            new Intent(ServiceConstants.BROADCAST_ACTION)
+            // Puts the status into the Intent
+            .putExtra(ServiceConstants.EXTENDED_DATA_STATUS, 
+            		playListItemsService.get(currentPlay).getFile().getPath());
+		// Broadcasts the Intent to receivers in this app.
+		LocalBroadcastManager.getInstance(this).sendBroadcast(localIntent);
+	}
+	
+	/**
+	 * 通过notification发送消息，并设置service为Foreground
+	 */
+	
 }

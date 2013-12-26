@@ -6,7 +6,6 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -19,11 +18,9 @@ import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Locale;
-import java.util.TreeSet;
-
 import com.maxproj.android.dirplayer.PlayService.LocalBinder;
+import com.maxproj.android.dirplayer.PlayService.ServiceConstants;
 
 
 
@@ -31,17 +28,16 @@ import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.FragmentTransaction;
-import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -53,9 +49,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.GestureDetectorCompat;
-import android.text.Editable;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -67,13 +63,11 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.MediaController.MediaPlayerControl;
 import android.widget.ShareActionProvider;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 import android.os.Environment;
@@ -1007,11 +1001,17 @@ public class DirPlayerActivity extends FragmentActivity implements
 		
 		if (f.isFile()){//file
 			//直接添加;
-			LvRow lr = new LvRow("" + f.getName(), "" + f.length(), ""
-					+ sdf.format(f.lastModified()), f, false, 2, 
-					URLConnection.getFileNameMap().getContentTypeFor(f.getName()));
-			playListItems.add(lr);
-				
+			String mime = URLConnection.getFileNameMap().getContentTypeFor(f.getName());
+			/**
+			 * 只加音乐文件
+			 */
+			if (mime !=null){
+				if(mime.startsWith("audio/")){	
+					LvRow lr = new LvRow("" + f.getName(), "" + f.length(), ""
+						+ sdf.format(f.lastModified()), f, false, 2, mime);
+					playListItems.add(lr);
+				}
+			}
 		}else if(f.isDirectory()){//dir
 			File files[] = f.listFiles();
 			for (File subFile : files) {
@@ -1422,7 +1422,22 @@ public class DirPlayerActivity extends FragmentActivity implements
 		Intent intent = new Intent(this, PlayService.class);
 		startService(intent);
 
-
+		
+		/**
+		 * 通过广播接收service的播放信息，比如当前曲目
+		 */
+        // The filter's action is BROADCAST_ACTION
+        IntentFilter mStatusIntentFilter = new IntentFilter(
+        		ServiceConstants.BROADCAST_ACTION);
+    
+        // Adds a data filter for the HTTP scheme
+        //mStatusIntentFilter.addDataScheme("http");
+        ServiceInforReceiver mServiceInforReceiver =
+                new ServiceInforReceiver();
+        // Registers the DownloadStateReceiver and its intent filters
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+        		mServiceInforReceiver,
+                mStatusIntentFilter);
 	}
 
     @Override
@@ -1994,4 +2009,19 @@ public class DirPlayerActivity extends FragmentActivity implements
 			mService.updatePlayList();
 	}
 
+	private class ServiceInforReceiver extends BroadcastReceiver
+	{
+		private ServiceInforReceiver(){ // Prevents instantiation
+		}
+		
+	    // Called when the BroadcastReceiver gets an Intent it's registered to receive
+		@Override
+	    public void onReceive(Context context, Intent intent) {
+			String path = intent.getStringExtra(ServiceConstants.EXTENDED_DATA_STATUS);
+			Log.d(DTAG, "ServiceInforReceiver() get: " + path);
+			fragmentPlayList.setPathView(
+					getResources().getString(R.string.pl_path) + path);
+	    }
+	}
+	
 }

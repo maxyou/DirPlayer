@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.MediaController;
 import android.widget.MediaController.MediaPlayerControl;
+import android.widget.TextView;
 
 
 public class FragmentPlayList  extends Fragment {
@@ -23,7 +24,8 @@ public class FragmentPlayList  extends Fragment {
     View fragmentView;
     final static String DTAG = "DirPlayer";
     Button b1, b2, b3, b4, b5;
-
+    TextView pathView;
+    
     public interface FragmentPlayListInterface{
         void onFragmentPlayListClicked(int i);
         void onFragmentPlayListButton1();
@@ -125,8 +127,13 @@ public class FragmentPlayList  extends Fragment {
             Log.d(DTAG,"FragmentPlayList maa is null pointer!");
         }
         
+        pathView = (TextView)fragmentView.findViewById(R.id.current_play);
+        
         mService = FragmentPlayListInterface.getServiceConnection();
 		
+    }
+    public void setPathView(String path){
+    	pathView.setText(path);
     }
     private class ItemClicklistener implements AdapterView.OnItemClickListener {
         @Override
