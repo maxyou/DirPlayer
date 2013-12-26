@@ -22,12 +22,13 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.MediaController.MediaPlayerControl;
 
 /**
  * @author Max You
  *
  */
-public class PlayService extends Service {
+public class PlayService extends Service implements MediaPlayerControl  {
 	String DTAG = "DirPlayer";
 	
     private final IBinder mBinder = new LocalBinder();
@@ -166,6 +167,95 @@ public class PlayService extends Service {
 //		notification.setEventInfo(getApplicationContext(), "MusicPlayerSample",
 //		                "Playing: " + songName, pi);
 //		startForeground(NOTIFICATION_ID, notification);
+	}
+
+
+	@Override
+	public void start() {
+		// TODO Auto-generated method stub
+		if(mediaPlayer != null)
+			mediaPlayer.start();
+	}
+
+
+	@Override
+	public void pause() {
+		// TODO Auto-generated method stub
+		if(mediaPlayer != null)
+			mediaPlayer.pause();
+	}
+
+
+	@Override
+	public int getDuration() {
+		// TODO Auto-generated method stub
+		if(mediaPlayer != null)			
+			return mediaPlayer.getDuration();
+		else
+			return 0;
+	}
+
+
+	@Override
+	public int getCurrentPosition() {
+		// TODO Auto-generated method stub
+		if(mediaPlayer != null)
+			return mediaPlayer.getCurrentPosition();
+		else
+			return 0;
+	}
+
+
+	@Override
+	public void seekTo(int pos) {
+		// TODO Auto-generated method stub
+		if(mediaPlayer != null)
+			mediaPlayer.seekTo(pos);
+	}
+
+
+	@Override
+	public boolean isPlaying() {
+		// TODO Auto-generated method stub
+		if(mediaPlayer != null)
+			return mediaPlayer.isPlaying();
+		else
+			return false;
+	}
+
+
+	@Override
+	public boolean canPause() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+
+	@Override
+	public boolean canSeekBackward() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+
+	@Override
+	public boolean canSeekForward() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+
+	@Override
+	public int getAudioSessionId() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+
+	@Override
+	public int getBufferPercentage() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
     
 }

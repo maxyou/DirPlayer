@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TreeSet;
 
+import com.maxproj.android.dirplayer.PlayService.LocalBinder;
+
 
 
 import android.app.ActionBar;
@@ -30,9 +32,11 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -42,6 +46,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -129,21 +134,36 @@ public class DirPlayerActivity extends FragmentActivity implements
 
 
 	/**
-	 * Media
+	 * 音频播放
 	 */
-	MediaPlayerControl mediaPlayerControl;
-	//MediaPlayerControl videoPlayerControl;	
-
-	MediaPlayer mediaPlayer = null;
+	//MediaPlayer mediaPlayer = null;
 	MediaController mediaController = null;
+	//这是媒体播放器MediaPlayer和媒体控制器MediaController之间的接口
+	MediaPlayerControl mediaPlayerControl;
 	
+	/**
+	 * 视频播放
+	 */
 	View vBottonControl;
 	VideoView vv;
+	//注意video和其控制器之间不需接口，而是直接关联
 	MediaController videoController = null;
 	
+	/**
+	 * 播放列表PlayList
+	 */
 	LinkedList<LvRow> playListItems = new LinkedList<LvRow>();
 	FragmentPlayList fragmentPlayList = FragmentPlayList.newInstance();
 	MyArrayAdapter playListArrayAdapter;
+	
+	
+	/**
+	 * PlayService音频播放
+	 */
+    PlayService mService;
+    boolean mBound = false;    
+	
+
 	
 	/**
 	 * 书签窗口相关定义
@@ -383,23 +403,20 @@ public class DirPlayerActivity extends FragmentActivity implements
 			{
 				Log.d(DTAG, "mediaPlayer: a MP3 file, play ......");
 				try {
-					if (mediaPlayer != null){					
-						// stop first
-					    mediaPlayer.stop();
-					    mediaPlayer.release();
-					    mediaPlayer = null;	
-					    Log.d(DTAG, "mediaPlayer: after clear mediaPlayer()");
-					}
-					
-					mediaPlayer = new MediaPlayer();
-					mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-					mediaPlayer.setDataSource(getApplicationContext(), Uri.fromFile(f));					
-					mediaPlayer.prepare();					
-					//mediaPlayer.prepareAsync();										
-					mediaPlayer.start();
-					
+//					if (mediaPlayer != null){					
+//						// stop first
+//					    mediaPlayer.stop();
+//					    mediaPlayer.release();
+//					    mediaPlayer = null;	
+//					    Log.d(DTAG, "mediaPlayer: after clear mediaPlayer()");
+//					}
+//					mediaPlayer = new MediaPlayer();
+//					mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+//					mediaPlayer.setDataSource(getApplicationContext(), Uri.fromFile(f));					
+//					mediaPlayer.prepare();
+//					mediaPlayer.start();
+					mService.playSingle(f);
 					mediaController.show();
-			          
 					Log.d(DTAG, "mediaPlayer: after start()");
 				} catch (IllegalArgumentException e) {
 					// TODO Auto-generated catch block
@@ -418,11 +435,10 @@ public class DirPlayerActivity extends FragmentActivity implements
 			else if (mime.startsWith("video/")){
 				
 				// 如果有音频或其他再播放，停止，防止声音冲突
-				if (mediaPlayer != null){					
+				if (mService != null){					
 					// stop first
-				    mediaPlayer.stop();
-				    mediaPlayer.release();
-				    mediaPlayer = null;	
+					mService.pause();
+
 				    Log.d(DTAG, "mediaPlayer: after clear mediaPlayer()");
 				}
 				Log.d(DTAG, "mediaPlayer: no mediaPlayer");
@@ -1122,8 +1138,8 @@ public class DirPlayerActivity extends FragmentActivity implements
 			for (LvRow lr : selectedItems[tab]) {
 				addToPlayList(lr.getFile());
 			}
-			updatePlayListAdapter();
 			savePlayList2File();
+			updatePlayListAdapter();
 			Log.d(DTAG, "cmdList.size(): "+cmdList.size());
 			break;
 
@@ -1424,7 +1440,53 @@ public class DirPlayerActivity extends FragmentActivity implements
 		 */
 		getPlayList();
 		updatePlayListAdapter();
+		
+		/**
+		 * 启动音频播放service
+		 */
+		Intent intent = new Intent(this, PlayService.class);
+		startService(intent);
+
+
 	}
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Bind to LocalService
+        Intent intent = new Intent(this, PlayService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        // Unbind from the service
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+        }
+    }
+	
+    /** Defines callbacks for service binding, passed to bindService() */
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            LocalBinder binder = (LocalBinder) service;
+            mService = binder.getService();
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+
+
+    };
 
 	View.OnTouchListener vvOnTouchListener = new View.OnTouchListener(){
 
@@ -1530,7 +1592,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 				
 				if (e1.getY() > (widthHeightInPixels[1] - 20)) {
 					Log.d(DTAG,"onScroll() find scroll from bottom!");
-					if((mediaPlayer!=null)&&(mediaController != null)){
+					if((mService!=null)&&(mediaController != null)){
 						mediaController.show();
 					}
 					return true;
@@ -1705,13 +1767,6 @@ public class DirPlayerActivity extends FragmentActivity implements
 	protected void onPause() {
 		// TODO Auto-generated method stub
 		super.onPause();
-		
-		// 会不会关早了？怎样备份这个状态？
-		if(mediaPlayer != null){
-			mediaPlayer.stop();
-			mediaPlayer.release();
-			mediaPlayer = null;
-		}
 	}
 	
 	private boolean backPressed = false;
@@ -1801,48 +1856,53 @@ public class DirPlayerActivity extends FragmentActivity implements
 			@Override
 			public int getCurrentPosition() {
 				// TODO Auto-generated method stub
-				return mediaPlayer.getCurrentPosition();
+				return mService.getCurrentPosition();
 			}
 		
 			@Override
 			public int getDuration() {
 				// TODO Auto-generated method stub
-				return mediaPlayer.getDuration();
+				return mService.getDuration();
 			}
 		
 			@Override
 			public boolean isPlaying() {
 				// TODO Auto-generated method stub
-				return mediaPlayer.isPlaying();
+				return mService.isPlaying();
 			}
 		
 			@Override
 			public void pause() {
 				// TODO Auto-generated method stub
 				Log.d(DTAG, "mediaPlayer: pause()");
-				mediaPlayer.pause();
+				mService.pause();
 			}
 		
 			@Override
 			public void seekTo(int arg0) {
 				// TODO Auto-generated method stub
-				mediaPlayer.seekTo(arg0);
+				mService.seekTo(arg0);
 			}
 		
 			@Override
 			public void start() {
 				Log.d(DTAG, "mediaPlayer: start()");
-				mediaPlayer.start();
+				mService.start();
 				// TODO Auto-generated method stub
 				
 			}
 		};
     }
 
+
+	
+    
 	public void onFragmentPlayListClicked(int i) {
-		Log.d(DTAG, "onFragmentPlayListClicked " + i);
-
-
+		Log.d(DTAG, "onFragmentPlayListClicked: " + i);
+		if(mService != null){
+			mService.playList(i);
+			mediaController.show();
+		}
 	}
 
 	public void onFragmentPlayListButton1() {
@@ -1885,7 +1945,9 @@ public class DirPlayerActivity extends FragmentActivity implements
 
 		savePlayList2File();
 	}
-
+    public PlayService getServiceConnection(){
+    	return mService;
+    }
 	/**
 	 * 播放目录用什么格式保存呢？
 	 */
@@ -1952,7 +2014,9 @@ public class DirPlayerActivity extends FragmentActivity implements
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+		
+		if(mService != null)
+			mService.updatePlayList();
 	}
 
 }

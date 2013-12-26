@@ -35,6 +35,7 @@
 
         
     </LinearLayout>
+
     	<ListView 
         android:id="@+id/fragment_playlist"
     	android:layout_width="match_parent"
@@ -43,9 +44,10 @@
         />
     	
     <TextView
-        android:id="@+id/play_control"
+        android:id="@+id/current_play"
         style="@style/lvRowText"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
+        android:layout_height="wrap_content"
+        android:text="============" />
+        
 </LinearLayout>

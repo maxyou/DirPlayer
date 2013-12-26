@@ -12,6 +12,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.MediaController;
+import android.widget.MediaController.MediaPlayerControl;
 
 
 public class FragmentPlayList  extends Fragment {
@@ -28,10 +30,15 @@ public class FragmentPlayList  extends Fragment {
         void onFragmentPlayListButton2();
         void onFragmentPlayListButton3();
         void onFragmentPlayListButton4();
-
+        PlayService getServiceConnection();
     }
     private FragmentPlayListInterface FragmentPlayListInterface = null;
 
+    /**
+     * play service control
+     */
+    PlayService mService = null;
+    
     /* 
     public FragmentListview(int tab){
         Log.d(DTAG,"fragment " + tab + " is initialized");
@@ -67,6 +74,8 @@ public class FragmentPlayList  extends Fragment {
         //return super.onCreateView(inflater, container, savedInstanceState);
         Log.d(DTAG,"FragmentPlayList onCreateView() is called!");
         fragmentView =  inflater.inflate(R.layout.fragment_playlist, container, false);
+        
+
         return fragmentView;
     }
     @Override
@@ -115,6 +124,9 @@ public class FragmentPlayList  extends Fragment {
         }else{
             Log.d(DTAG,"FragmentPlayList maa is null pointer!");
         }
+        
+        mService = FragmentPlayListInterface.getServiceConnection();
+		
     }
     private class ItemClicklistener implements AdapterView.OnItemClickListener {
         @Override
