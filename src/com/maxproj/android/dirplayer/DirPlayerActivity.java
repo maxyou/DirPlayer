@@ -396,10 +396,14 @@ public class DirPlayerActivity extends FragmentActivity implements
 			if (mime.startsWith("audio/"))				
 			{
 				Log.d(DTAG, "mediaPlayer: a MP3 file, play ......");
-				mService.play(f, null);
-				mediaController.show();
-				Log.d(DTAG, "mediaPlayer: after start()");
-
+				/**
+				 * 这里有个问题，Service何时能初始化完成？
+				 */
+				if(mService != null){
+					mService.play(f, null);
+					mediaController.show();
+					Log.d(DTAG, "mediaPlayer: after start()");
+				}
 			}
 			else if (mime.startsWith("video/")){
 				
@@ -2019,8 +2023,10 @@ public class DirPlayerActivity extends FragmentActivity implements
 	    public void onReceive(Context context, Intent intent) {
 			String path = intent.getStringExtra(ServiceConstants.EXTENDED_DATA_STATUS);
 			Log.d(DTAG, "ServiceInforReceiver() get: " + path);
-			fragmentPlayList.setPathView(
+			if(fragmentPlayList != null){
+				fragmentPlayList.setPathView(
 					getResources().getString(R.string.pl_path) + path);
+			}
 	    }
 	}
 	

@@ -203,10 +203,15 @@ public class PlayService extends Service implements MediaPlayerControl  {
 		Log.d(DTAG,"play in service 3");
 		
 		if (listener != null){
+			/**
+			 * 如果listener监听器不为空，说明是list播放
+			 * 此时将此监听器挂入
+			 * 同时对外发送播放信息
+			 */
 			mediaPlayer.setOnCompletionListener(listener);
+			broadcastInfor();
 		}
 		
-		broadcastInfor();
 		
 //		String songName;
 //		// assign the song name to songName
@@ -324,13 +329,19 @@ public class PlayService extends Service implements MediaPlayerControl  {
 	 * 通过广播发送当前播放曲目的路径和名称
 	 */
 	public void broadcastInfor(){
-		Intent localIntent =
-            new Intent(ServiceConstants.BROADCAST_ACTION)
-            // Puts the status into the Intent
-            .putExtra(ServiceConstants.EXTENDED_DATA_STATUS, 
-            		playListItemsService.get(currentPlay).getFile().getPath());
-		// Broadcasts the Intent to receivers in this app.
-		LocalBroadcastManager.getInstance(this).sendBroadcast(localIntent);
+		if(playListItemsService != null){
+			LvRow lr = playListItemsService.get(currentPlay);
+			if (lr != null){
+			
+				Intent localIntent =
+		            new Intent(ServiceConstants.BROADCAST_ACTION)
+		            // Puts the status into the Intent
+		            .putExtra(ServiceConstants.EXTENDED_DATA_STATUS, 
+		            		lr.getFile().getPath());
+				// Broadcasts the Intent to receivers in this app.
+				LocalBroadcastManager.getInstance(this).sendBroadcast(localIntent);
+			}
+		}
 	}
 	
 	/**

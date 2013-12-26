@@ -21,10 +21,10 @@ public class FragmentPlayList  extends Fragment {
 
     MyArrayAdapter listAdapter = null;
     ListView listView = null;
-    View fragmentView;
+    View fragmentView = null;
     final static String DTAG = "DirPlayer";
     Button b1, b2, b3, b4, b5;
-    TextView pathView;
+    TextView pathView = null;
     
     public interface FragmentPlayListInterface{
         void onFragmentPlayListClicked(int i);
@@ -133,7 +133,12 @@ public class FragmentPlayList  extends Fragment {
 		
     }
     public void setPathView(String path){
-    	pathView.setText(path);
+    	/**
+    	 * 这里有个问题。
+    	 * 刚开机，还没有切换到播放tab，也即这个tab还没有初始化，此刻设置pathView导致空指针异常
+    	 */
+    	if(pathView != null)
+    		pathView.setText(path);
     }
     private class ItemClicklistener implements AdapterView.OnItemClickListener {
         @Override
