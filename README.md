@@ -1,5 +1,7 @@
 DirPlayer目录播放器说明
 
+(ppt文件请参考本目录下DirPlayerAbout.ppt)
+
 设计目标
 
 	一个简洁的音视频目录播放器
