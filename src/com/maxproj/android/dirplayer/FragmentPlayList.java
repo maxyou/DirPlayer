@@ -23,7 +23,7 @@ public class FragmentPlayList  extends Fragment {
     ListView listView = null;
     View fragmentView = null;
     final static String DTAG = "DirPlayer";
-    Button b1, b2, b3, b4, b5;
+    Button b1, b2, b3, b4, b5, b6, b7;
     TextView pathView = null;
     
     public interface FragmentPlayListInterface{
@@ -32,6 +32,9 @@ public class FragmentPlayList  extends Fragment {
         void onFragmentPlayListButton2();
         void onFragmentPlayListButton3();
         void onFragmentPlayListButton4();
+        void onFragmentPlayListButton5();
+        void onFragmentPlayListButton6();
+        void onFragmentPlayListButton7();
         PlayService getServiceConnection();
     }
     private FragmentPlayListInterface FragmentPlayListInterface = null;
@@ -112,7 +115,27 @@ public class FragmentPlayList  extends Fragment {
             	FragmentPlayListInterface.onFragmentPlayListButton4();
             }
         });
-
+        b5 = (Button)fragmentView.findViewById(R.id.pl_b5);
+        b5.setOnClickListener(new View.OnClickListener() { // 删除
+            @Override
+            public void onClick(View view) {
+            	FragmentPlayListInterface.onFragmentPlayListButton5();
+            }
+        });
+        b6 = (Button)fragmentView.findViewById(R.id.pl_b6);
+        b6.setOnClickListener(new View.OnClickListener() { // 删除
+            @Override
+            public void onClick(View view) {
+            	FragmentPlayListInterface.onFragmentPlayListButton6();
+            }
+        });
+        b7 = (Button)fragmentView.findViewById(R.id.pl_b7);
+        b7.setOnClickListener(new View.OnClickListener() { // 删除
+            @Override
+            public void onClick(View view) {
+            	FragmentPlayListInterface.onFragmentPlayListButton7();
+            }
+        });
 
         listView = (ListView)fragmentView.findViewById(R.id.fragment_playlist);
 

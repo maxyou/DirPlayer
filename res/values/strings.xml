@@ -55,7 +55,22 @@
 	<string name="bm_act5" >修改
     </string>
     
-    <string name="bar_b1" >A->B
+	<string name="pl_act1" >全选
+    </string>
+    <string name="pl_act2" >清除
+    </string>
+    <string name="pl_act3" >反选
+    </string>
+    <string name="pl_act4" >删除
+    </string>
+	<string name="pl_act5" >上移
+    </string>
+	<string name="pl_act6" >下移
+    </string>
+	<string name="pl_act7" >操作
+    </string>
+		
+	<string name="bar_b1" >A->B
     </string>
     <string name="bar_b2" >A=>B
     </string>
