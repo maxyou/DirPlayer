@@ -10,16 +10,14 @@ import java.io.IOException;
 import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.LinkedList;
-import java.util.Random;
-
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnCompletionListener;
+import io.vov.vitamio.MediaPlayer;
+import io.vov.vitamio.MediaPlayer.OnCompletionListener;
+import io.vov.vitamio.MediaPlayer.OnPreparedListener;
+import io.vov.vitamio.Vitamio;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
@@ -94,6 +92,8 @@ public class PlayService extends Service implements MediaPlayerControl {
 
 		Log.d(DTAG, "service: onCreate()");
 		updatePlayList();
+		
+		Vitamio.initialize(this);
 	}
 
 	@Override
@@ -173,6 +173,8 @@ public class PlayService extends Service implements MediaPlayerControl {
 				// 如果是list播放，跳到下一曲
 				// 假定list中全是非音乐文件，这里会导致嵌套死循环！！
 				// 简单的处理方法是，禁止非音乐文件加入这个list
+				// @todo
+				//		这个bug需要检查一下
 				listener.onCompletion(null);
 				return;
 			}
@@ -183,37 +185,41 @@ public class PlayService extends Service implements MediaPlayerControl {
 			mediaPlayer = null;
 			Log.d(DTAG, "play in service: clear last");
 		}
-		mediaPlayer = new MediaPlayer();
-		mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+		mediaPlayer = new MediaPlayer(this);
+		//mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 		Log.d(DTAG, "play in service 0");
 
 		try {
 			mediaPlayer.setDataSource(getApplicationContext(), Uri.fromFile(f));
 			Log.d(DTAG, "play in service 1");
 			mediaPlayer.prepare();
+			// mediaPlayer.prepareAsync();
+			// mediaPlayer.start();
+			mediaPlayer.setOnPreparedListener(new OnPreparedListener() { 
+		        @Override
+		        public void onPrepared(MediaPlayer mp) {
+		            mp.start();
+		        }
+		    });
+			if (listener != null) {
+				/**
+				 * 如果listener监听器不为空，说明是list播放 此时将此监听器挂入 同时对外发送播放信息
+				 */
+				mediaPlayer.setOnCompletionListener(listener);
+
+				// 广播给主activity
+				broadcastInfor();
+
+				// 发送到notification
+				sendNotification();
+			}
+
 		} catch (IllegalStateException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-		Log.d(DTAG, "play in service 2");
-		// mediaPlayer.prepareAsync();
-		mediaPlayer.start();
-		Log.d(DTAG, "play in service 3");
-
-		if (listener != null) {
-			/**
-			 * 如果listener监听器不为空，说明是list播放 此时将此监听器挂入 同时对外发送播放信息
-			 */
-			mediaPlayer.setOnCompletionListener(listener);
-
-			// 广播给主activity
-			broadcastInfor();
-
-			// 发送到notification
-			sendNotification();
 		}
 
 	}
@@ -258,11 +264,16 @@ public class PlayService extends Service implements MediaPlayerControl {
 			mediaPlayer.pause();
 	}
 
+	public void stop() {
+		// TODO Auto-generated method stub
+		if (mediaPlayer != null)
+			mediaPlayer.stop();
+	}
 	@Override
 	public int getDuration() {
 		// TODO Auto-generated method stub
 		if (mediaPlayer != null)
-			return mediaPlayer.getDuration();
+			return (int) mediaPlayer.getDuration();
 		else
 			return 0;
 	}
@@ -271,7 +282,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 	public int getCurrentPosition() {
 		// TODO Auto-generated method stub
 		if (mediaPlayer != null)
-			return mediaPlayer.getCurrentPosition();
+			return (int) mediaPlayer.getCurrentPosition();
 		else
 			return 0;
 	}

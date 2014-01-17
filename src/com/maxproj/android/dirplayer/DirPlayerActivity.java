@@ -1,5 +1,10 @@
 package com.maxproj.android.dirplayer;
 
+import io.vov.vitamio.MediaPlayer;
+import io.vov.vitamio.widget.VideoView;
+import io.vov.vitamio.widget.MediaController;
+//import io.vov.vitamio.widget.MediaController.MediaPlayerControl;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -13,16 +18,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLConnection;
-
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Locale;
-import com.maxproj.android.dirplayer.PlayService.LocalBinder;
-import com.maxproj.android.dirplayer.PlayService.ServiceConstants;
-
-
 
 import android.app.ActionBar;
 import android.app.AlertDialog;
@@ -41,6 +41,7 @@ import android.content.res.Resources;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -50,8 +51,8 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.view.ViewPager;
 import android.support.v4.view.GestureDetectorCompat;
+import android.support.v4.view.ViewPager;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -65,12 +66,13 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.MediaController;
+//import android.widget.MediaController;
 import android.widget.MediaController.MediaPlayerControl;
 import android.widget.ShareActionProvider;
 import android.widget.Toast;
-import android.widget.VideoView;
-import android.os.Environment;
+
+import com.maxproj.android.dirplayer.PlayService.LocalBinder;
+import com.maxproj.android.dirplayer.PlayService.ServiceConstants;
 
 public class DirPlayerActivity extends FragmentActivity implements
 		ActionBar.TabListener, FragmentListview.FragmentListviewInterface,
@@ -131,9 +133,9 @@ public class DirPlayerActivity extends FragmentActivity implements
 	 * 音频播放
 	 */
 	//MediaPlayer mediaPlayer = null;
-	MediaController mediaController = null;
+	android.widget.MediaController mediaController = null;
 	//这是媒体播放器MediaPlayer和媒体控制器MediaController之间的接口
-	MediaPlayerControl mediaPlayerControl;
+	android.widget.MediaController.MediaPlayerControl mediaPlayerControl;
 	
 	/**
 	 * 视频播放
@@ -141,7 +143,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	View vBottonControl;
 	VideoView vv;
 	//注意video和其控制器之间不需接口，而是直接关联
-	MediaController videoController = null;
+	io.vov.vitamio.widget.MediaController videoController = null;
 	
 	/**
 	 * 播放列表PlayList
@@ -389,6 +391,8 @@ public class DirPlayerActivity extends FragmentActivity implements
 			if (mime == null){
 				// 不认识的格式
 				Log.d(DTAG, "mediaPlayer: mime == null, unkown video format");
+				Toast.makeText(this, "file mime is null !",
+						Toast.LENGTH_SHORT).show();
 				return;
 			}
 			
@@ -400,6 +404,14 @@ public class DirPlayerActivity extends FragmentActivity implements
 				 * 这里有个问题，Service何时能初始化完成？
 				 */
 				if(mService != null){
+					// 退出视频，并隐藏VideoView
+					if((vv!=null)&&(vv.isPlaying())){
+						if(videoController!=null)
+							videoController.hide();
+						vv.stopPlayback();
+						vv.setVisibility(View.GONE);
+						//vv.pause();
+					}
 					mService.play(f, null);
 					mediaController.show();
 					Log.d(DTAG, "mediaPlayer: after start()");
@@ -410,7 +422,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 				// 如果有音频或其他再播放，停止，防止声音冲突
 				if (mService != null){					
 					// stop first
-					mService.pause();
+					mService.stop();
 
 				    Log.d(DTAG, "mediaPlayer: after clear mediaPlayer()");
 				}
@@ -423,11 +435,35 @@ public class DirPlayerActivity extends FragmentActivity implements
 				// 方法二
 				// 使用VideoView
 				vv.setVisibility(View.VISIBLE);
+				vv.requestFocus();
 				vv.setVideoURI(Uri.fromFile(f));
+
+				/* 这个高端玩法似乎不行
+				vv.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+					@Override
+					public void onPrepared(MediaPlayer mediaPlayer) {
+						// optional need Vitamio 4.0
+						//mediaPlayer.setPlaybackSpeed(1.0f);目前没修改过速度
+						vv.start();
+						videoController.show();
+					}
+				});
+				*/
+				//mediaPlayer.prepareAsync();
+				vv.setOnCompletionListener(new MediaPlayer.OnCompletionListener(){
+
+					@Override
+					public void onCompletion(MediaPlayer mp) {
+						// TODO Auto-generated method stub
+						mp.seekTo(0);
+						mp.pause();
+					}
+					
+				});
 				vv.start();
-				Log.d(DTAG, "mediaPlayer: vv.start()");
-				videoController.show();
-				Log.d(DTAG, "mediaPlayer: after mediaController.show()");
+				
+				//Log.d(DTAG, "mediaPlayer: vv.start()");
+				//Log.d(DTAG, "mediaPlayer: after mediaController.show()");
 			}
 			
 			// 文本文件直接查看
@@ -1399,15 +1435,15 @@ public class DirPlayerActivity extends FragmentActivity implements
 		
 		mediaPlayerControlInit(); // 生成音频控制接口		
 		
-		// 音频控制器初始化 
-		mediaController = new MediaController(this);
+		// 音频控制器使用android自带的
+		mediaController = new android.widget.MediaController(this);
 		mediaController.setMediaPlayer(mediaPlayerControl);
 		mediaController.setAnchorView(vBottonControl);
 		mediaController.setEnabled(true);					
 
-		// 视频控制器初始化
-		vv = (VideoView)findViewById(R.id.videoview); // 视频播放窗口
-		videoController = new MediaController(this);
+		// 视频控制器使用vitamio内含的
+		vv = (io.vov.vitamio.widget.VideoView)findViewById(R.id.videoview); // 视频播放窗口
+		videoController = new io.vov.vitamio.widget.MediaController(this);
 		//videoController.setMediaPlayer(videoPlayerControl);
 		//videoController.setAnchorView(vBottonControl);
 		//videoController.setEnabled(true);
@@ -1586,7 +1622,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 				
 				if (e1.getY() > (widthHeightInPixels[1] - 20)) {
 					Log.d(DTAG,"onScroll() find scroll from bottom!");
-					if((mService!=null)&&(mediaController != null)){
+					if((mService!=null)&&(mService.isPlaying())&&(mediaController != null)){
 						mediaController.show();
 					}
 					return true;
@@ -1888,12 +1924,16 @@ public class DirPlayerActivity extends FragmentActivity implements
 		};
     }
 
-
-	
-    
 	public void onFragmentPlayListClicked(int i) {
 		Log.d(DTAG, "onFragmentPlayListClicked: " + i);
 		if(mService != null){
+			if((vv!=null)&&(vv.isPlaying())){
+				if(videoController!=null)
+					videoController.hide();
+				vv.stopPlayback();
+				vv.setVisibility(View.GONE);
+				//vv.pause();
+			}
 			mService.playList(i);
 			mediaController.show();
 		}
