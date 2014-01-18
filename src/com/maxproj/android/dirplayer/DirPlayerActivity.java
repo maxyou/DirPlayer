@@ -399,22 +399,17 @@ public class DirPlayerActivity extends FragmentActivity implements
 			// 音频文件处理
 			if (mime.startsWith("audio/"))				
 			{
-				Log.d(DTAG, "mediaPlayer: a MP3 file, play ......");
+				Log.d(DTAG, "audio/video: begin audio play......");
 				/**
 				 * 这里有个问题，Service何时能初始化完成？
 				 */
 				if(mService != null){
 					// 退出视频，并隐藏VideoView
-					if((vv!=null)&&(vv.isPlaying())){
-						if(videoController!=null)
-							videoController.hide();
-						vv.stopPlayback();
-						vv.setVisibility(View.GONE);
-						//vv.pause();
-					}
-					mService.play(f, null);
+					clearVideoViewPlaying();
+					mService.play(f, null); // clearMusicPlaying() will be called
+					Log.d(DTAG, "audio/video: after mService.play(f, null)");
 					mediaController.show();
-					Log.d(DTAG, "mediaPlayer: after start()");
+					Log.d(DTAG, "audio/video: after mediaController.show()");
 				}
 			}
 			else if (mime.startsWith("video/")){
@@ -422,21 +417,18 @@ public class DirPlayerActivity extends FragmentActivity implements
 				// 如果有音频或其他再播放，停止，防止声音冲突
 				if (mService != null){					
 					// stop first
-					mService.stop();
-
-				    Log.d(DTAG, "mediaPlayer: after clear mediaPlayer()");
+					mService.clearMusicPlaying();
+					Log.d(DTAG, "audio/video: after clear audio playing");
 				}
-				Log.d(DTAG, "mediaPlayer: no mediaPlayer");
-				// 方法一
-				// 使用intent，发送文件给系统缺省播放器
-				// Intent intent = new Intent(android.content.Intent.ACTION_VIEW);
-				// intent.setDataAndType(Uri.fromFile(f), mime);
-				
-				// 方法二
-				// 使用VideoView
+				Log.d(DTAG, "audio/video: begin vv play");
+				if (vv.isPlaying()){
+					vv.stopPlayback();
+					Log.d(DTAG, "audio/video: after clear last vv playing");
+				}
 				vv.setVisibility(View.VISIBLE);
 				vv.requestFocus();
 				vv.setVideoURI(Uri.fromFile(f));
+				Log.d(DTAG, "audio/video: after vv.setVideoURI(Uri.fromFile(f))");
 
 				/* 这个高端玩法似乎不行
 				vv.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
@@ -460,10 +452,9 @@ public class DirPlayerActivity extends FragmentActivity implements
 					}
 					
 				});
+				Log.d(DTAG, "audio/video: after vv.setOnCompletionListener()");
 				vv.start();
-				
-				//Log.d(DTAG, "mediaPlayer: vv.start()");
-				//Log.d(DTAG, "mediaPlayer: after mediaController.show()");
+				Log.d(DTAG, "audio/video: after vv.start()");
 			}
 			
 			// 文本文件直接查看
@@ -1592,9 +1583,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 						&& Math.abs(velocityY) > swipeThresholdVelocity) {
 					Log.d(DTAG,"onFling is accepted");
 					// 退出视频，并隐藏VideoView
-					videoController.hide();
-					vv.stopPlayback();
-					vv.setVisibility(View.GONE);					
+					clearVideoViewPlaying();					
 		            return true;
 				}
 				Log.d(DTAG,"diliver onFling()");
@@ -1927,18 +1916,31 @@ public class DirPlayerActivity extends FragmentActivity implements
 	public void onFragmentPlayListClicked(int i) {
 		Log.d(DTAG, "onFragmentPlayListClicked: " + i);
 		if(mService != null){
-			if((vv!=null)&&(vv.isPlaying())){
-				if(videoController!=null)
-					videoController.hide();
-				vv.stopPlayback();
-				vv.setVisibility(View.GONE);
-				//vv.pause();
-			}
+			clearVideoViewPlaying();
 			mService.playList(i);
 			mediaController.show();
 		}
 	}
 
+	/**
+	 * 怎样干净地关掉视频播放呢？
+	 * 如果使用android自带的播放系统
+	 * 		似乎没有问题？
+	 * 如果使用Vitamio播放视频
+	 * 		在视频和音频切换时经常导致死机或退出
+	 */
+	public void clearVideoViewPlaying(){
+		Log.d(DTAG, "audio/video: begin clearVideoViewPlaying()");
+		//if((vv!=null)&&(vv.isPlaying())){
+		if(vv != null){ // 即便vv并非正在播放，只要vv存在，就需要清除
+			if(videoController!=null)
+				videoController.hide();
+			vv.stopPlayback();
+			vv.setVisibility(View.GONE);
+			//vv.pause();
+		}
+		Log.d(DTAG, "audio/video: after clearVideoViewPlaying()");
+	}
 	public void onFragmentPlayListButton1() {
 		// 全选
 		for (LvRow lr : playListItems) {

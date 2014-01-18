@@ -18,6 +18,7 @@ import io.vov.vitamio.MediaPlayer;
 import io.vov.vitamio.MediaPlayer.OnCompletionListener;
 import io.vov.vitamio.MediaPlayer.OnPreparedListener;
 import io.vov.vitamio.Vitamio;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
@@ -162,7 +163,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 	}
 
 	public void play(File f, OnCompletionListener listener) {
-		Log.d(DTAG, "play in service: " + f.getPath());
+		Log.d(DTAG, "audio/video: play in service: " + f.getPath());
 		String mime = URLConnection.getFileNameMap().getContentTypeFor(
 				f.getName());
 		if (!mime.startsWith("audio/")) {
@@ -179,28 +180,38 @@ public class PlayService extends Service implements MediaPlayerControl {
 				return;
 			}
 		}
-		if (mediaPlayer != null) {
-			// mediaPlayer.stop();
-			mediaPlayer.release();
-			mediaPlayer = null;
-			Log.d(DTAG, "play in service: clear last");
-		}
+		
+		clearMusicPlaying();
+		
 		mediaPlayer = new MediaPlayer(this);
 		//mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-		Log.d(DTAG, "play in service 0");
+		Log.d(DTAG, "audio/video: after new MediaPlayer(this)");
 
 		try {
 			mediaPlayer.setDataSource(getApplicationContext(), Uri.fromFile(f));
-			Log.d(DTAG, "play in service 1");
+			Log.d(DTAG, "audio/video: after mediaPlayer.setDataSource()");
+			
+			/**
+			 * 小心。
+			 * 如果是同步的prepare，那么其后start
+			 * 如果是异步的prepare，那么可能需要在prepare之前设置监听？！
+			 */
+			
 			mediaPlayer.prepare();
-			// mediaPlayer.prepareAsync();
-			// mediaPlayer.start();
+			mediaPlayer.start();
+			
+			/*
 			mediaPlayer.setOnPreparedListener(new OnPreparedListener() { 
 		        @Override
 		        public void onPrepared(MediaPlayer mp) {
 		            mp.start();
 		        }
 		    });
+			Log.d(DTAG, "audio/video: after mediaPlayer.setOnPreparedListener()");
+			mediaPlayer.prepareAsync();
+			Log.d(DTAG, "audio/video: after mediaPlayer.prepare()");
+			*/
+
 			if (listener != null) {
 				/**
 				 * 如果listener监听器不为空，说明是list播放 此时将此监听器挂入 同时对外发送播放信息
@@ -213,7 +224,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 				// 发送到notification
 				sendNotification();
 			}
-
+			Log.d(DTAG, "audio/video: after sendNotification()");
 		} catch (IllegalStateException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -269,6 +280,18 @@ public class PlayService extends Service implements MediaPlayerControl {
 		if (mediaPlayer != null)
 			mediaPlayer.stop();
 	}
+
+	public void clearMusicPlaying() {
+		// TODO Auto-generated method stub
+		Log.d(DTAG, "audio/video: begin clear music playing");
+		if (mediaPlayer != null){
+			mediaPlayer.stop();
+			mediaPlayer.release();
+			mediaPlayer = null;
+		}
+		Log.d(DTAG, "audio/video: after clear music playing");
+	}
+	
 	@Override
 	public int getDuration() {
 		// TODO Auto-generated method stub
