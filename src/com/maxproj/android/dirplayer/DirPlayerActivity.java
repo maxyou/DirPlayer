@@ -1,8 +1,8 @@
 package com.maxproj.android.dirplayer;
 
-import io.vov.vitamio.MediaPlayer;
-import io.vov.vitamio.widget.VideoView;
-import io.vov.vitamio.widget.MediaController;
+//import io.vov.vitamio.MediaPlayer;
+//import io.vov.vitamio.widget.VideoView;
+//import io.vov.vitamio.widget.MediaController;
 //import io.vov.vitamio.widget.MediaController.MediaPlayerControl;
 
 import java.io.BufferedInputStream;
@@ -38,6 +38,7 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -66,10 +67,12 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.MediaController;
 //import android.widget.MediaController;
 import android.widget.MediaController.MediaPlayerControl;
 import android.widget.ShareActionProvider;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import com.maxproj.android.dirplayer.PlayService.LocalBinder;
 import com.maxproj.android.dirplayer.PlayService.ServiceConstants;
@@ -143,7 +146,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	View vBottonControl;
 	VideoView vv;
 	//注意video和其控制器之间不需接口，而是直接关联
-	io.vov.vitamio.widget.MediaController videoController = null;
+	MediaController videoController = null;
 	
 	/**
 	 * 播放列表PlayList
@@ -1433,8 +1436,8 @@ public class DirPlayerActivity extends FragmentActivity implements
 		mediaController.setEnabled(true);					
 
 		// 视频控制器使用vitamio内含的
-		vv = (io.vov.vitamio.widget.VideoView)findViewById(R.id.videoview); // 视频播放窗口
-		videoController = new io.vov.vitamio.widget.MediaController(this);
+		vv = (VideoView)findViewById(R.id.videoview); // 视频播放窗口
+		videoController = new MediaController(this);
 		//videoController.setMediaPlayer(videoPlayerControl);
 		//videoController.setAnchorView(vBottonControl);
 		//videoController.setEnabled(true);

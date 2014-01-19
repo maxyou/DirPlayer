@@ -13,7 +13,7 @@
         android:layout_weight="1"      
     tools:context=".MainActivity" />
 
-	<io.vov.vitamio.widget.VideoView 
+	<VideoView 
         android:id="@+id/videoview"
         android:layout_width="wrap_content"
 	    android:layout_height="200dp"

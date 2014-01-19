@@ -14,11 +14,13 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
-import io.vov.vitamio.MediaPlayer;
-import io.vov.vitamio.MediaPlayer.OnCompletionListener;
-import io.vov.vitamio.MediaPlayer.OnPreparedListener;
-import io.vov.vitamio.Vitamio;
+//import io.vov.vitamio.MediaPlayer;
+//import io.vov.vitamio.MediaPlayer.OnCompletionListener;
+//import io.vov.vitamio.MediaPlayer.OnPreparedListener;
+//import io.vov.vitamio.Vitamio;
 import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
@@ -41,6 +43,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 	 */
 	LinkedList<LvRow> playListItemsService = new LinkedList<LvRow>();
 	int currentPlay = 0; // 第一首
+	
 	OnCompletionListener listener = new OnCompletionListener() {
 		@Override
 		public void onCompletion(MediaPlayer mp) {
@@ -94,7 +97,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 		Log.d(DTAG, "service: onCreate()");
 		updatePlayList();
 		
-		Vitamio.initialize(this);
+		// Vitamio.initialize(this);
 	}
 
 	@Override
@@ -183,7 +186,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 		
 		clearMusicPlaying();
 		
-		mediaPlayer = new MediaPlayer(this);
+		mediaPlayer = new MediaPlayer();
 		//mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 		Log.d(DTAG, "audio/video: after new MediaPlayer(this)");
 
