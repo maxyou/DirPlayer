@@ -6,7 +6,8 @@
     <TextView
         android:id="@+id/bookmark"
         style="@style/lvRowText"
-        android:layout_width="260dp"
+        android:layout_width="0dp"
+        android:layout_weight="1"   
         android:layout_height="16dp" />
 
 
