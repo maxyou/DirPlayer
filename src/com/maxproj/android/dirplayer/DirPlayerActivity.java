@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Locale;
 
+import android.R.color;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -38,6 +39,7 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -148,7 +150,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	/**
 	 * 视频播放
 	 */
-	View vBottonControl;
+	View mainWindow;
 	VideoView vv;
 	//注意video和其控制器之间不需接口，而是直接关联
 	MediaController videoController = null;
@@ -511,6 +513,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		actionBar.hide();
+		mainWindow.setBackgroundColor(Color.BLACK);
 		
 		android.widget.LinearLayout.LayoutParams params = (android.widget.LinearLayout.LayoutParams) vv.getLayoutParams();
 		partScreenHeight = params.height;
@@ -549,7 +552,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 		getWindow().setFlags(~WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		actionBar.show();
-
+		mainWindow.setBackgroundColor(Color.WHITE);
 
 	}
 	public void setVideoViewGone(){
@@ -1515,21 +1518,21 @@ public class DirPlayerActivity extends FragmentActivity implements
 		/**
 		 * 音视频媒体相关初始化
 		 */
-		vBottonControl = findViewById(R.id.main_window); // 停放controller的地方
+		mainWindow = findViewById(R.id.main_window); // 停放controller的地方
 		
 		mediaPlayerControlInit(); // 生成音频控制接口		
 		
 		// 音频控制器使用android自带的
 		mediaController = new android.widget.MediaController(this);
 		mediaController.setMediaPlayer(mediaPlayerControl);
-		mediaController.setAnchorView(vBottonControl);
+		mediaController.setAnchorView(mainWindow);
 		mediaController.setEnabled(true);					
 
 		// 视频控制器使用vitamio内含的
 		vv = (VideoView)findViewById(R.id.videoview); // 视频播放窗口
 		videoController = new MediaController(this);
 		//videoController.setMediaPlayer(videoPlayerControl);
-		//videoController.setAnchorView(vBottonControl);
+		//videoController.setAnchorView(mainWindow);
 		//videoController.setEnabled(true);
 		vv.setMediaController(videoController);
 		vv.setOnTouchListener(vvOnTouchListener);
