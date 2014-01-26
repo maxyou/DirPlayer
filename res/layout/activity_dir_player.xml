@@ -9,8 +9,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/pager"
     android:layout_width="match_parent"
-        android:layout_height="0dp"          
-        android:layout_weight="1"      
+    android:layout_height="0dp"          
+    android:layout_weight="1"      
     tools:context=".MainActivity" />
 
 	<VideoView 
@@ -28,6 +28,7 @@
 		如果不想看到下面这个view，也许可以考虑设置其高度为非常小的dp		
 	 -->
 	 <LinearLayout 
+	    android:id="@+id/bottom"
 	    android:layout_width="match_parent"
     	android:layout_height="wrap_content"
     	android:orientation="horizontal"

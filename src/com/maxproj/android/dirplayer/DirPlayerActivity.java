@@ -57,6 +57,7 @@ import android.support.v4.view.ViewPager;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -65,9 +66,13 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.ViewGroup.LayoutParams;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.MediaController;
+import android.widget.LinearLayout;
 //import android.widget.MediaController;
 import android.widget.MediaController.MediaPlayerControl;
 import android.widget.ShareActionProvider;
@@ -83,7 +88,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 		FragmentPlayList.FragmentPlayListInterface {
 
 	final static String DTAG = "DirPlayer";
-
+	ActionBar actionBar = null;
 	/**
 	 * 分享菜单 
 	 *
@@ -147,6 +152,13 @@ public class DirPlayerActivity extends FragmentActivity implements
 	VideoView vv;
 	//注意video和其控制器之间不需接口，而是直接关联
 	MediaController videoController = null;
+	
+	int orientation = Configuration.ORIENTATION_PORTRAIT;
+	boolean fullScreen = false;
+
+	//android.widget.LinearLayout.LayoutParams partVideoParamsBK = null;
+	int partScreenHeight = 0;
+	int partScreenWidth = 0;
 	
 	/**
 	 * 播放列表PlayList
@@ -428,7 +440,8 @@ public class DirPlayerActivity extends FragmentActivity implements
 					vv.stopPlayback();
 					Log.d(DTAG, "audio/video: after clear last vv playing");
 				}
-				vv.setVisibility(View.VISIBLE);
+				fullScreen = false; //打开时总是窗口显示
+				setVideoScreen();
 				vv.requestFocus();
 				vv.setVideoURI(Uri.fromFile(f));
 				Log.d(DTAG, "audio/video: after vv.setVideoURI(Uri.fromFile(f))");
@@ -456,6 +469,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 					
 				});
 				Log.d(DTAG, "audio/video: after vv.setOnCompletionListener()");
+				
 				vv.start();
 				Log.d(DTAG, "audio/video: after vv.start()");
 			}
@@ -465,6 +479,83 @@ public class DirPlayerActivity extends FragmentActivity implements
 		}
 	}
 
+	public void setVideoScreen(){
+	    if (fullScreen == true) {
+	    	setVideoViewFullScreen();
+	    } else {
+	    	setVideoViewPartScreen();
+	    }
+	}
+	public void setVideoViewFullScreen(){
+		/**
+		 * 设置全屏必须在横屏和竖屏时都管用，也即要跟横屏和竖屏无关
+		 * 视频尽可能充满屏幕，不能填满的地方黑屏
+		 * 不能改变长宽比
+		 */
+//		DisplayMetrics metrics = new DisplayMetrics();
+//		getWindowManager().getDefaultDisplay().getMetrics(metrics);
+//		android.widget.LinearLayout.LayoutParams params = (android.widget.LinearLayout.LayoutParams) vv.getLayoutParams();
+//		params.width =  metrics.widthPixels;
+//		params.height = metrics.heightPixels;
+//		params.leftMargin = 0;
+//		vv.setLayoutParams(params);
+		
+		android.support.v4.view.ViewPager pager = (android.support.v4.view.ViewPager)findViewById(R.id.pager);
+		LinearLayout bottom = (LinearLayout)findViewById(R.id.bottom);
+		pager.setVisibility(View.GONE);
+		bottom.setVisibility(View.GONE);
+		
+//		View decorView = getWindow().getDecorView();
+//		int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+//		decorView.setSystemUiVisibility(uiOptions);
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		actionBar.hide();
+		
+		android.widget.LinearLayout.LayoutParams params = (android.widget.LinearLayout.LayoutParams) vv.getLayoutParams();
+		partScreenHeight = params.height;
+		partScreenWidth = params.width;
+		Log.d(DTAG, "screen: backup params " + partScreenHeight + " " + partScreenWidth);
+		params.height = android.widget.LinearLayout.LayoutParams.MATCH_PARENT;
+		params.width = android.widget.LinearLayout.LayoutParams.MATCH_PARENT;
+		vv.setLayoutParams(params);
+	}
+	public void setVideoViewPartScreen(){
+//		DisplayMetrics metrics = new DisplayMetrics();
+//		getWindowManager().getDefaultDisplay().getMetrics(metrics);
+//		android.widget.LinearLayout.LayoutParams params = (android.widget.LinearLayout.LayoutParams) vv.getLayoutParams();
+//		params.width = LayoutParams.WRAP_CONTENT;
+//		params.height = (int) (200*metrics.density);
+//		params.gravity = Gravity.CENTER;
+//		vv.setLayoutParams(params);
+		
+
+		if(partScreenHeight != 0){
+			android.widget.LinearLayout.LayoutParams params = (android.widget.LinearLayout.LayoutParams) vv.getLayoutParams();
+			params.height = partScreenHeight;
+			params.width = partScreenWidth;
+			Log.d(DTAG, "screen: backup params " + partScreenHeight + " " + partScreenWidth);
+			vv.setLayoutParams(params);
+		}
+		vv.setVisibility(View.VISIBLE);
+		android.support.v4.view.ViewPager pager = (android.support.v4.view.ViewPager)findViewById(R.id.pager);
+		LinearLayout bottom = (LinearLayout)findViewById(R.id.bottom);
+		pager.setVisibility(View.VISIBLE);
+		bottom.setVisibility(View.VISIBLE);
+		
+//		View decorView = getWindow().getDecorView();
+//		int uiOptions = View.SYSTEM_UI_FLAG_VISIBLE;
+//		decorView.setSystemUiVisibility(uiOptions);
+		getWindow().setFlags(~WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		actionBar.show();
+
+
+	}
+	public void setVideoViewGone(){
+		setVideoViewPartScreen();
+		vv.setVisibility(View.GONE);
+	}
 
 	public void onFragmentButton1(int tab) {
 		Log.d(DTAG, "Button1 clicked in fragment " + tab);
@@ -1322,9 +1413,8 @@ public class DirPlayerActivity extends FragmentActivity implements
 		setContentView(R.layout.activity_dir_player);
 
 		// Set up the action bar.
-		final ActionBar actionBar = getActionBar();
-		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-
+		actionBar = getActionBar();
+		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);		
 		
 		// Create the adapter that will return a fragment for each of the three
 		// primary sections of the app.
@@ -1538,7 +1628,6 @@ public class DirPlayerActivity extends FragmentActivity implements
 			@Override
 			public boolean onSingleTapUp(MotionEvent e) {
 				// TODO Auto-generated method stub
-				videoController.show();
 				return super.onSingleTapUp(e);
 			}
 
@@ -1548,8 +1637,32 @@ public class DirPlayerActivity extends FragmentActivity implements
 			@Override
 			public boolean onSingleTapConfirmed(MotionEvent e) {
 				// TODO Auto-generated method stub
-				
+				videoController.show();
 				return super.onSingleTapConfirmed(e);
+			}
+
+			/* (non-Javadoc)
+			 * @see android.view.GestureDetector.SimpleOnGestureListener#onDoubleTap(android.view.MotionEvent)
+			 */
+			@Override
+			public boolean onDoubleTap(MotionEvent e) {
+				// TODO Auto-generated method stub
+
+				/**
+				 * 怎样实现全屏播放？
+				 * 简单起见，根据横竖屏来确定
+				 * 横屏：全屏播放
+				 * 竖屏：小窗口播放
+				 * 所以不需要用双击来控制
+				 */
+				if(fullScreen == false)
+					fullScreen = true;
+				else
+					fullScreen = false;
+				
+				setVideoScreen();
+				
+				return super.onDoubleTap(e);
 			}
 
 			/* (non-Javadoc)
@@ -1939,7 +2052,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 			if(videoController!=null)
 				videoController.hide();
 			vv.stopPlayback();
-			vv.setVisibility(View.GONE);
+			setVideoViewGone();
 			//vv.pause();
 		}
 		Log.d(DTAG, "audio/video: after clearVideoViewPlaying()");
@@ -2152,4 +2265,28 @@ public class DirPlayerActivity extends FragmentActivity implements
 	    }
 	}
 	
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		// TODO Auto-generated method stub
+		super.onConfigurationChanged(newConfig);
+		
+		Log.d(DTAG,"rotate and onConfigurationChanged() is called");
+
+		//保存一下
+		orientation = newConfig.orientation;
+		
+	    // Checks the orientation of the screen
+	    if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+	        //Toast.makeText(this, "landscape", Toast.LENGTH_SHORT).show();
+
+	    	
+	    	
+	    } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
+	        //Toast.makeText(this, "portrait", Toast.LENGTH_SHORT).show();
+	    	
+	    	
+	    	
+	    }
+	}
+
 }
