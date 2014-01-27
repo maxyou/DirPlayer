@@ -82,7 +82,6 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.maxproj.android.dirplayer.PlayService.LocalBinder;
-import com.maxproj.android.dirplayer.PlayService.ServiceConstants;
 
 public class DirPlayerActivity extends FragmentActivity implements
 		ActionBar.TabListener, FragmentListview.FragmentListviewInterface,
@@ -175,8 +174,13 @@ public class DirPlayerActivity extends FragmentActivity implements
 	 */
     PlayService mService;
     boolean mBound = false;    
-	
 
+    int playStatus = 0; //播放状态
+    int playType = 0; //播放类型
+    int playListIndex = 0; //列表下标
+    int playListItemIndex = 0; //播放下标
+    String playListPath; //列表播放的路径
+    String fileListPath; //文件播放的路径
 	
 	/**
 	 * 书签窗口相关定义
@@ -423,9 +427,9 @@ public class DirPlayerActivity extends FragmentActivity implements
 				if(mService != null){
 					// 退出视频，并隐藏VideoView
 					clearVideoViewPlaying();
-					mService.play(f, null); // clearMusicPlaying() will be called
+					mService.play(f, LocalConst.SinglePlay); // clearMusicPlaying() will be called
 					Log.d(DTAG, "audio/video: after mService.play(f, null)");
-					mediaController.show();
+					// mediaController.show(); // 开始播放时是否要显示一下控制面板？
 					Log.d(DTAG, "audio/video: after mediaController.show()");
 				}
 			}
@@ -1136,7 +1140,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 			if (mime !=null){
 				if(mime.startsWith("audio/")){	
 					LvRow lr = new LvRow("" + f.getName(), "" + f.length(), ""
-						+ sdf.format(f.lastModified()), f, false, 2, mime);
+						+ sdf.format(f.lastModified()), f, false, 2, mime, false);
 					playListItems.add(lr);
 				}
 			}
@@ -1386,7 +1390,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 		if (!currentPath[tab].equals(pathRoot)) {
 			Log.d(DTAG, "add parentPath: " + parentPath[tab]);
 			// viewListFiles.add(new File(parentPath));
-			LvRow lr = new LvRow("/..", "", "", new File(parentPath[tab]), false, 0, null);
+			LvRow lr = new LvRow("/..", "", "", new File(parentPath[tab]), false, 0, null, false);
 			viewListItems[tab].add(lr);
 		}
 		Log.d(DTAG, "fillList loop end 2");
@@ -1394,7 +1398,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 		for (File f : dirList[tab]) {
 			// viewListFiles.add(f);
 			LvRow lr = new LvRow("/" + f.getName(), "", ""
-					+ sdf.format(f.lastModified()), f, false, 1, null);
+					+ sdf.format(f.lastModified()), f, false, 1, null, false);
 			Log.d(DTAG, "add directory: " + lr.getName());
 			viewListItems[tab].add(lr);
 		}
@@ -1402,7 +1406,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 			// viewListFiles.add(f);
 			LvRow lr = new LvRow("" + f.getName(), "" + f.length(), ""
 					+ sdf.format(f.lastModified()), f, false, 2, 
-					URLConnection.getFileNameMap().getContentTypeFor(f.getName()));
+					URLConnection.getFileNameMap().getContentTypeFor(f.getName()), false);
 			Log.d(DTAG, "add file: " + lr.getName());
 			viewListItems[tab].add(lr);
 		}
@@ -1555,7 +1559,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 		 */
         // The filter's action is BROADCAST_ACTION
         IntentFilter mStatusIntentFilter = new IntentFilter(
-        		ServiceConstants.BROADCAST_ACTION);
+        		LocalConst.BROADCAST_ACTION);
     
         // Adds a data filter for the HTTP scheme
         //mStatusIntentFilter.addDataScheme("http");
@@ -2037,7 +2041,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 		if(mService != null){
 			clearVideoViewPlaying();
 			mService.playList(i);
-			mediaController.show();
+			//mediaController.show();
 		}
 	}
 
@@ -2197,7 +2201,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 				File f = new File(line);
 				LvRow lr = new LvRow("" + f.getName(), "" + f.length(), ""
 						+ sdf.format(f.lastModified()), f, false, 2, 
-						URLConnection.getFileNameMap().getContentTypeFor(f.getName()));
+						URLConnection.getFileNameMap().getContentTypeFor(f.getName()), false);
 				playListItems.add(lr);
 			}
 			br.close();
@@ -2259,11 +2263,41 @@ public class DirPlayerActivity extends FragmentActivity implements
 	    // Called when the BroadcastReceiver gets an Intent it's registered to receive
 		@Override
 	    public void onReceive(Context context, Intent intent) {
-			String path = intent.getStringExtra(ServiceConstants.EXTENDED_DATA_STATUS);
-			Log.d(DTAG, "ServiceInforReceiver() get: " + path);
-			if(fragmentPlayList != null){
-				fragmentPlayList.setPathView(
-					getResources().getString(R.string.pl_path) + path);
+			/**
+			 * 接收如下信息
+			 * 		播放状态：正在播放、暂停、停止、清除
+			 * 		播放类型：文件播放、列表播放
+			 * 		播放路径：被播放的路径
+			 * 		播放列表：以后可能多个列表
+			 * 		播放下标：播放列表中的下标
+			 */
+			playStatus =  intent.getIntExtra(LocalConst.PLAY_STATUS, -1);
+			playType = intent.getIntExtra(LocalConst.PLAY_TYPE, -1);
+			if(playType == LocalConst.SinglePlay){
+				fileListPath = intent.getStringExtra(LocalConst.FILELIST_PATH);
+				
+				/**
+				 * 更新左右窗口的文件列表
+				 * 也即更新listview的adapter
+				 */
+				Log.d(DTAG, "audio/video single: " + playStatus + " " + playType + " " + fileListPath);
+				return;
+			}else if(playType == LocalConst.ListPlay){
+				playListPath = intent.getStringExtra(LocalConst.PLAYLIST_PATH);
+				playListIndex = intent.getIntExtra(LocalConst.PLAYLIST_INDEX, 0);
+				playListItemIndex = intent.getIntExtra(LocalConst.PLAYLIST_ITEM_INDEX, 0);
+
+				Log.d(DTAG, "audio/video list: " + playStatus + " " + playType + " " + playListPath + " - " + playListIndex + " - " + playListItemIndex);
+				/**
+				 * 更新播放列表
+				 * 更新播放路径
+				 */
+				if(fragmentPlayList != null){
+					fragmentPlayList.setPathView(
+						getResources().getString(R.string.pl_path) + playListPath);
+				}
+				
+				return;
 			}
 	    }
 	}

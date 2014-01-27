@@ -13,8 +13,21 @@ public class LvRow{
     private boolean selected;
     private int type; // 0: paraent, 1: dir, 2: file
     private String mime;
+    private boolean playing;
 
     
+	/**
+	 * @return the playing
+	 */
+	public boolean isPlaying() {
+		return playing;
+	}
+	/**
+	 * @param playing the playing to set
+	 */
+	public void setPlaying(boolean playing) {
+		this.playing = playing;
+	}
 	public int getType() {
 		return type;
 	}
@@ -73,7 +86,7 @@ public class LvRow{
     */
     
     public LvRow(String name, String length, String date, File file, 
-    		boolean selected, int type, String mime){
+    		boolean selected, int type, String mime, boolean playing){
         this.name = name;
         this.length = length;
         this.date = date;
@@ -81,6 +94,7 @@ public class LvRow{
         this.selected = selected;
         this.type = type;
         this.mime = mime;
+        this.playing = playing;
     }
 
 }

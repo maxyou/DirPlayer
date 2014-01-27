@@ -42,12 +42,70 @@ public class PlayService extends Service implements MediaPlayerControl {
 	 * 播放列表
 	 */
 	LinkedList<LvRow> playListItemsService = new LinkedList<LvRow>();
-	int currentPlay = 0; // 第一首
+	File playingFile;//当前播放的文件
+	int playListItemIndex = 0; // 第一首
 	
-	OnCompletionListener listener = new OnCompletionListener() {
+
+	public void lightenPlayList(){
+		/**
+		 * 需要发送item位置，如果有多个列表的话，需要发送列表编号
+		 */
+		Log.d(DTAG, "audio/video: path in playlist " + playingFile.getPath());
+				Intent localIntent = new Intent(
+						LocalConst.BROADCAST_ACTION)
+				// Puts the status into the Intent
+						.putExtra(LocalConst.PLAY_STATUS, LocalConst.playing)
+						.putExtra(LocalConst.PLAY_TYPE, LocalConst.ListPlay)
+						.putExtra(LocalConst.PLAYLIST_PATH, playingFile.getPath())
+						.putExtra(LocalConst.PLAYLIST_INDEX, 0)//以后可能多列表
+						.putExtra(LocalConst.PLAYLIST_ITEM_INDEX, playListItemIndex);
+				// Broadcasts the Intent to receivers in this app.
+				LocalBroadcastManager.getInstance(this).sendBroadcast(
+						localIntent);
+	}
+	public void unLightenPlayList(){
+				Intent localIntent = new Intent(
+						LocalConst.BROADCAST_ACTION)
+				// Puts the status into the Intent
+						.putExtra(LocalConst.PLAY_STATUS, LocalConst.clear)
+						.putExtra(LocalConst.PLAY_TYPE, LocalConst.ListPlay)
+						.putExtra(LocalConst.PLAYLIST_PATH, playingFile.getPath())
+						.putExtra(LocalConst.PLAYLIST_INDEX, 0)//以后可能多列表
+						.putExtra(LocalConst.PLAYLIST_ITEM_INDEX, playListItemIndex);
+				// Broadcasts the Intent to receivers in this app.
+				LocalBroadcastManager.getInstance(this).sendBroadcast(
+						localIntent);
+	}
+	public void lightenFileList(){
+		/**
+		 * 需要发送文件path
+		 */
+		Intent localIntent = new Intent(
+				LocalConst.BROADCAST_ACTION)
+		// Puts the status into the Intent
+				.putExtra(LocalConst.PLAY_STATUS, LocalConst.playing)
+				.putExtra(LocalConst.PLAY_TYPE, LocalConst.SinglePlay)
+				.putExtra(LocalConst.FILELIST_PATH, playingFile.getPath());
+		// Broadcasts the Intent to receivers in this app.
+		LocalBroadcastManager.getInstance(this).sendBroadcast(
+				localIntent);
+	}
+	public void unLightenFileList(){
+		Intent localIntent = new Intent(
+				LocalConst.BROADCAST_ACTION)
+		// Puts the status into the Intent
+				.putExtra(LocalConst.PLAY_STATUS, LocalConst.clear)
+				.putExtra(LocalConst.PLAY_TYPE, LocalConst.SinglePlay)
+				.putExtra(LocalConst.FILELIST_PATH, playingFile.getPath());
+		// Broadcasts the Intent to receivers in this app.
+		LocalBroadcastManager.getInstance(this).sendBroadcast(
+				localIntent);
+	}
+	
+	OnCompletionListener listPlayListener = new OnCompletionListener() {
 		@Override
 		public void onCompletion(MediaPlayer mp) {
-			// TODO Auto-generated method stub
+			unLightenPlayList();
 			/**
 			 * 找到下一首歌曲，并调用play()
 			 */
@@ -56,14 +114,20 @@ public class PlayService extends Service implements MediaPlayerControl {
 				return;
 			}
 
-			currentPlay++;
-			if (currentPlay >= playListItemsService.size()) {
-				currentPlay = 0;
+			playListItemIndex++;
+			if (playListItemIndex >= playListItemsService.size()) {
+				playListItemIndex = 0;
 			}
-			play(playListItemsService.get(currentPlay).getFile(), listener);
+			play(playListItemsService.get(playListItemIndex).getFile(), LocalConst.ListPlay);
 		}
 	};
-
+	
+	OnCompletionListener singlePlayListener = new OnCompletionListener() {
+		@Override
+		public void onCompletion(MediaPlayer mp) {
+			unLightenFileList();
+		}
+	};
 	/**
 	 * 音频播放
 	 */
@@ -140,7 +204,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 				LvRow lr = new LvRow("" + f.getName(), "" + f.length(), ""
 						+ sdf.format(f.lastModified()), f, false, 2,
 						URLConnection.getFileNameMap().getContentTypeFor(
-								f.getName()));
+								f.getName()),false);
 				playListItemsService.add(lr);
 			}
 			br.close();
@@ -160,31 +224,17 @@ public class PlayService extends Service implements MediaPlayerControl {
 		if (lr == null)
 			return;
 
-		currentPlay = i; // 更新当前指针
+		playListItemIndex = i; // 更新当前指针
 
-		play(lr.getFile(), listener);
+		play(lr.getFile(), LocalConst.ListPlay);
 	}
 
-	public void play(File f, OnCompletionListener listener) {
+	public void play(File f, int type) {
 		Log.d(DTAG, "audio/video: play in service: " + f.getPath());
-		String mime = URLConnection.getFileNameMap().getContentTypeFor(
-				f.getName());
-		if (!mime.startsWith("audio/")) {
-			if (listener == null) {
-				// 如果单曲播放，不产生任何影响
-				return;
-			} else {
-				// 如果是list播放，跳到下一曲
-				// 假定list中全是非音乐文件，这里会导致嵌套死循环！！
-				// 简单的处理方法是，禁止非音乐文件加入这个list
-				// @todo
-				//		这个bug需要检查一下
-				listener.onCompletion(null);
-				return;
-			}
-		}
 		
 		clearMusicPlaying();
+		
+		playingFile = f;
 		
 		mediaPlayer = new MediaPlayer();
 		//mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -214,19 +264,16 @@ public class PlayService extends Service implements MediaPlayerControl {
 			mediaPlayer.prepareAsync();
 			Log.d(DTAG, "audio/video: after mediaPlayer.prepare()");
 			*/
-
-			if (listener != null) {
-				/**
-				 * 如果listener监听器不为空，说明是list播放 此时将此监听器挂入 同时对外发送播放信息
-				 */
-				mediaPlayer.setOnCompletionListener(listener);
-
-				// 广播给主activity
-				broadcastInfor();
-
+			if(type == LocalConst.ListPlay){
+				mediaPlayer.setOnCompletionListener(listPlayListener);
+				lightenPlayList();
 				// 发送到notification
 				sendNotification();
+			}else if(type == LocalConst.SinglePlay){
+				mediaPlayer.setOnCompletionListener(singlePlayListener);
+				lightenFileList();
 			}
+			
 			Log.d(DTAG, "audio/video: after sendNotification()");
 		} catch (IllegalStateException e) {
 			// TODO Auto-generated catch block
@@ -241,7 +288,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 	public void sendNotification() {
 		String songName;
 		if (playListItemsService != null) {
-			LvRow lr = playListItemsService.get(currentPlay);
+			LvRow lr = playListItemsService.get(playListItemIndex);
 			if (lr != null) {
 				NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
 						.setSmallIcon(R.drawable.bottom)
@@ -358,36 +405,5 @@ public class PlayService extends Service implements MediaPlayerControl {
 		// TODO Auto-generated method stub
 		return 0;
 	}
-
-	public final class ServiceConstants {
-		// Defines a custom Intent action
-		public static final String BROADCAST_ACTION = "com.maxproj.android.dirplayer.BROADCAST";
-		// Defines the key for the status "extra" in an Intent
-		public static final String EXTENDED_DATA_STATUS = "com.maxproj.android.dirplayer.STATUS";
-	}
-
-	/**
-	 * 通过广播发送当前播放曲目的路径和名称
-	 */
-	public void broadcastInfor() {
-		if (playListItemsService != null) {
-			LvRow lr = playListItemsService.get(currentPlay);
-			if (lr != null) {
-
-				Intent localIntent = new Intent(
-						ServiceConstants.BROADCAST_ACTION)
-				// Puts the status into the Intent
-						.putExtra(ServiceConstants.EXTENDED_DATA_STATUS, lr
-								.getFile().getPath());
-				// Broadcasts the Intent to receivers in this app.
-				LocalBroadcastManager.getInstance(this).sendBroadcast(
-						localIntent);
-			}
-		}
-	}
-
-	/**
-	 * 通过notification发送消息，并设置service为Foreground
-	 */
 
 }
