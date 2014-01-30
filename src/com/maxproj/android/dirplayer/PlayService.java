@@ -43,6 +43,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 	 */
 	LinkedList<LvRow> playListItemsService = new LinkedList<LvRow>();
 	File playingFile;//当前播放的文件
+	int playingType;//播放fileList或playList？
 	int playListItemIndex = 0; // 第一首
 	
 
@@ -234,6 +235,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 		
 		clearMusicPlaying();
 		
+		playingType = type;
 		playingFile = f;
 		
 		mediaPlayer = new MediaPlayer();
@@ -264,12 +266,12 @@ public class PlayService extends Service implements MediaPlayerControl {
 			mediaPlayer.prepareAsync();
 			Log.d(DTAG, "audio/video: after mediaPlayer.prepare()");
 			*/
-			if(type == LocalConst.ListPlay){
+			if(playingType == LocalConst.ListPlay){
 				mediaPlayer.setOnCompletionListener(listPlayListener);
 				lightenPlayList();
 				// 发送到notification
 				sendNotification();
-			}else if(type == LocalConst.SinglePlay){
+			}else if(playingType == LocalConst.SinglePlay){
 				mediaPlayer.setOnCompletionListener(singlePlayListener);
 				lightenFileList();
 			}
@@ -335,6 +337,14 @@ public class PlayService extends Service implements MediaPlayerControl {
 		// TODO Auto-generated method stub
 		Log.d(DTAG, "audio/video: begin clear music playing");
 		if (mediaPlayer != null){
+			if(playingType == LocalConst.ListPlay){
+				unLightenPlayList();
+				// 发送到notification
+				sendNotification();
+			}else if(playingType == LocalConst.SinglePlay){
+				unLightenFileList();
+			}
+
 			mediaPlayer.stop();
 			mediaPlayer.release();
 			mediaPlayer = null;
