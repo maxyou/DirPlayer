@@ -81,6 +81,10 @@
 
     <string name="prompt" >怎样操作被选择的文件？
     </string>
+    <string name="cancel_copy" >取消后续拷贝
+    </string>
+    <string name="background_copy" >背景拷贝
+    </string>
     <string name="negative" >取消
     </string>
     <string name="positive" >确定

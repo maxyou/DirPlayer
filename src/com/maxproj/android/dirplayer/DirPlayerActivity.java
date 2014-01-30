@@ -126,12 +126,12 @@ public class DirPlayerActivity extends FragmentActivity implements
 
 	static Handler cmdHandler;
 
-	final int CMD_COPY = 1;
-	final int CMD_MOVE = 2;
-	final int CMD_DELETE = 3;
-	final int CMD_FRESH = 4;
-	final int CMD_MKDIR = 5;
-	final int CMD_PLAY = 6;
+//	final int CMD_COPY = 1;
+//	final int CMD_MOVE = 2;
+//	final int CMD_DELETE = 3;
+//	final int CMD_FRESH = 4;
+//	final int CMD_MKDIR = 5;
+//	final int CMD_PLAY = 6;
 	
 	int tabCount = 3;
 	private static final String pathRoot = Environment
@@ -226,6 +226,10 @@ public class DirPlayerActivity extends FragmentActivity implements
 
 	DialogFragmentProgress dfp = null; //进度条
 
+	boolean showCopyProcess;
+	public void setShowCopyProcess(boolean enable){
+		showCopyProcess = enable;
+	}
 
 	/**
 	 * 书签用文本文件保存
@@ -690,24 +694,25 @@ public class DirPlayerActivity extends FragmentActivity implements
 				Log.d(DTAG, "dir copy: Handler find a cmd: " + fc.cmd);
 				try {
 					switch (fc.cmd) {
-					case CMD_COPY:
+					case LocalConst.CMD_COPY:
 						copyFiles(fc.src, fc.desPath, fc.force);
 						break;
-					case CMD_MOVE:
+					case LocalConst.CMD_MOVE:
 						moveFiles(fc.src, fc.desPath, fc.force);
 						break;
-					case CMD_DELETE:
+					case LocalConst.CMD_DELETE:
 						deleteFiles(fc.src);
 						break;
-					case CMD_FRESH:
+					case LocalConst.CMD_FRESH:
 						Log.d(DTAG, "fresh window: " + fc.fresh);
 						updateDirInfor(currentPath[fc.fresh], fc.fresh);
+						cmdHandler.sendEmptyMessage(1);//其他命令的结束都有这个激活next指令
 						break;
-					case CMD_MKDIR:
+					case LocalConst.CMD_MKDIR:
 						Log.d(DTAG, "mkdir at tab: " + fc.fresh);
 						mkDir(fc.desPath, fc.force);
 						break;
-					case CMD_PLAY:
+					case LocalConst.CMD_PLAY:
 						Log.d(DTAG, "mkdir at tab: " + fc.fresh);
 						//servicePlay();
 					default:
@@ -860,10 +865,14 @@ public class DirPlayerActivity extends FragmentActivity implements
 			Log.d(DTAG, "dir copy: onPreExecute()");
 			
 			// 启动进度条
-			dfp = DialogFragmentProgress.newInstance();
-			dfp.show(getSupportFragmentManager(), "");
-			dfp.setProgress(0);
-			dfp.setMsg(msg);
+			if (showCopyProcess == true) {
+				dfp = DialogFragmentProgress.newInstance();
+				dfp.show(getSupportFragmentManager(), "");
+				dfp.setProgress(0);
+				dfp.setMsg(msg);
+			}else{
+				dfp = null;
+			}
 		}
 
 		protected void onPostExecute(Long result) {
@@ -1028,7 +1037,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 		File srcFiles[] = srcDirFile.listFiles();
 		for (File f : srcFiles) {
 			Log.d(DTAG, "dir copy: copyFilesInDir() add "+f.getName());
-			cmdList.addFirst(new FileCmd(f, desDirStr, force, CMD_COPY, 1));
+			cmdList.addFirst(new FileCmd(f, desDirStr, force, LocalConst.CMD_COPY, 1));
 		}
 
 	}
@@ -1163,6 +1172,25 @@ public class DirPlayerActivity extends FragmentActivity implements
 		}
 	}
 	
+	/**
+	 * 这里做每一次cmd操作之前的准备
+	 */
+	public void cmdPrepare(){
+		/**
+		 * 先读取配置文件
+		 */
+		
+		
+		setShowCopyProcess(true);
+	}
+	public void cancelCopy(){
+
+		Iterator<FileCmd> iter = cmdList.iterator();
+		while (iter.hasNext()) {
+			if (iter.next().cmd == LocalConst.CMD_COPY)
+				iter.remove();
+		}
+	}
 	/*
 	 * 将用户命令添加到list 
 	 */
@@ -1192,6 +1220,8 @@ public class DirPlayerActivity extends FragmentActivity implements
 				+ Thread.currentThread().getStackTrace()[1].getLineNumber());
 		
 		cmdList.clear();
+		cmdPrepare();
+		
 		// try {
 		switch (cmdPosition) {
 		/**
@@ -1202,43 +1232,43 @@ public class DirPlayerActivity extends FragmentActivity implements
 		case 0: // 从A拷贝到B
 			for (LvRow lr : selectedItems[0]) {
 				cmdList.add(new FileCmd(lr.getFile(), currentPath[1], true,
-						CMD_COPY, 0));
+						LocalConst.CMD_COPY, 0));
 			}
-			cmdList.add(new FileCmd(null, null, true, CMD_FRESH, 1));
+			cmdList.add(new FileCmd(null, null, true, LocalConst.CMD_FRESH, 1));
 			break;
 		case 1: // 从A移动到B
 			for (LvRow lr : selectedItems[0]) {
 				cmdList.add(new FileCmd(lr.getFile(), currentPath[1], true,
-						CMD_MOVE, 0));
+						LocalConst.CMD_MOVE, 0));
 			}
-			cmdList.add(new FileCmd(null, null, true, CMD_FRESH, 0));// 两边都刷新
-			cmdList.add(new FileCmd(null, null, true, CMD_FRESH, 1));
+			cmdList.add(new FileCmd(null, null, true, LocalConst.CMD_FRESH, 0));// 两边都刷新
+			cmdList.add(new FileCmd(null, null, true, LocalConst.CMD_FRESH, 1));
 			break;
 		case 2: // 从B拷贝到A
 			for (LvRow lr : selectedItems[1]) {
 				cmdList.add(new FileCmd(lr.getFile(), currentPath[0], true,
-						CMD_COPY, 0));
+						LocalConst.CMD_COPY, 0));
 			}
-			cmdList.add(new FileCmd(null, null, true, CMD_FRESH, 0));
+			cmdList.add(new FileCmd(null, null, true, LocalConst.CMD_FRESH, 0));
 			break;
 		case 3: // 从B移动到A
 			for (LvRow lr : selectedItems[1]) {
 				cmdList.add(new FileCmd(lr.getFile(), currentPath[0], true,
-						CMD_MOVE, 0));
+						LocalConst.CMD_MOVE, 0));
 			}
-			cmdList.add(new FileCmd(null, null, true, CMD_FRESH, 0));
-			cmdList.add(new FileCmd(null, null, true, CMD_FRESH, 1));
+			cmdList.add(new FileCmd(null, null, true, LocalConst.CMD_FRESH, 0));
+			cmdList.add(new FileCmd(null, null, true, LocalConst.CMD_FRESH, 1));
 			break;
 		case 4: // 删除当前窗口所选
 			for (LvRow lr : selectedItems[tab]) {
-				cmdList.add(new FileCmd(lr.getFile(), null, false, CMD_DELETE,
+				cmdList.add(new FileCmd(lr.getFile(), null, false, LocalConst.CMD_DELETE,
 						0));
 			}
-			cmdList.add(new FileCmd(null, null, true, CMD_FRESH, tab));
+			cmdList.add(new FileCmd(null, null, true, LocalConst.CMD_FRESH, tab));
 			break;
 		case 5: // 创建文件夹
-			cmdList.add(new FileCmd(null, currentPath[tab], false, CMD_MKDIR, tab));
-			cmdList.add(new FileCmd(null, null, true, CMD_FRESH, tab));
+			cmdList.add(new FileCmd(null, currentPath[tab], false, LocalConst.CMD_MKDIR, tab));
+			cmdList.add(new FileCmd(null, null, true, LocalConst.CMD_FRESH, tab));
 			Log.d(DTAG, "cmdList.size(): "+cmdList.size());
 			break;
 		case 6: // 添加到播放列表

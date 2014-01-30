@@ -2,6 +2,8 @@ package com.maxproj.android.dirplayer;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
@@ -66,7 +68,26 @@ public class DialogFragmentProgress extends DialogFragment {
 		v = inflater.inflate(R.layout.progressbar, null);
 
 		builder.setView(v).setTitle(R.string.progress_prompt)
-				.setNegativeButton(R.string.negative, null);
+				.setNegativeButton(R.string.cancel_copy, new OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// TODO Auto-generated method stub
+						((DirPlayerActivity) getActivity()).cancelCopy();
+					}
+				})
+				.setPositiveButton(R.string.background_copy, new OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// TODO Auto-generated method stub
+						/**
+						 * 设置本次序列的拷贝为背景拷贝
+						 */
+						
+						((DirPlayerActivity) getActivity()).setShowCopyProcess(false);
+					}
+				});
 
 		tv = (TextView) v.findViewById(R.id.progressbar_text);
 		pb = (ProgressBar) v.findViewById(R.id.progressbar);
