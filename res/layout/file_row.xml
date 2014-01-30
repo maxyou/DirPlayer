@@ -16,6 +16,12 @@
         android:layout_weight="1"   
         android:layout_height="16dp" />
 
+    <ImageView
+        android:id="@+id/fileplayingicon"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_gravity="center"
+         />
     <TextView
         android:id="@+id/text2"
         android:layout_width="60dp"

@@ -204,7 +204,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 				LvRow lr = new LvRow("" + f.getName(), "" + f.length(), ""
 						+ sdf.format(f.lastModified()), f, false, 2,
 						URLConnection.getFileNameMap().getContentTypeFor(
-								f.getName()),false);
+								f.getName()),LocalConst.clear);
 				playListItemsService.add(lr);
 			}
 			br.close();

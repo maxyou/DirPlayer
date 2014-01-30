@@ -75,7 +75,19 @@ public class MyArrayAdapter extends ArrayAdapter{
         	}
         }
         //iv.setImageResource(resId)
-        
+
+        ImageView fpi = (ImageView)fileView.findViewById(R.id.fileplayingicon);
+        if ((lr.getPlayingStatus() == LocalConst.playing)
+        		|| (lr.getPlayingStatus() == LocalConst.pause))
+        {
+        	fpi.setVisibility(View.VISIBLE);
+        	fpi.setImageResource(R.drawable.playingmusic);
+        }else if ((lr.getPlayingStatus() == LocalConst.clear)
+        		|| (lr.getPlayingStatus() == LocalConst.stop))
+        {
+        	fpi.setVisibility(View.GONE);
+        }
+
         TextView length = (TextView)fileView.findViewById(R.id.text2);
         length.setText(lr.getLength());
         

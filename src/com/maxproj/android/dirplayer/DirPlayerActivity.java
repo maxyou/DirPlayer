@@ -1140,7 +1140,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 			if (mime !=null){
 				if(mime.startsWith("audio/")){	
 					LvRow lr = new LvRow("" + f.getName(), "" + f.length(), ""
-						+ sdf.format(f.lastModified()), f, false, 2, mime, false);
+						+ sdf.format(f.lastModified()), f, false, 2, mime, LocalConst.clear);
 					playListItems.add(lr);
 				}
 			}
@@ -1390,7 +1390,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 		if (!currentPath[tab].equals(pathRoot)) {
 			Log.d(DTAG, "add parentPath: " + parentPath[tab]);
 			// viewListFiles.add(new File(parentPath));
-			LvRow lr = new LvRow("/..", "", "", new File(parentPath[tab]), false, 0, null, false);
+			LvRow lr = new LvRow("/..", "", "", new File(parentPath[tab]), false, 0, null, LocalConst.clear);
 			viewListItems[tab].add(lr);
 		}
 		Log.d(DTAG, "fillList loop end 2");
@@ -1398,7 +1398,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 		for (File f : dirList[tab]) {
 			// viewListFiles.add(f);
 			LvRow lr = new LvRow("/" + f.getName(), "", ""
-					+ sdf.format(f.lastModified()), f, false, 1, null, false);
+					+ sdf.format(f.lastModified()), f, false, 1, null, LocalConst.clear);
 			Log.d(DTAG, "add directory: " + lr.getName());
 			viewListItems[tab].add(lr);
 		}
@@ -1406,7 +1406,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 			// viewListFiles.add(f);
 			LvRow lr = new LvRow("" + f.getName(), "" + f.length(), ""
 					+ sdf.format(f.lastModified()), f, false, 2, 
-					URLConnection.getFileNameMap().getContentTypeFor(f.getName()), false);
+					URLConnection.getFileNameMap().getContentTypeFor(f.getName()), LocalConst.clear);
 			Log.d(DTAG, "add file: " + lr.getName());
 			viewListItems[tab].add(lr);
 		}
@@ -2201,7 +2201,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 				File f = new File(line);
 				LvRow lr = new LvRow("" + f.getName(), "" + f.length(), ""
 						+ sdf.format(f.lastModified()), f, false, 2, 
-						URLConnection.getFileNameMap().getContentTypeFor(f.getName()), false);
+						URLConnection.getFileNameMap().getContentTypeFor(f.getName()), LocalConst.clear);
 				playListItems.add(lr);
 			}
 			br.close();
@@ -2279,7 +2279,24 @@ public class DirPlayerActivity extends FragmentActivity implements
 				/**
 				 * 更新左右窗口的文件列表
 				 * 也即更新listview的adapter
+				 * 这里应该主动更新
 				 */
+				for (int i = 0; i < tabCount; i++) {
+					for(LvRow lr:viewListItems[i]){
+						if(lr.getFile().getPath().equals(fileListPath)){
+							lr.setPlayingStatus(playStatus);
+						}else{
+							lr.setPlayingStatus(LocalConst.clear);
+						}
+					}
+					/**
+					 * 有两种更新方法，这里需要测试一下
+					 * 其一是notifyDataSetChanged()-----发现这个可以
+					 * 其二是重新设置adapter
+					 */
+					
+					myArrayAdapter[i].notifyDataSetChanged();
+				}
 				Log.d(DTAG, "audio/video single: " + playStatus + " " + playType + " " + fileListPath);
 				return;
 			}else if(playType == LocalConst.ListPlay){
@@ -2291,12 +2308,20 @@ public class DirPlayerActivity extends FragmentActivity implements
 				/**
 				 * 更新播放列表
 				 * 更新播放路径
+				 * 主动更新
 				 */
 				if(fragmentPlayList != null){
 					fragmentPlayList.setPathView(
 						getResources().getString(R.string.pl_path) + playListPath);
 				}
-				
+				for (LvRow lr : playListItems) {
+					if(lr.getFile().getPath().equals(playListPath)){
+						lr.setPlayingStatus(playStatus);
+					}else{
+						lr.setPlayingStatus(LocalConst.clear);
+					}
+				}
+				playListArrayAdapter.notifyDataSetChanged();
 				return;
 			}
 	    }
