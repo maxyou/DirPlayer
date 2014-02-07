@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    	
+	<!--
+		设置
+			始终背景拷贝
+			有冲突时强制覆盖、停止、提示
+			去掉actionbar和title
+			简繁LvRow界面切换		
+	 -->
+	 
+    <CheckBoxPreference
+        android:key="@string/setting1_key"
+        android:title="@string/setting1_title"
+        android:summary="@string/seting1_summ"
+        android:defaultValue="false" />
+
+</PreferenceScreen>

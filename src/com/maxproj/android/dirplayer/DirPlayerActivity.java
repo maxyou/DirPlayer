@@ -37,6 +37,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -48,6 +49,8 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -86,10 +89,16 @@ import com.maxproj.android.dirplayer.PlayService.LocalBinder;
 public class DirPlayerActivity extends FragmentActivity implements
 		ActionBar.TabListener, FragmentListview.FragmentListviewInterface,
 		FragmentBookMark.FragmentBookMarkInterface,
-		FragmentPlayList.FragmentPlayListInterface {
+		FragmentPlayList.FragmentPlayListInterface
+		{
 
 	final static String DTAG = "DirPlayer";
 	ActionBar actionBar = null;
+	
+	/**
+	 * 设置
+	 */
+	SharedPreferences settingPref;
 	/**
 	 * 分享菜单 
 	 *
@@ -1485,6 +1494,13 @@ public class DirPlayerActivity extends FragmentActivity implements
 		}
 		
 		/**
+		 * 初始化setting
+		 */
+		
+		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+		settingPref = PreferenceManager.getDefaultSharedPreferences(this);
+		
+		/**
 		 * 初始化手势
 		 * 
 		 */
@@ -1607,6 +1623,21 @@ public class DirPlayerActivity extends FragmentActivity implements
         // Bind to LocalService
         Intent intent = new Intent(this, PlayService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        
+        
+        //是否显示顶部标题条
+        boolean b = settingPref.getBoolean(getString(R.string.setting1_key), false);
+        if(b == true){
+        	actionBar.setDisplayOptions(
+        			actionBar.DISPLAY_SHOW_CUSTOM|actionBar.DISPLAY_SHOW_HOME|actionBar.DISPLAY_SHOW_TITLE,
+        			actionBar.DISPLAY_SHOW_CUSTOM|actionBar.DISPLAY_SHOW_HOME|actionBar.DISPLAY_SHOW_TITLE);
+        	actionBar.setTitle(R.string.app_name);
+        }else{
+        	actionBar.setDisplayOptions(
+        			0,
+        			actionBar.DISPLAY_SHOW_CUSTOM|actionBar.DISPLAY_SHOW_HOME|actionBar.DISPLAY_SHOW_TITLE);
+        }
+        
     }
 
     @Override
@@ -1848,6 +1879,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 		// as you specify a parent activity in AndroidManifest.xml.
 		switch (item.getItemId()) {
 		case R.id.action_settings:
+            startActivity(new Intent(this,SettingsActivity.class));	
 			return true;
 		case R.id.about:
 			return true;
@@ -2380,5 +2412,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	    	
 	    }
 	}
+
+	
 
 }

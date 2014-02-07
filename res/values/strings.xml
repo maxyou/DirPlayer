@@ -7,9 +7,11 @@
     </string>
     <string name="dealby" >请选择处理程序
     </string>
-    <string name="about" >DirPlayer ver0.936(audio/video switch) hyyou@foxmail.com
+    <string name="about">关于(DirPlayer ver0.94 hyyou@foxmail.com)
     </string>
-    <string name="action_settings" >no setting
+    <string name="help">帮助
+    </string>
+    <string name="action_settings" >设置
     </string>
     <string name="hello_world" >Hello world!
     </string>
@@ -106,6 +108,17 @@
     <string name="playlist_file" >playlist.txt
     </string>
     <string name="pl_path" >当前播放曲目：
+    </string>
+
+    
+
+    <string name="setting1_key">setting1_key
+    </string>
+    <string name="setting1_title">是否显示顶部标题条
+    </string>
+    <string name="seting1_summ">目前选择显示顶部标题条
+    </string>
+    <string name="seting1_summ2">目前选择隐藏顶部标题条
     </string>
     
 </resources>
