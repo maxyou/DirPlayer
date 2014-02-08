@@ -6,6 +6,7 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 public class SettingsActivity extends Activity {
@@ -28,6 +29,13 @@ class SettingsFragment extends PreferenceFragment implements OnSharedPreferenceC
 
         // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.preferences);
+        
+        
+        /**
+         * 目前setting部分可以凑合用，还没有搭好一个便于增删的灵活结构
+         */
+        updateSettingSummary(getString(R.string.setting1_key));
+        
     }
     @Override
     public void onResume() {
@@ -54,18 +62,24 @@ class SettingsFragment extends PreferenceFragment implements OnSharedPreferenceC
 			String key) {
 		if (key.equals(getString(R.string.setting1_key)))
         {
-            // Set summary to be the user-description for the selected value
-            Preference prefShowActionBar = findPreference(key);
-            boolean b = sharedPreferences.getBoolean(key, false);
-			if(b == true){ //true: 显示顶部标题条
-            	prefShowActionBar.setSummary(getString(R.string.seting1_summ));
-            	Log.d(DTAG,"setting: seting1_summ");
-            }else{
-            	prefShowActionBar.setSummary(getString(R.string.seting1_summ2));
-            	Log.d(DTAG,"setting: seting1_summ2");
-            }
-            
+			updateSettingSummary(key);
         }
 	}
 
+	public void updateSettingSummary(String key){
+	
+        // Set summary to be the user-description for the selected value
+        Preference prefShowActionBar = findPreference(key);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        boolean b = sharedPreferences.getBoolean(key, false);
+		if(b == true){ //true: 显示顶部标题条
+        	prefShowActionBar.setSummary(getString(R.string.seting1_summ));
+        	Log.d(DTAG,"setting: seting1_summ");
+        }else{
+        	prefShowActionBar.setSummary(getString(R.string.seting1_summ2));
+        	Log.d(DTAG,"setting: seting1_summ2");
+        }
+	}
+	
+	
 }

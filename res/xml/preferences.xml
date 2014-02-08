@@ -13,7 +13,7 @@
     <CheckBoxPreference
         android:key="@string/setting1_key"
         android:title="@string/setting1_title"
-        android:summary="@string/seting1_summ"
+        android:summary="@string/seting1_summ2"
         android:defaultValue="false" />
 
 </PreferenceScreen>

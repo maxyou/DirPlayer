@@ -6,6 +6,17 @@ public class LocalConst {
 		// TODO Auto-generated constructor stub
 	}
 
+	/**
+	 * 系统状态
+	 */
+    public static final int STATE_FILE       = 0;
+    public static final int STATE_VIDEO       = 1;
+    public static final int STATE_MUSIC       = 2;
+
+	
+	/**
+	 * 音乐播放状态
+	 */
 //    public static final int NoPlay       = 0;
     public static final int SinglePlay       = 1;
     public static final int ListPlay      = 2;
@@ -14,6 +25,8 @@ public class LocalConst {
     public static final int playing       = 1;
     public static final int pause       = 2;
     public static final int stop      = 3;
+    
+    
 	// 过滤器
 	public static final String BROADCAST_ACTION = "com.maxproj.android.dirplayer.BROADCAST";
 	// 消息类别
@@ -27,7 +40,9 @@ public class LocalConst {
 	// 文件播放信息
 	public static final String FILELIST_PATH = "com.maxproj.android.dirplayer.FILELIST_PATH";
 	
-	
+	/**
+	 * 文件命令
+	 */
     public static final int CMD_COPY = 1;
     public static final int CMD_MOVE = 2;
     public static final int CMD_DELETE = 3;

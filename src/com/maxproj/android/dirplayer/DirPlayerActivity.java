@@ -146,6 +146,10 @@ public class DirPlayerActivity extends FragmentActivity implements
 	private static final String pathRoot = Environment
 			.getExternalStorageDirectory().getPath();
 
+	/**
+	 * 系统状态
+	 */
+	int dirPlayerState = LocalConst.STATE_FILE;
 
 	/**
 	 * 音频播放
@@ -433,6 +437,8 @@ public class DirPlayerActivity extends FragmentActivity implements
 			// 音频文件处理
 			if (mime.startsWith("audio/"))				
 			{
+				dirPlayerState = LocalConst.STATE_MUSIC;
+				
 				Log.d(DTAG, "audio/video: begin audio play......");
 				/**
 				 * 这里有个问题，Service何时能初始化完成？
@@ -447,7 +453,9 @@ public class DirPlayerActivity extends FragmentActivity implements
 				}
 			}
 			else if (mime.startsWith("video/")){
-				
+				// 设置当前为视频播放状态
+				dirPlayerState = LocalConst.STATE_VIDEO; 
+
 				// 如果有音频或其他再播放，停止，防止声音冲突
 				if (mService != null){					
 					// stop first
@@ -1795,7 +1803,11 @@ public class DirPlayerActivity extends FragmentActivity implements
 				
 				if (e1.getY() > (widthHeightInPixels[1] - 20)) {
 					Log.d(DTAG,"onScroll() find scroll from bottom!");
-					if((mService!=null)&&(mService.isPlaying())&&(mediaController != null)){
+					if(
+							(dirPlayerState == LocalConst.STATE_MUSIC)
+							&&(mService!=null)
+//							&&(mService.isPlaying())
+							&&(mediaController != null)){
 						mediaController.show();
 					}
 					return true;
@@ -2100,6 +2112,9 @@ public class DirPlayerActivity extends FragmentActivity implements
 
 	public void onFragmentPlayListClicked(int i) {
 		Log.d(DTAG, "onFragmentPlayListClicked: " + i);
+		
+		dirPlayerState = LocalConst.STATE_MUSIC;
+		
 		if(mService != null){
 			clearVideoViewPlaying();
 			mService.playList(i);
