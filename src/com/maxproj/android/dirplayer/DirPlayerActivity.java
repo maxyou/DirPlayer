@@ -60,7 +60,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.ViewPager;
 import android.util.DisplayMetrics;
-import android.util.Log;
+
 import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -92,7 +92,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 		FragmentPlayList.FragmentPlayListInterface
 		{
 
-	final static String DTAG = "DirPlayer";
+	
 	ActionBar actionBar = null;
 	
 	/**
@@ -259,7 +259,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 
 			while ((line = br.readLine()) != null) {
 				bookMarkItems.add(new BookMarkRow(line, false));
-				Log.d(DTAG, "get book mark from file" + line);
+				Log.d(LocalConst.DTAG, "get book mark from file" + line);
 				// Toast.makeText(this, "您获取了书签： " + line, Toast.LENGTH_LONG)
 				// .show();
 			}
@@ -306,14 +306,14 @@ public class DirPlayerActivity extends FragmentActivity implements
 	}
 
 	public void onFragmentBookMarkClicked(int i) {
-		Log.d(DTAG, "onFragmentBookMarkClicked " + i);
+		Log.d(LocalConst.DTAG, "onFragmentBookMarkClicked " + i);
 
 		updateDirInfor(bookMarkItems.get(i).getPath(), lastWinTab);
 		mViewPager.setCurrentItem(lastWinTab);
 	}
 
 	public void onFragmentBookMarkButton1() {
-		Log.d(DTAG, "onFragmentBookMarkButton1 ");
+		Log.d(LocalConst.DTAG, "onFragmentBookMarkButton1 ");
 		// 全选
 		for (BookMarkRow bmr : bookMarkItems) {
 			bmr.setSelected(true);
@@ -322,7 +322,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	}
 
 	public void onFragmentBookMarkButton2() {
-		Log.d(DTAG, "onFragmentBookMarkButton2 ");
+		Log.d(LocalConst.DTAG, "onFragmentBookMarkButton2 ");
 		// 全清
 		for (BookMarkRow bmr : bookMarkItems) {
 			bmr.setSelected(false);
@@ -332,7 +332,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	}
 
 	public void onFragmentBookMarkButton3() {
-		Log.d(DTAG, "onFragmentBookMarkButton3 ");
+		Log.d(LocalConst.DTAG, "onFragmentBookMarkButton3 ");
 		// 反选
 		for (BookMarkRow bmr : bookMarkItems) {
 			if (bmr.getSelected() == true)
@@ -345,7 +345,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	}
 
 	public void onFragmentBookMarkButton4() {
-		Log.d(DTAG, "onFragmentBookMarkButton4 ");
+		Log.d(LocalConst.DTAG, "onFragmentBookMarkButton4 ");
 		// 删除
 		Iterator<BookMarkRow> iter = bookMarkItems.iterator();
 		while (iter.hasNext()) {
@@ -358,7 +358,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	}
 
 	public void onFragmentBookMarkButton5() {
-		Log.d(DTAG, "onFragmentBookMarkButton5 ");
+		Log.d(LocalConst.DTAG, "onFragmentBookMarkButton5 ");
 		// 修改
 
 	}
@@ -368,28 +368,28 @@ public class DirPlayerActivity extends FragmentActivity implements
 
 		bookMarkArrayAdapter = new BookMarkArrayAdapter(this,
 				R.layout.bookmark_row, bookMarkItems);
-		Log.d(DTAG, "after new BookMarkArrayAdapter");
+		Log.d(LocalConst.DTAG, "after new BookMarkArrayAdapter");
 
 		if (fragmentBookMark != null) {
 			fragmentBookMark.setListviewAdapter(bookMarkArrayAdapter);
-			Log.d(DTAG,
+			Log.d(LocalConst.DTAG,
 					"fragmentBookMark.setListviewAdapter(bookMarkArrayAdapter)!");
 		} else {
-			Log.d(DTAG, "fragmentBookMark is null!");
+			Log.d(LocalConst.DTAG, "fragmentBookMark is null!");
 		}
 	}
 	public void onFragmentListviewLongClicked(int i,int tab){
 		File f = viewListItems[tab].get(i).getFile();
 
 		if (f.isDirectory()) {
-			Log.d(DTAG, "a dir is long clicked in tab: " + tab);
+			Log.d(LocalConst.DTAG, "a dir is long clicked in tab: " + tab);
 
 			// 发送这个目录
 		} else {
 			
 			// 发送这个文件
 			String mime = URLConnection.getFileNameMap().getContentTypeFor(f.getName());
-			Log.d(DTAG, "a file is long clicked in tab " + tab + "which mime is "+ mime);
+			Log.d(LocalConst.DTAG, "a file is long clicked in tab " + tab + "which mime is "+ mime);
 			Toast.makeText(this, "file type: " + mime,
 					Toast.LENGTH_LONG).show();		
 			
@@ -402,7 +402,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 
 			startActivity(Intent.createChooser(dealIntent, 
 					getResources().getText(R.string.dealby)));
-			Log.d(DTAG, "onOptionsItemSelected: cmdList.size() " + cmdList.size());	
+			Log.d(LocalConst.DTAG, "onOptionsItemSelected: cmdList.size() " + cmdList.size());	
 			
 		}
 	}
@@ -411,7 +411,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 		File f = lr.getFile();
 
 		if (lr.getType() != 2) {// 2是文件，1是目录，0是上一级目录
-			Log.d(DTAG, "a dir is clicked in tab: " + tab);
+			Log.d(LocalConst.DTAG, "a dir is clicked in tab: " + tab);
 			try {
 				updateFileInfor(f, tab);
 			} catch (Exception e) {
@@ -420,7 +420,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 				}
 			}
 		} else {
-			Log.d(DTAG, "a file is clicked in tab" + tab);
+			Log.d(LocalConst.DTAG, "a file is clicked in tab" + tab);
 
 			// 文件单击时直接打开
 			
@@ -428,7 +428,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 			
 			if (mime == null){
 				// 不认识的格式
-				Log.d(DTAG, "mediaPlayer: mime == null, unkown video format");
+				Log.d(LocalConst.DTAG, "mediaPlayer: mime == null, unkown video format");
 				Toast.makeText(this, "file mime is null !",
 						Toast.LENGTH_SHORT).show();
 				return;
@@ -439,7 +439,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 			{
 				dirPlayerState = LocalConst.STATE_MUSIC;
 				
-				Log.d(DTAG, "audio/video: begin audio play......");
+				Log.d(LocalConst.DTAG, "audio/video: begin audio play......");
 				/**
 				 * 这里有个问题，Service何时能初始化完成？
 				 */
@@ -447,9 +447,9 @@ public class DirPlayerActivity extends FragmentActivity implements
 					// 退出视频，并隐藏VideoView
 					clearVideoViewPlaying();
 					mService.play(f, LocalConst.SinglePlay); // clearMusicPlaying() will be called
-					Log.d(DTAG, "audio/video: after mService.play(f, null)");
+					Log.d(LocalConst.DTAG, "audio/video: after mService.play(f, null)");
 					// mediaController.show(); // 开始播放时是否要显示一下控制面板？
-					Log.d(DTAG, "audio/video: after mediaController.show()");
+					Log.d(LocalConst.DTAG, "audio/video: after mediaController.show()");
 				}
 			}
 			else if (mime.startsWith("video/")){
@@ -460,18 +460,18 @@ public class DirPlayerActivity extends FragmentActivity implements
 				if (mService != null){					
 					// stop first
 					mService.clearMusicPlaying();
-					Log.d(DTAG, "audio/video: after clear audio playing");
+					Log.d(LocalConst.DTAG, "audio/video: after clear audio playing");
 				}
-				Log.d(DTAG, "audio/video: begin vv play");
+				Log.d(LocalConst.DTAG, "audio/video: begin vv play");
 				if (vv.isPlaying()){
 					vv.stopPlayback();
-					Log.d(DTAG, "audio/video: after clear last vv playing");
+					Log.d(LocalConst.DTAG, "audio/video: after clear last vv playing");
 				}
 				fullScreen = false; //打开时总是窗口显示
 				setVideoScreen();
 				vv.requestFocus();
 				vv.setVideoURI(Uri.fromFile(f));
-				Log.d(DTAG, "audio/video: after vv.setVideoURI(Uri.fromFile(f))");
+				Log.d(LocalConst.DTAG, "audio/video: after vv.setVideoURI(Uri.fromFile(f))");
 
 				/* 这个高端玩法似乎不行
 				vv.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
@@ -495,10 +495,10 @@ public class DirPlayerActivity extends FragmentActivity implements
 					}
 					
 				});
-				Log.d(DTAG, "audio/video: after vv.setOnCompletionListener()");
+				Log.d(LocalConst.DTAG, "audio/video: after vv.setOnCompletionListener()");
 				
 				vv.start();
-				Log.d(DTAG, "audio/video: after vv.start()");
+				Log.d(LocalConst.DTAG, "audio/video: after vv.start()");
 			}
 			
 			// 文本文件直接查看
@@ -543,7 +543,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 		android.widget.LinearLayout.LayoutParams params = (android.widget.LinearLayout.LayoutParams) vv.getLayoutParams();
 		partScreenHeight = params.height;
 		partScreenWidth = params.width;
-		Log.d(DTAG, "screen: backup params " + partScreenHeight + " " + partScreenWidth);
+		Log.d(LocalConst.DTAG, "screen: backup params " + partScreenHeight + " " + partScreenWidth);
 		params.height = android.widget.LinearLayout.LayoutParams.MATCH_PARENT;
 		params.width = android.widget.LinearLayout.LayoutParams.MATCH_PARENT;
 		vv.setLayoutParams(params);
@@ -562,7 +562,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 			android.widget.LinearLayout.LayoutParams params = (android.widget.LinearLayout.LayoutParams) vv.getLayoutParams();
 			params.height = partScreenHeight;
 			params.width = partScreenWidth;
-			Log.d(DTAG, "screen: backup params " + partScreenHeight + " " + partScreenWidth);
+			Log.d(LocalConst.DTAG, "screen: backup params " + partScreenHeight + " " + partScreenWidth);
 			vv.setLayoutParams(params);
 		}
 		vv.setVisibility(View.VISIBLE);
@@ -586,7 +586,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	}
 
 	public void onFragmentButton1(int tab) {
-		Log.d(DTAG, "Button1 clicked in fragment " + tab);
+		Log.d(LocalConst.DTAG, "Button1 clicked in fragment " + tab);
 		// Toast.makeText(this, "Button1 clicked in fragment " + tab,
 		// Toast.LENGTH_LONG).show();
 
@@ -600,7 +600,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	}
 
 	public void onFragmentButton2(int tab) {
-		Log.d(DTAG, "Button2 clicked in fragment " + tab);
+		Log.d(LocalConst.DTAG, "Button2 clicked in fragment " + tab);
 		// Toast.makeText(this, "Button2 clicked in fragment " + tab,
 		// Toast.LENGTH_LONG).show();
 
@@ -613,7 +613,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	}
 
 	public void onFragmentButton3(int tab) {
-		Log.d(DTAG, "Button3 clicked in fragment " + tab);
+		Log.d(LocalConst.DTAG, "Button3 clicked in fragment " + tab);
 		// Toast.makeText(this, "Button3 clicked in fragment " + tab,
 		// Toast.LENGTH_LONG).show();
 
@@ -630,7 +630,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	}
 
 	public void onFragmentButton4(int tab) {
-		Log.d(DTAG, "Button4 clicked in fragment " + tab);
+		Log.d(LocalConst.DTAG, "Button4 clicked in fragment " + tab);
 		Toast.makeText(this, "您添加了书签： " + currentPath[tab], Toast.LENGTH_LONG)
 				.show();
 
@@ -647,7 +647,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	}
 
 	public void onFragmentButton5(int tab) {
-		Log.d(DTAG, "Button5 clicked in fragment " + tab);
+		Log.d(LocalConst.DTAG, "Button5 clicked in fragment " + tab);
 		// Toast.makeText(this, "Button5 clicked in fragment " + tab,
 		// Toast.LENGTH_LONG).show();
 
@@ -656,7 +656,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	}
 
 	public void onFragmentButton6(int tab) {
-		Log.d(DTAG, "Button6 clicked in fragment " + tab);
+		Log.d(LocalConst.DTAG, "Button6 clicked in fragment " + tab);
 		// Toast.makeText(this, "Button5 clicked in fragment " + tab,
 		// Toast.LENGTH_LONG).show();
 
@@ -671,7 +671,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	}
 
 	private void commandMenu(int tab) { // operate selected files
-		Log.d(DTAG, "show Operation Dialog");
+		Log.d(LocalConst.DTAG, "show Operation Dialog");
 		
 		final int currentTab = tab;
 		//mCmdOptions.clear();
@@ -695,7 +695,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 			}
 		}.show(getSupportFragmentManager(), "");
 
-		Log.d(DTAG, "after show Operation Dialogcon");
+		Log.d(LocalConst.DTAG, "after show Operation Dialogcon");
 
 	}
 
@@ -708,7 +708,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 		public void handleMessage(Message msg) {
 			FileCmd fc = cmdList.pollFirst();
 			if (fc != null) { // 如果还有命令没执行完
-				Log.d(DTAG, "dir copy: Handler find a cmd: " + fc.cmd);
+				Log.d(LocalConst.DTAG, "dir copy: Handler find a cmd: " + fc.cmd);
 				try {
 					switch (fc.cmd) {
 					case LocalConst.CMD_COPY:
@@ -721,16 +721,16 @@ public class DirPlayerActivity extends FragmentActivity implements
 						deleteFiles(fc.src);
 						break;
 					case LocalConst.CMD_FRESH:
-						Log.d(DTAG, "fresh window: " + fc.fresh);
+						Log.d(LocalConst.DTAG, "fresh window: " + fc.fresh);
 						updateDirInfor(currentPath[fc.fresh], fc.fresh);
 						cmdHandler.sendEmptyMessage(1);//其他命令的结束都有这个激活next指令
 						break;
 					case LocalConst.CMD_MKDIR:
-						Log.d(DTAG, "mkdir at tab: " + fc.fresh);
+						Log.d(LocalConst.DTAG, "mkdir at tab: " + fc.fresh);
 						mkDir(fc.desPath, fc.force);
 						break;
 					case LocalConst.CMD_PLAY:
-						Log.d(DTAG, "mkdir at tab: " + fc.fresh);
+						Log.d(LocalConst.DTAG, "mkdir at tab: " + fc.fresh);
 						//servicePlay();
 					default:
 					}
@@ -775,24 +775,24 @@ public class DirPlayerActivity extends FragmentActivity implements
 			        	@Override
 			            public void onClick(DialogInterface dialog, int id) {
 			               // mkdir here
-			        		Log.d(DTAG, "mkdir onClick()");
+			        		Log.d(LocalConst.DTAG, "mkdir onClick()");
 			        		
 			        		EditText et = (EditText) v.findViewById(R.id.mkdirtext);
-			        		Log.d(DTAG, "mkdir find EditText()");
+			        		Log.d(LocalConst.DTAG, "mkdir find EditText()");
 			        		
 			        		if(et == null){
-			        			Log.d(DTAG, "mkdir find et is null");
+			        			Log.d(LocalConst.DTAG, "mkdir find et is null");
 			        			return;
 			        		}
 			        		String dirName = et.getText().toString();
-			        		Log.d(DTAG, "mkdir get dir name"+dirName);
+			        		Log.d(LocalConst.DTAG, "mkdir get dir name"+dirName);
 			        		
 			        		File newDirFile = new File(newDirParantStr, dirName);
 			        		try{
 			        			newDirFile.mkdir();
 			        			cmdHandler.sendEmptyMessage(1); // move Handler to next
 			        		}catch(Exception e){
-			        			Log.d(DTAG, "mkdir get exception");
+			        			Log.d(LocalConst.DTAG, "mkdir get exception");
 			        			Toast.makeText(
 			        			getActivity(),
 			        			"由于某种原因，比如目录名不合法，本次创建文件夹失败",
@@ -817,7 +817,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 		Context context;
 
 		public copySingleFileAsyncTask(Context context, String msg) {
-			Log.d(DTAG, "dir copy: Handler in copyFileTask()");
+			Log.d(LocalConst.DTAG, "dir copy: Handler in copyFileTask()");
 			this.msg = msg;
 			this.context = context;
 
@@ -833,7 +833,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 			InputStream in;
 			OutputStream out;
 
-			Log.d(DTAG,
+			Log.d(LocalConst.DTAG,
 					"dir copy: doInBackground(src: "
 							+ files[0].getPath()
 							+ " des:" + files[1].getPath() + ")");
@@ -844,7 +844,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 				
 				in = new BufferedInputStream(new FileInputStream(files[0]));
 				out = new BufferedOutputStream(new FileOutputStream(files[1]));
-				Log.d(DTAG, "dir copy: before while");
+				Log.d(LocalConst.DTAG, "dir copy: before while");
 
 				while ((b = in.read()) != -1) {
 					out.write(b);
@@ -853,7 +853,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 					if (countLoop > 1024) { //每拷贝1k字节更新一次进度条
 						countLoop = 0;
 						publishProgress((int) ((count / (float) length) * 100));
-						Log.d(DTAG, "AsyncTask: publishProgress("
+						Log.d(LocalConst.DTAG, "AsyncTask: publishProgress("
 								+ ((int) ((count / (float) length) * 100))
 								+ ")");
 					}
@@ -872,14 +872,14 @@ public class DirPlayerActivity extends FragmentActivity implements
 		}
 
 		protected void onProgressUpdate(Integer... progress) {
-			Log.d(DTAG, "dir copy: onProgressUpdate(" + progress + ")");
+			Log.d(LocalConst.DTAG, "dir copy: onProgressUpdate(" + progress + ")");
 			if (dfp != null) {
 				dfp.setProgress(progress[0].intValue());
 			}
 		}
 
 		protected void onPreExecute() {
-			Log.d(DTAG, "dir copy: onPreExecute()");
+			Log.d(LocalConst.DTAG, "dir copy: onPreExecute()");
 			
 			// 启动进度条
 			if (showCopyProcess == true) {
@@ -893,7 +893,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 		}
 
 		protected void onPostExecute(Long result) {
-			Log.d(DTAG, "dir copy: onPostExecute()");
+			Log.d(LocalConst.DTAG, "dir copy: onPostExecute()");
 			if (dfp != null) {
 				dfp.dismiss();
 			}
@@ -981,13 +981,13 @@ public class DirPlayerActivity extends FragmentActivity implements
 			throws IOException {
 		
 		if(!copyFilesValidity(srcFile,desPathStr)){
-			Log.d(DTAG, "Handler copyFile: validaity check failed: " + srcFile.getPath()
+			Log.d(LocalConst.DTAG, "Handler copyFile: validaity check failed: " + srcFile.getPath()
 					+ " to " + desPathStr);
 			
 			/**
 			 * 如果不合法，停止后续所有操作
 			 */
-			Log.d(DTAG, "dir copy: cmdList.clear() in copyFiles()"+ Thread.currentThread().getStackTrace()[1].getLineNumber());
+			Log.d(LocalConst.DTAG, "dir copy: cmdList.clear() in copyFiles()"+ Thread.currentThread().getStackTrace()[1].getLineNumber());
 			cmdList.clear();
 			return;
 		}
@@ -1000,11 +1000,11 @@ public class DirPlayerActivity extends FragmentActivity implements
 		File desFile = new File(desPathStr, srcFile.getName());
 		if (desFile.exists()) {
 			if (force == true) {// 覆盖同名文件
-				Log.d(DTAG,
+				Log.d(LocalConst.DTAG,
 						"Handler copyFile: delete file before copy");
 				deleteFileOrDir(desFile);
 			} else {
-				Log.d(DTAG, "Handler copyFile: do nothing");
+				Log.d(LocalConst.DTAG, "Handler copyFile: do nothing");
 				
 				//什么也不做，但是激活后面的操作
 				cmdHandler.sendEmptyMessage(1);
@@ -1013,7 +1013,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 		}
 		
 		if (srcFile.isFile()) {// 一个文件
-			Log.d(DTAG, "dir copy: srcFile.isFile()");
+			Log.d(LocalConst.DTAG, "dir copy: srcFile.isFile()");
 
 			//添加拷贝任务
 			new copySingleFileAsyncTask(this, srcFile.getName())
@@ -1025,7 +1025,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 		
 		if (srcFile.isDirectory()) {// 一个目录
 
-			Log.d(DTAG, "dir copy: srcFile.isDirectory()");
+			Log.d(LocalConst.DTAG, "dir copy: srcFile.isDirectory()");
 			
 			if(desFile.mkdirs()){
 				// 这里拷贝下一级
@@ -1036,7 +1036,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 				
 			}else{
 				//严重错误，停止后续全部操作				 
-				Log.d(DTAG, "dir copy: cmdList.clear() in copyFiles() "
+				Log.d(LocalConst.DTAG, "dir copy: cmdList.clear() in copyFiles() "
 						+ Thread.currentThread().getStackTrace()[1].getLineNumber());
 				cmdList.clear();
 				return;
@@ -1049,11 +1049,11 @@ public class DirPlayerActivity extends FragmentActivity implements
 	 */
 	public void copyFilesInDir(File srcDirFile, String desDirStr, boolean force){
 		
-		Log.d(DTAG, "dir copy: copyFilesInDir()");
+		Log.d(LocalConst.DTAG, "dir copy: copyFilesInDir()");
 		
 		File srcFiles[] = srcDirFile.listFiles();
 		for (File f : srcFiles) {
-			Log.d(DTAG, "dir copy: copyFilesInDir() add "+f.getName());
+			Log.d(LocalConst.DTAG, "dir copy: copyFilesInDir() add "+f.getName());
 			cmdList.addFirst(new FileCmd(f, desDirStr, force, LocalConst.CMD_COPY, 1));
 		}
 
@@ -1076,13 +1076,13 @@ public class DirPlayerActivity extends FragmentActivity implements
 			throws IOException {
 		
 		if(!moveFilesValidity(srcFile,desPathStr)){
-			Log.d(DTAG, "moveFiles: validaity check failed: " + srcFile.getPath()
+			Log.d(LocalConst.DTAG, "moveFiles: validaity check failed: " + srcFile.getPath()
 					+ " to " + desPathStr);
 			
 			/**
 			 * 如果不合法，停止后续所有操作
 			 */
-			//Log.d(DTAG, "dir copy: cmdList.clear() in moveFiles()"
+			//Log.d(LocalConst.DTAG, "dir copy: cmdList.clear() in moveFiles()"
 			//		+ Thread.currentThread().getStackTrace()[1].getLineNumber());
 			cmdList.clear();
 			return;
@@ -1096,11 +1096,11 @@ public class DirPlayerActivity extends FragmentActivity implements
 		File desFile = new File(desPathStr, srcFile.getName());
 		if (desFile.exists()) {
 			if (force == true) {// 覆盖同名文件
-				Log.d(DTAG,
+				Log.d(LocalConst.DTAG,
 						"moveFiles: delete file before copy");
 				deleteFileOrDir(desFile);
 			} else {
-				Log.d(DTAG, "moveFiles: do nothing");
+				Log.d(LocalConst.DTAG, "moveFiles: do nothing");
 				
 				//什么也不做，但是激活后面的操作
 				cmdHandler.sendEmptyMessage(1);
@@ -1180,7 +1180,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	
 	private void updatePlayListAdapter()
 	{
-		Log.d(DTAG, "updatePlayListAdapter()");
+		Log.d(LocalConst.DTAG, "updatePlayListAdapter()");
 		playListArrayAdapter = new MyArrayAdapter(this, R.layout.file_row,
 				playListItems);
 
@@ -1217,7 +1217,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 		// "cmd: " + cmdIndex + ", path A: " + currentPath[0]
 		// + ", path B: " + currentPath[1], Toast.LENGTH_LONG)
 		// .show();
-		Log.d(DTAG, "cmd: " + cmdPosition + ", path A: " + currentPath[0]
+		Log.d(LocalConst.DTAG, "cmd: " + cmdPosition + ", path A: " + currentPath[0]
 				+ ", path B: " + currentPath[1]);
 
 		for (int i = 0; i < 2; i++) {// A是0，B是1
@@ -1226,14 +1226,14 @@ public class DirPlayerActivity extends FragmentActivity implements
 			for (LvRow lr : viewListItems[i]) {
 				if (lr.getSelected() == true) {
 					selectedItems[i].add(lr);
-					Log.d(DTAG,
+					Log.d(LocalConst.DTAG,
 							"operateMenu(): tab " + i + " selected: "
 									+ lr.getName());
 				}
 			}
 		}
 		
-		Log.d(DTAG, "dir copy: cmdList.clear() in addCmds()"
+		Log.d(LocalConst.DTAG, "dir copy: cmdList.clear() in addCmds()"
 				+ Thread.currentThread().getStackTrace()[1].getLineNumber());
 		
 		cmdList.clear();
@@ -1286,7 +1286,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 		case 5: // 创建文件夹
 			cmdList.add(new FileCmd(null, currentPath[tab], false, LocalConst.CMD_MKDIR, tab));
 			cmdList.add(new FileCmd(null, null, true, LocalConst.CMD_FRESH, tab));
-			Log.d(DTAG, "cmdList.size(): "+cmdList.size());
+			Log.d(LocalConst.DTAG, "cmdList.size(): "+cmdList.size());
 			break;
 		case 6: // 添加到播放列表
 			for (LvRow lr : selectedItems[tab]) {
@@ -1294,7 +1294,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 			}
 			savePlayList2File();
 			updatePlayListAdapter();
-			Log.d(DTAG, "cmdList.size(): "+cmdList.size());
+			Log.d(LocalConst.DTAG, "cmdList.size(): "+cmdList.size());
 			break;
 
 		default:
@@ -1330,29 +1330,29 @@ public class DirPlayerActivity extends FragmentActivity implements
 			}
 		} else {
 			// NullPointerException
-			Log.d(DTAG, "path null: " + path);
+			Log.d(LocalConst.DTAG, "path null: " + path);
 		}
 	}
 
 	private void updateFileInfor(File f, int tab) throws Exception {
 		File files[];
 
-		Log.d(DTAG, "xtab "+tab+" goto this directory: " + f.getPath());
+		Log.d(LocalConst.DTAG, "xtab "+tab+" goto this directory: " + f.getPath());
 		try {
 			files = f.listFiles();
 			if (files == null) {
-				Log.d(DTAG, "sorry, xtab "+tab+" can't update to this directory: " +
+				Log.d(LocalConst.DTAG, "sorry, xtab "+tab+" can't update to this directory: " +
 				 currentPath);
 				Toast.makeText(this, "Failed to this directory!",
 						Toast.LENGTH_SHORT).show();
 				return;
 			}
 			// update to new directory
-			Log.d(DTAG, "xtab "+tab+" get currentPath and praentPath");
+			Log.d(LocalConst.DTAG, "xtab "+tab+" get currentPath and praentPath");
 			currentPath[tab] = f.getPath();
 			parentPath[tab] = f.getParent(); // 如果f是根目录会怎样？
 
-			Log.d(DTAG, "xtab "+tab+" save currentPath");
+			Log.d(LocalConst.DTAG, "xtab "+tab+" save currentPath");
 			if (tab == 0) {
 				prefEditor.putString(getString(R.string.left_window_path),
 						currentPath[tab]);
@@ -1368,11 +1368,11 @@ public class DirPlayerActivity extends FragmentActivity implements
 			// Log.d(TAG_DEBUG, "3.2 should not come here if Exception");
 			constructViewList(tab);
 
-			Log.d(DTAG, "check viewListItems[" + tab + "]:"
+			Log.d(LocalConst.FRAGMENT_LIFE, "check viewListItems[" + tab + "]:"
 					+ viewListItems[tab].toString());
 			myArrayAdapter[tab] = new MyArrayAdapter(this, R.layout.file_row,
 					viewListItems[tab]);
-			Log.d(DTAG, "after new MyArrayAdapter");
+			Log.d(LocalConst.FRAGMENT_LIFE, "after new MyArrayAdapter");
 
 			if (fragmentListview[tab] != null) {
 				fragmentListview[tab].setListviewAdapter(myArrayAdapter[tab],
@@ -1381,20 +1381,20 @@ public class DirPlayerActivity extends FragmentActivity implements
 				//debug, should be deleted
 				//fragmentPlayList.setListviewAdapter(myArrayAdapter[tab]);
 				
-				Log.d(DTAG,
+				Log.d(LocalConst.FRAGMENT_LIFE,
 						"fragmentListview.setListviewAdapter(myArrayAdapter)!");
 			} else {
-				Log.d(DTAG, "fragmentListview is null!");
+				Log.d(LocalConst.FRAGMENT_LIFE, "fragmentListview is null!");
 			}
 			// Log.d(TAG_DEBUG, "show path: " + parentPath + f.getName());
 		} catch (Exception e) {
-			Log.d(DTAG, "xtab path: " + f.getPath() + "Exception e: " + e.toString());
+			Log.d(LocalConst.FRAGMENT_LIFE, "xtab path: " + f.getPath() + "Exception e: " + e.toString());
 			e.printStackTrace();
 
 			throw new Exception(pathRoot);
 			// return;
 		} finally {
-			Log.d(DTAG, "xtab " + tab + " finally " + currentPath[tab]);
+			Log.d(LocalConst.FRAGMENT_LIFE, "xtab " + tab + " finally " + currentPath[tab]);
 			// return;
 		}
 
@@ -1406,21 +1406,21 @@ public class DirPlayerActivity extends FragmentActivity implements
 	 *	以后排序控制加到这里
 	 */
 	private void fillList(File[] files, int tab) {
-		Log.d(DTAG, "in fillList, fils.length: " + files.length);
+		Log.d(LocalConst.DTAG, "in fillList, fils.length: " + files.length);
 		dirList[tab].clear();
 		fileList[tab].clear();
 		for (File f : files) {
 			if (f.isDirectory()) {
-				Log.d(DTAG, "find directory: " + f.getName());
+				Log.d(LocalConst.DTAG, "find directory: " + f.getName());
 				dirList[tab].add(f);
 			} else if (f.isFile()) {
-				Log.d(DTAG, "find file: " + f.getName());
+				Log.d(LocalConst.DTAG, "find file: " + f.getName());
 				fileList[tab].add(f);
 			} else
-				Log.d(DTAG, "File error~~~");
+				Log.d(LocalConst.DTAG, "File error~~~");
 
 		}
-		Log.d(DTAG, "fillList loop end 1");
+		Log.d(LocalConst.DTAG, "fillList loop end 1");
 
 		Collections.sort(dirList[tab]);
 		Collections.sort(fileList[tab]);
@@ -1437,18 +1437,18 @@ public class DirPlayerActivity extends FragmentActivity implements
 		// viewListFiles.clear();
 		viewListItems[tab].clear();
 		if (!currentPath[tab].equals(pathRoot)) {
-			Log.d(DTAG, "add parentPath: " + parentPath[tab]);
+			Log.d(LocalConst.DTAG, "add parentPath: " + parentPath[tab]);
 			// viewListFiles.add(new File(parentPath));
 			LvRow lr = new LvRow("/..", "", "", new File(parentPath[tab]), false, 0, null, LocalConst.clear);
 			viewListItems[tab].add(lr);
 		}
-		Log.d(DTAG, "fillList loop end 2");
+		Log.d(LocalConst.DTAG, "fillList loop end 2");
 
 		for (File f : dirList[tab]) {
 			// viewListFiles.add(f);
 			LvRow lr = new LvRow("/" + f.getName(), "", ""
 					+ sdf.format(f.lastModified()), f, false, 1, null, LocalConst.clear);
-			Log.d(DTAG, "add directory: " + lr.getName());
+			Log.d(LocalConst.DTAG, "add directory: " + lr.getName());
 			viewListItems[tab].add(lr);
 		}
 		for (File f : fileList[tab]) {
@@ -1456,11 +1456,11 @@ public class DirPlayerActivity extends FragmentActivity implements
 			LvRow lr = new LvRow("" + f.getName(), "" + f.length(), ""
 					+ sdf.format(f.lastModified()), f, false, 2, 
 					URLConnection.getFileNameMap().getContentTypeFor(f.getName()), LocalConst.clear);
-			Log.d(DTAG, "add file: " + lr.getName());
+			Log.d(LocalConst.DTAG, "add file: " + lr.getName());
 			viewListItems[tab].add(lr);
 		}
 		// System.out.println(viewListItems);
-		Log.d(DTAG, "viewListItems is constructed!");
+		Log.d(LocalConst.DTAG, "viewListItems is constructed!");
 	}
 
 	@Override
@@ -1468,6 +1468,12 @@ public class DirPlayerActivity extends FragmentActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_dir_player);
 
+		/**
+		 * 保存上下文
+		 */
+		LocalConst.app = getApplicationContext();
+		LocalConst.dirPlayerActivity = this;
+		
 		// Set up the action bar.
 		actionBar = getActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);		
@@ -1523,7 +1529,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 		 * 好像多初始化了一个fragment，以后改
 		 */
 		
-		Log.d(DTAG, "fragment initial code begin...");
+		Log.d(LocalConst.FRAGMENT_LIFE, "fragment initial code begin...");
 		for (int i = 0; i < tabCount; i++) {
 			viewListItems[i] = new LinkedList<LvRow>();
 			selectedItems[i] = new LinkedList<LvRow>();
@@ -1532,12 +1538,17 @@ public class DirPlayerActivity extends FragmentActivity implements
 			currentPath[i] = pathRoot;
 			parentPath[i] = null;
 			fragmentListview[i] = FragmentListview.newInstance(i);
+			
+			/**
+			 * 以下设置adapter似乎没有必要
+			 */
 			myArrayAdapter[i] = new MyArrayAdapter(this, R.layout.file_row,
 					viewListItems[i]);
+			Log.d(LocalConst.FRAGMENT_LIFE, "currentPath["+i+"]" + currentPath[i]);
 			fragmentListview[i].setListviewAdapter(myArrayAdapter[i],
 					currentPath[i]);
 		}
-		Log.d(DTAG, "fragment initial code ended!");
+		Log.d(LocalConst.FRAGMENT_LIFE, "fragment initial code ended!");
 		
 		ImageView bottomIcon = (ImageView)findViewById(R.id.bottom_icon);
 		bottomIcon.setImageResource(R.drawable.bottom);
@@ -1566,14 +1577,13 @@ public class DirPlayerActivity extends FragmentActivity implements
 				pathRoot);
 		String rwp = sharedPref.getString(
 				getString(R.string.right_window_path), pathRoot);
-		// Toast.makeText(this,
-		// "lwp: " + lwp + " rwp:" + rwp + " pathRoot: " + pathRoot,
-		// Toast.LENGTH_LONG).show();
+		Log.d(LocalConst.FRAGMENT_LIFE,
+				"lwp: " + lwp + " rwp:" + rwp + " pathRoot: " + pathRoot);
 		updateDirInfor(lwp, 0);
 		updateDirInfor(rwp, 1);
 
 		// updateDirInfor(pathRoot, 2);
-		Log.d(DTAG, "updateDir....");
+		Log.d(LocalConst.FRAGMENT_LIFE, "updateDir....");
 
 		/**
 		 * 音视频媒体相关初始化
@@ -1696,7 +1706,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	        
 	        @Override
 	        public boolean onDown(MotionEvent event) { 
-	            Log.d(DTAG,"videoview onDown"); 
+	            Log.d(LocalConst.DTAG,"videoview onDown"); 
 	            return true;
 	        }
 
@@ -1749,7 +1759,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 			@Override
 			public boolean onScroll(MotionEvent e1, MotionEvent e2,
 					float distanceX, float distanceY) {
-				Log.d(DTAG,"videoview onScroll"); 
+				Log.d(LocalConst.DTAG,"videoview onScroll"); 
 				// TODO Auto-generated method stub
 				return super.onScroll(e1, e2, distanceX, distanceY);
 			}
@@ -1768,19 +1778,19 @@ public class DirPlayerActivity extends FragmentActivity implements
 				final int swipeThresholdVelocity = vc.getScaledMinimumFlingVelocity();
 				final int swipeMaxOffPath = vc.getScaledTouchSlop();
 
-				Log.d(DTAG,"videoview onFling:"+(e2.getY() - e1.getY()));
-				Log.d(DTAG,"videoview onFling:"+swipeMinDistance);
-				Log.d(DTAG,"videoview onFling:"+Math.abs(velocityY));
-				Log.d(DTAG,"videoview onFling:"+swipeThresholdVelocity);
+				Log.d(LocalConst.DTAG,"videoview onFling:"+(e2.getY() - e1.getY()));
+				Log.d(LocalConst.DTAG,"videoview onFling:"+swipeMinDistance);
+				Log.d(LocalConst.DTAG,"videoview onFling:"+Math.abs(velocityY));
+				Log.d(LocalConst.DTAG,"videoview onFling:"+swipeThresholdVelocity);
 				
 				if (e2.getY() - e1.getY() > swipeMinDistance
 						&& Math.abs(velocityY) > swipeThresholdVelocity) {
-					Log.d(DTAG,"onFling is accepted");
+					Log.d(LocalConst.DTAG,"onFling is accepted");
 					// 退出视频，并隐藏VideoView
 					clearVideoViewPlaying();					
 		            return true;
 				}
-				Log.d(DTAG,"diliver onFling()");
+				Log.d(LocalConst.DTAG,"diliver onFling()");
 				return super.onFling(e1, e2, velocityX, velocityY);
 			}
 	    }
@@ -1788,7 +1798,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	        
 	        @Override
 	        public boolean onDown(MotionEvent event) { 
-	            Log.d(DTAG,"onDown: " + event.toString()); 
+	            Log.d(LocalConst.DTAG,"onDown: " + event.toString()); 
 	            return true;
 	        }
 
@@ -1800,11 +1810,11 @@ public class DirPlayerActivity extends FragmentActivity implements
 					float distanceX, float distanceY) {
 				
 				//如果从底部滑出，并且媒体播放器存在的话，调用其show方法
-				Log.d(DTAG,"onScroll().getY(): "+e1.getY()
+				Log.d(LocalConst.DTAG,"onScroll().getY(): "+e1.getY()
 						+ ", bottom is: "+ (widthHeightInPixels[1] - 20));
 				
 				if (e1.getY() > (widthHeightInPixels[1] - 20)) {
-					Log.d(DTAG,"onScroll() find scroll from bottom!");
+					Log.d(LocalConst.DTAG,"onScroll() find scroll from bottom!");
 					if(
 							(dirPlayerState == LocalConst.STATE_MUSIC)
 							&&(mService!=null)
@@ -1843,7 +1853,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	     double screenHeightInPixels = screenWidthInPixels * dm.heightPixels / dm.widthPixels;
 	     widthHeightInPixels[0] = (int)(screenWidthInPixels + .5);
 	     widthHeightInPixels[1] = (int)(screenHeightInPixels + .5);
-	     Log.d(DTAG, "widthHeightInPixels[0]: " + widthHeightInPixels[0]
+	     Log.d(LocalConst.DTAG, "widthHeightInPixels[0]: " + widthHeightInPixels[0]
 	    		 + "widthHeightInPixels[1]: " + widthHeightInPixels[1]);
 	 }
 	@Override
@@ -1918,7 +1928,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 		if(lastPosition < 2) {// 左窗口0，右窗口1
 			lastWinTab = lastPosition;
 		}
-		Log.d(DTAG, "last tab: " + lastWinTab);
+		Log.d(LocalConst.DTAG, "last tab: " + lastWinTab);
 	}
 
 	@Override
@@ -1943,14 +1953,14 @@ public class DirPlayerActivity extends FragmentActivity implements
 			// below) with the page number as its lone argument.
 
 			if (position == 3) { // 第四个tab为播放列表
-				Log.d(DTAG, "getItem(" + position + ") return fragmentPlayList");
+				Log.d(LocalConst.FRAGMENT_LIFE, "getItem(" + position + ") return fragmentPlayList");
 				return fragmentPlayList;
 			}
 			if (position == 2) { // 第三个tab为标签
-				Log.d(DTAG, "getItem(" + position + ") return fragmentBookMark");
+				Log.d(LocalConst.FRAGMENT_LIFE, "getItem(" + position + ") return fragmentBookMark");
 				return fragmentBookMark;
 			} else { // 第一个tab为左窗口，第二个tab为右窗口
-				Log.d(DTAG, "getItem(" + position + ") return fragmentListview");
+				Log.d(LocalConst.FRAGMENT_LIFE, "getItem(" + position + ") return fragmentListview");
 				return fragmentListview[position];
 			}
 
@@ -1995,23 +2005,23 @@ public class DirPlayerActivity extends FragmentActivity implements
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 	    if (keyCode == KeyEvent.KEYCODE_BACK) {
-	    	Log.d(DTAG, "back key found!");
+	    	Log.d(LocalConst.DTAG, "back key found!");
 	    	Toast.makeText(this, "连按两次回退键可以退出程序", Toast.LENGTH_SHORT).show();
 	    	
 	        if (backPressed == true) {
-	        	Log.d(DTAG, "back key twice! close app!");
+	        	Log.d(LocalConst.DTAG, "back key twice! close app!");
 	            finish();
 	        }
 	        else
 	        {
-	        	Log.d(DTAG, "back key once! set flag.");
+	        	Log.d(LocalConst.DTAG, "back key once! set flag.");
 	            backPressed = true;
 	            new Handler().postDelayed(new Runnable() {
 
 	                @Override
 	                public void run() {
 	                	backPressed = false;   
-	                	Log.d(DTAG, "clear back key once flag from runnable()!");;
+	                	Log.d(LocalConst.DTAG, "clear back key once flag from runnable()!");;
 	                }
 	            }, 2000);
 	            
@@ -2095,7 +2105,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 			@Override
 			public void pause() {
 				// TODO Auto-generated method stub
-				Log.d(DTAG, "mediaPlayer: pause()");
+				Log.d(LocalConst.DTAG, "mediaPlayer: pause()");
 				mService.pause();
 			}
 		
@@ -2107,7 +2117,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 		
 			@Override
 			public void start() {
-				Log.d(DTAG, "mediaPlayer: start()");
+				Log.d(LocalConst.DTAG, "mediaPlayer: start()");
 				mService.start();
 				// TODO Auto-generated method stub
 				
@@ -2116,7 +2126,7 @@ public class DirPlayerActivity extends FragmentActivity implements
     }
 
 	public void onFragmentPlayListClicked(int i) {
-		Log.d(DTAG, "onFragmentPlayListClicked: " + i);
+		Log.d(LocalConst.DTAG, "onFragmentPlayListClicked: " + i);
 		
 		dirPlayerState = LocalConst.STATE_MUSIC;
 		
@@ -2135,7 +2145,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	 * 		在视频和音频切换时经常导致死机或退出
 	 */
 	public void clearVideoViewPlaying(){
-		Log.d(DTAG, "audio/video: begin clearVideoViewPlaying()");
+		Log.d(LocalConst.DTAG, "audio/video: begin clearVideoViewPlaying()");
 		//if((vv!=null)&&(vv.isPlaying())){
 		if(vv != null){ // 即便vv并非正在播放，只要vv存在，就需要清除
 			if(videoController!=null)
@@ -2144,7 +2154,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 			setVideoViewGone();
 			//vv.pause();
 		}
-		Log.d(DTAG, "audio/video: after clearVideoViewPlaying()");
+		Log.d(LocalConst.DTAG, "audio/video: after clearVideoViewPlaying()");
 	}
 	public void onFragmentPlayListButton1() {
 		// 全选
@@ -2188,23 +2198,23 @@ public class DirPlayerActivity extends FragmentActivity implements
 	}
 	public void onFragmentPlayListButton5() {
 		// 上移
-		Log.d(DTAG, "move up ....");
+		Log.d(LocalConst.DTAG, "move up ....");
 		if (playListItems.size() < 2)
 			return;
 		
 		for(int i = 0;i < playListItems.size() - 1 ;i++){
-			Log.d(DTAG, "compare in pair: " + i);
+			Log.d(LocalConst.DTAG, "compare in pair: " + i);
 			// 用冒泡的方式来实现被选择项上移
 			// 首先获取一对
 			LvRow lr_first = playListItems.get(i);
 			if (lr_first.getSelected()){
-				Log.d(DTAG, "the first in pair is selected");
+				Log.d(LocalConst.DTAG, "the first in pair is selected");
 				continue; // 如果第一个被选择了，无论第二个是什么，什么也不做
 			}
 			
 			LvRow lr_second = playListItems.get(i+1);
 			if (!lr_second.getSelected()){
-				Log.d(DTAG, "the second in pair is not selected");
+				Log.d(LocalConst.DTAG, "the second in pair is not selected");
 				continue; // 由于第一个没有被选择，第二个如果也没被选择，那么什么也不做
 			}
 			
@@ -2212,7 +2222,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 			LvRow lr = playListItems.remove(i+1);
 			playListItems.add(i,lr);
 			
-			Log.d(DTAG, "move up in pair: " + i);
+			Log.d(LocalConst.DTAG, "move up in pair: " + i);
 		}
 		
 		playListArrayAdapter.notifyDataSetChanged();
@@ -2221,23 +2231,23 @@ public class DirPlayerActivity extends FragmentActivity implements
 	}
 	public void onFragmentPlayListButton6() {
 		// 下移
-		Log.d(DTAG, "move down ....");
+		Log.d(LocalConst.DTAG, "move down ....");
 		if (playListItems.size() < 2)
 			return;
 		
 		for(int i = playListItems.size() - 1; i > 0;i--){
-			Log.d(DTAG, "compare in pair: " + i);
+			Log.d(LocalConst.DTAG, "compare in pair: " + i);
 			// 用冒泡的方式来实现被选择项上移
 			// 首先获取一对
 			LvRow lr_second = playListItems.get(i);
 			if (lr_second.getSelected()){
-				Log.d(DTAG, "the second in pair is selected");
+				Log.d(LocalConst.DTAG, "the second in pair is selected");
 				continue; // 如果第二个被选择了，无论第一个是什么，什么也不做
 			}
 
 			LvRow lr_first = playListItems.get(i-1);
 			if (!lr_first.getSelected()){
-				Log.d(DTAG, "the first in pair is not selected");
+				Log.d(LocalConst.DTAG, "the first in pair is not selected");
 				continue; // 由于第二个没有被选择，第一个如果也没被选择，那么什么也不做 
 			}
 			
@@ -2246,7 +2256,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 			LvRow lr = playListItems.remove(i-1);
 			playListItems.add(i,lr);
 			
-			Log.d(DTAG, "move down in pair: " + i);
+			Log.d(LocalConst.DTAG, "move down in pair: " + i);
 		}
 		playListArrayAdapter.notifyDataSetChanged();
 
@@ -2379,14 +2389,14 @@ public class DirPlayerActivity extends FragmentActivity implements
 					
 					myArrayAdapter[i].notifyDataSetChanged();
 				}
-				Log.d(DTAG, "audio/video single: " + playStatus + " " + playType + " " + fileListPath);
+				Log.d(LocalConst.DTAG, "audio/video single: " + playStatus + " " + playType + " " + fileListPath);
 				return;
 			}else if(playType == LocalConst.ListPlay){
 				playListPath = intent.getStringExtra(LocalConst.PLAYLIST_PATH);
 				playListIndex = intent.getIntExtra(LocalConst.PLAYLIST_INDEX, 0);
 				playListItemIndex = intent.getIntExtra(LocalConst.PLAYLIST_ITEM_INDEX, 0);
 
-				Log.d(DTAG, "audio/video list: " + playStatus + " " + playType + " " + playListPath + " - " + playListIndex + " - " + playListItemIndex);
+				Log.d(LocalConst.DTAG, "audio/video list: " + playStatus + " " + playType + " " + playListPath + " - " + playListIndex + " - " + playListItemIndex);
 				/**
 				 * 更新播放列表
 				 * 更新播放路径
@@ -2412,9 +2422,8 @@ public class DirPlayerActivity extends FragmentActivity implements
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		// TODO Auto-generated method stub
-		super.onConfigurationChanged(newConfig);
-		
-		Log.d(DTAG,"rotate and onConfigurationChanged() is called");
+		super.onConfigurationChanged(newConfig);		
+		Log.d(LocalConst.DTAG,"rotate and onConfigurationChanged() is called");
 
 		//保存一下
 		orientation = newConfig.orientation;

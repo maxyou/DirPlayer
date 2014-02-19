@@ -2,7 +2,7 @@ package com.maxproj.android.dirplayer;
 
 import java.util.List;
 import android.content.Context;
-import android.util.Log;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +13,6 @@ import android.widget.TextView;
 
 public class BookMarkArrayAdapter extends ArrayAdapter {
 
-	String DTAG = "DirPlayer";
 	int resource;
 	final List<BookMarkRow> listItems;// = new List<LvRow>();
 
@@ -22,7 +21,7 @@ public class BookMarkArrayAdapter extends ArrayAdapter {
 		super(context, textViewResourceId, objects);
 		resource = textViewResourceId;
 		listItems = objects;
-		Log.d(DTAG, "initialize BookMarkArrayAdapter...end");
+		Log.d(LocalConst.DTAG, "initialize BookMarkArrayAdapter...end");
 	}
 
 	public View getView(int position, View convertView, ViewGroup parent) {
@@ -33,7 +32,7 @@ public class BookMarkArrayAdapter extends ArrayAdapter {
 		BookMarkRow bmr = (BookMarkRow) getItem(position);
 
 		if (convertView == null) {
-			Log.d(DTAG, "getView: new view, position: " + position);
+			Log.d(LocalConst.DTAG, "getView: new view, position: " + position);
 			fileView = new LinearLayout(getContext());
 			String inflater = Context.LAYOUT_INFLATER_SERVICE;
 			LayoutInflater li;
@@ -41,22 +40,22 @@ public class BookMarkArrayAdapter extends ArrayAdapter {
 			li.inflate(resource, fileView, true);
 		} else {
 			fileView = (LinearLayout) convertView;
-			Log.d(DTAG, "getView: converView, position: " + position);
+			Log.d(LocalConst.DTAG, "getView: converView, position: " + position);
 		}
 
 		TextView path = (TextView) fileView.findViewById(R.id.bookmark);
 		path.setText(bmr.getPath());
-		Log.d(DTAG, "getView: path: " + path.getText());
+		Log.d(LocalConst.DTAG, "getView: path: " + path.getText());
 
 		CheckBox cb = (CheckBox) fileView.findViewById(R.id.bm_checkbox);
 		// 2. add tag to view
 		cb.setTag(position); // sava position in view
-		Log.d(DTAG, "getView: setTag " + cb.getTag());
+		Log.d(LocalConst.DTAG, "getView: setTag " + cb.getTag());
 
 		cb.setVisibility(cb.VISIBLE);
 		cb.setChecked(listItems.get(position).getSelected()); // restore check
 																// state
-		Log.d(DTAG,
+		Log.d(LocalConst.DTAG,
 				"getView: listItems " + position + " is "
 						+ listItems.get(position).getSelected());
 
@@ -65,7 +64,7 @@ public class BookMarkArrayAdapter extends ArrayAdapter {
 			@Override
 			public void onClick(View view) {
 				CheckBox cb = (CheckBox) view;
-				Log.d(DTAG,
+				Log.d(LocalConst.DTAG,
 						"getView: listItems getTag " + (Integer) view.getTag()
 								+ " set " + cb.isChecked());
 				listItems.get((Integer) view.getTag()).setSelected(
@@ -74,7 +73,7 @@ public class BookMarkArrayAdapter extends ArrayAdapter {
 			}
 		});
 
-		Log.d(DTAG, "getView: " + bmr.getPath());
+		Log.d(LocalConst.DTAG, "getView: " + bmr.getPath());
 
 		// Log.d(TAG_DEBUG, "date: " + date.getText());
 

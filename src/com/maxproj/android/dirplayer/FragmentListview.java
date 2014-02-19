@@ -5,7 +5,7 @@ package com.maxproj.android.dirplayer;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +21,7 @@ public class FragmentListview extends Fragment {
     ListView listView = null;
     TextView show_path = null;
     View fragmentView;
-    final static String DTAG = "DirPlayer";
+
     Button b1, b2, b3, b4, b5, b6;
 
     public interface FragmentListviewInterface{
@@ -38,7 +38,7 @@ public class FragmentListview extends Fragment {
 
     /* 
     public FragmentListview(int tab){
-        Log.d(DTAG,"fragment " + tab + " is initialized");
+        Log.d(LocalConst.DTAG,"fragment " + tab + " is initialized");
         this.tab = tab;
     }
     */
@@ -56,14 +56,14 @@ public class FragmentListview extends Fragment {
 		//show_path = (TextView)fragmentView.findViewById(R.id.show_path);
         if(show_path !=null){
         	show_path.setText("当前路径是"+currentPath);
-            Log.d(DTAG,"setListviewAdapter(): show_path is set to "+currentPath);
+            Log.d(LocalConst.DTAG,"setListviewAdapter(): show_path is set to "+currentPath);
         }
 		
         if (listView != null){
             listView.setAdapter(listAdapter);
-            Log.d(DTAG,"setListviewAdapter(): adapter is set!");
+            Log.d(LocalConst.DTAG,"setListviewAdapter(): adapter is set!");
         }else{
-            Log.d(DTAG,"setListviewAdapter(): listView is null pointer!");
+            Log.d(LocalConst.DTAG,"setListviewAdapter(): listView is null pointer!");
         }
     }
     public View getItemView(int position){
@@ -77,14 +77,14 @@ public class FragmentListview extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         //return super.onCreateView(inflater, container, savedInstanceState);
-        Log.d(DTAG,"onCreateView() is called!");
+        Log.d(LocalConst.DTAG,"onCreateView() is called!");
         fragmentView =  inflater.inflate(R.layout.fragment_listview, container, false);
         
 		//show path at upper of listview
 		show_path = (TextView)fragmentView.findViewById(R.id.show_path);
         if(show_path !=null){
         	show_path.setText("当前路径是"+currentPath);
-            Log.d(DTAG,"setListviewAdapter(): show_path is set to "+currentPath);
+            Log.d(LocalConst.DTAG,"setListviewAdapter(): show_path is set to "+currentPath);
         }
         
         return fragmentView;
@@ -92,7 +92,7 @@ public class FragmentListview extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        Log.d(DTAG,"onActivityCreated() is called!");
+        Log.d(LocalConst.DTAG,"onActivityCreated() is called!");
 
         
         b1 = (Button)fragmentView.findViewById(R.id.fl_b1);
@@ -120,7 +120,7 @@ public class FragmentListview extends Fragment {
         b4.setOnClickListener(new View.OnClickListener() { // 书签
             @Override
             public void onClick(View view) {
-            	Log.d(DTAG,"button test: b4 is clicked....");
+            	Log.d(LocalConst.DTAG,"button test: b4 is clicked....");
                 fragmentListviewInterface.onFragmentButton4(tab);
             }
         });
@@ -128,7 +128,7 @@ public class FragmentListview extends Fragment {
         b5.setOnClickListener(new View.OnClickListener() { // 操作
             @Override
             public void onClick(View view) {
-            	Log.d(DTAG,"button test: b5 is clicked....");
+            	Log.d(LocalConst.DTAG,"button test: b5 is clicked....");
                 fragmentListviewInterface.onFragmentButton5(tab);
             }
         });
@@ -136,7 +136,7 @@ public class FragmentListview extends Fragment {
         b6.setOnClickListener(new View.OnClickListener() { // 向上
             @Override
             public void onClick(View view) {
-            	Log.d(DTAG,"button test: b6 is clicked....");
+            	Log.d(LocalConst.DTAG,"button test: b6 is clicked....");
                 fragmentListviewInterface.onFragmentButton6(tab);
             }
         });
@@ -144,15 +144,15 @@ public class FragmentListview extends Fragment {
 
 
         listView.setOnItemClickListener(new ItemClicklistener());
-        Log.d(DTAG,"listView.setOnItemClickListener(new ItemClicklistener())!");
+        Log.d(LocalConst.DTAG,"listView.setOnItemClickListener(new ItemClicklistener())!");
 
         listView.setOnItemLongClickListener(new ItemLongClickListener());
         
         if (listAdapter != null){
             listView.setAdapter(listAdapter);
-            Log.d(DTAG,"(maa != null) and adapter is set!");
+            Log.d(LocalConst.DTAG,"(maa != null) and adapter is set!");
         }else{
-            Log.d(DTAG,"maa is null pointer!");
+            Log.d(LocalConst.DTAG,"maa is null pointer!");
         }
     }
     private class ItemLongClickListener implements AdapterView.OnItemLongClickListener{
@@ -162,7 +162,7 @@ public class FragmentListview extends Fragment {
 				int arg2, long arg3) {
             fragmentListviewInterface.onFragmentListviewLongClicked(arg2,tab);
 
-            Log.d(DTAG,"ItemLongClickListener is called!");
+            Log.d(LocalConst.DTAG,"ItemLongClickListener is called!");
 			return false;
 		}
     	
@@ -172,23 +172,23 @@ public class FragmentListview extends Fragment {
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
             fragmentListviewInterface.onFragmentListviewClicked(i,tab);
 
-            Log.d(DTAG,"ItemClicklistener is called!");
+            Log.d(LocalConst.DTAG,"ItemClicklistener is called!");
         }
     }
     @Override
     public void onAttach(Activity activity){
         super.onAttach(activity);
-        Log.d(DTAG,"onAttach() is called!");
+        Log.d(LocalConst.DTAG,"onAttach() is called!");
         try{
-        	Log.d(DTAG,"check if activity implement interface....");
+        	Log.d(LocalConst.DTAG,"check if activity implement interface....");
             fragmentListviewInterface = (FragmentListviewInterface)activity;
-            Log.d(DTAG,"activity implemented interface!");
+            Log.d(LocalConst.DTAG,"activity implemented interface!");
         }catch(ClassCastException e){
-            Log.d(DTAG,"onAttach() throw new ClassCastException!");
+            Log.d(LocalConst.DTAG,"onAttach() throw new ClassCastException!");
             throw new ClassCastException(activity.toString()+ " must implement "
                     +fragmentListviewInterface.toString());
         }
-        Log.d(DTAG,"onAttach() is ended!");
+        Log.d(LocalConst.DTAG,"onAttach() is ended!");
     }
 	@Override
 	public void onPause() {

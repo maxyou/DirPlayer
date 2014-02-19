@@ -26,7 +26,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
+
 import android.widget.MediaController.MediaPlayerControl;
 
 /**
@@ -34,7 +34,7 @@ import android.widget.MediaController.MediaPlayerControl;
  * 
  */
 public class PlayService extends Service implements MediaPlayerControl {
-	String DTAG = "DirPlayer";
+
 
 	private final IBinder mBinder = new LocalBinder();
 
@@ -51,7 +51,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 		/**
 		 * 需要发送item位置，如果有多个列表的话，需要发送列表编号
 		 */
-		Log.d(DTAG, "audio/video: path in playlist " + playingFile.getPath());
+		Log.d(LocalConst.DTAG, "audio/video: path in playlist " + playingFile.getPath());
 				Intent localIntent = new Intent(
 						LocalConst.BROADCAST_ACTION)
 				// Puts the status into the Intent
@@ -159,7 +159,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 		// TODO Auto-generated method stub
 		super.onCreate();
 
-		Log.d(DTAG, "service: onCreate()");
+		Log.d(LocalConst.DTAG, "service: onCreate()");
 		updatePlayList();
 		
 		// Vitamio.initialize(this);
@@ -167,7 +167,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 
 	@Override
 	public void onDestroy() {
-		Log.d(DTAG, "service: onDestroy()");
+		Log.d(LocalConst.DTAG, "service: onDestroy()");
 		if (mediaPlayer != null)
 			mediaPlayer.release();
 	}
@@ -190,7 +190,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 	 * 拷贝自DirPlayerActivity.java，以后重构合并 应该直接new一个list，读取数据后返回这个list
 	 */
 	private void getPlayList() {
-		Log.d(DTAG, "getPlayList()");
+		Log.d(LocalConst.DTAG, "getPlayList()");
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy");
 		String line;
 		File playlist = new File(getFilesDir(),
@@ -219,7 +219,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 	 * 从playlist中获取一首歌曲，并开始播放
 	 */
 	public void playList(int i) {
-		Log.d(DTAG, "playList: " + i);
+		Log.d(LocalConst.DTAG, "playList: " + i);
 
 		LvRow lr = playListItemsService.get(i);
 		if (lr == null)
@@ -231,7 +231,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 	}
 
 	public void play(File f, int type) {
-		Log.d(DTAG, "audio/video: play in service: " + f.getPath());
+		Log.d(LocalConst.DTAG, "audio/video: play in service: " + f.getPath());
 		
 		clearMusicPlaying();
 		
@@ -240,11 +240,11 @@ public class PlayService extends Service implements MediaPlayerControl {
 		
 		mediaPlayer = new MediaPlayer();
 		//mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-		Log.d(DTAG, "audio/video: after new MediaPlayer(this)");
+		Log.d(LocalConst.DTAG, "audio/video: after new MediaPlayer(this)");
 
 		try {
 			mediaPlayer.setDataSource(getApplicationContext(), Uri.fromFile(f));
-			Log.d(DTAG, "audio/video: after mediaPlayer.setDataSource()");
+			Log.d(LocalConst.DTAG, "audio/video: after mediaPlayer.setDataSource()");
 			
 			/**
 			 * 小心。
@@ -262,9 +262,9 @@ public class PlayService extends Service implements MediaPlayerControl {
 		            mp.start();
 		        }
 		    });
-			Log.d(DTAG, "audio/video: after mediaPlayer.setOnPreparedListener()");
+			Log.d(LocalConst.DTAG, "audio/video: after mediaPlayer.setOnPreparedListener()");
 			mediaPlayer.prepareAsync();
-			Log.d(DTAG, "audio/video: after mediaPlayer.prepare()");
+			Log.d(LocalConst.DTAG, "audio/video: after mediaPlayer.prepare()");
 			*/
 			if(playingType == LocalConst.ListPlay){
 				mediaPlayer.setOnCompletionListener(listPlayListener);
@@ -276,7 +276,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 				lightenFileList();
 			}
 			
-			Log.d(DTAG, "audio/video: after sendNotification()");
+			Log.d(LocalConst.DTAG, "audio/video: after sendNotification()");
 		} catch (IllegalStateException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -335,7 +335,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 
 	public void clearMusicPlaying() {
 		// TODO Auto-generated method stub
-		Log.d(DTAG, "audio/video: begin clear music playing");
+		Log.d(LocalConst.DTAG, "audio/video: begin clear music playing");
 		if (mediaPlayer != null){
 			if(playingType == LocalConst.ListPlay){
 				unLightenPlayList();
@@ -349,7 +349,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 			mediaPlayer.release();
 			mediaPlayer = null;
 		}
-		Log.d(DTAG, "audio/video: after clear music playing");
+		Log.d(LocalConst.DTAG, "audio/video: after clear music playing");
 	}
 	
 	@Override

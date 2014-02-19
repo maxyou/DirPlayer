@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-import android.util.Log;
+
 
 public class SettingsActivity extends Activity {
     @Override
@@ -22,7 +22,7 @@ public class SettingsActivity extends Activity {
 }
 
 class SettingsFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener {
-	final static String DTAG = "DirPlayer";
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,10 +74,10 @@ class SettingsFragment extends PreferenceFragment implements OnSharedPreferenceC
         boolean b = sharedPreferences.getBoolean(key, false);
 		if(b == true){ //true: 显示顶部标题条
         	prefShowActionBar.setSummary(getString(R.string.seting1_summ));
-        	Log.d(DTAG,"setting: seting1_summ");
+        	Log.d(LocalConst.DTAG,"setting: seting1_summ");
         }else{
         	prefShowActionBar.setSummary(getString(R.string.seting1_summ2));
-        	Log.d(DTAG,"setting: seting1_summ2");
+        	Log.d(LocalConst.DTAG,"setting: seting1_summ2");
         }
 	}
 	

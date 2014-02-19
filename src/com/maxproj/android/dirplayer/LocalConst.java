@@ -1,11 +1,23 @@
 package com.maxproj.android.dirplayer;
 
+import android.app.Application;
+import android.content.Context;
+
 public class LocalConst {
 
 	private LocalConst() {
 		// TODO Auto-generated constructor stub
 	}
 
+	public static Context app = null;
+	public static Context dirPlayerActivity = null;
+	
+	/**
+	 * Log switch
+	 */
+	public static final String ACTIVITY_LIFE = "activity_life";
+	public static final String FRAGMENT_LIFE = "fragment_life";
+	public static final String DTAG = "dirplayer";
 	/**
 	 * 系统状态
 	 */

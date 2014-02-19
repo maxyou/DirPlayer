@@ -6,14 +6,13 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.util.Log;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class DialogFragmentProgress extends DialogFragment {
-	final static String DTAG = "DirPlayer";
 
 	View v;
 	ProgressBar pb = null;
@@ -23,28 +22,28 @@ public class DialogFragmentProgress extends DialogFragment {
 	int mProgress = -1;
 
 	public void setMsg(String msg) {
-		Log.d(DTAG, "ProgressBar: setMsg(" + msg + ")");
+		Log.d(LocalConst.DTAG, "ProgressBar: setMsg(" + msg + ")");
 
 		mMsg = msg;
 
 		if (tv != null) {
-			Log.d(DTAG, "ProgressBar: (tv != null)");
+			Log.d(LocalConst.DTAG, "ProgressBar: (tv != null)");
 			tv.setText(mMsg);
 		} else {
-			Log.d(DTAG, "ProgressBar: (tv == null)");
+			Log.d(LocalConst.DTAG, "ProgressBar: (tv == null)");
 		}
 	}
 
 	public void setProgress(int progress) {
 		mProgress = progress;
 
-		Log.d(DTAG, "ProgressBar: setProgress(" + progress + ")");
+		Log.d(LocalConst.DTAG, "ProgressBar: setProgress(" + progress + ")");
 		if (pb != null) {
-			Log.d(DTAG, "ProgressBar: (pb != null)");
+			Log.d(LocalConst.DTAG, "ProgressBar: (pb != null)");
 			pb.setProgress(mProgress);
-			Log.d(DTAG, "ProgressBar: getProgress() return " + pb.getProgress());
+			Log.d(LocalConst.DTAG, "ProgressBar: getProgress() return " + pb.getProgress());
 		} else {
-			Log.d(DTAG, "ProgressBar: (pb == null)");
+			Log.d(LocalConst.DTAG, "ProgressBar: (pb == null)");
 		}
 	}
 
@@ -52,7 +51,7 @@ public class DialogFragmentProgress extends DialogFragment {
 
 		DialogFragmentProgress fragment = new DialogFragmentProgress();
 
-		Log.d(DTAG, "ProgressBar: DialogFragmentProgress.newInstance()!");
+		Log.d(LocalConst.DTAG, "ProgressBar: DialogFragmentProgress.newInstance()!");
 		return fragment;
 	}
 
@@ -100,7 +99,7 @@ public class DialogFragmentProgress extends DialogFragment {
 			pb.setProgress(mProgress);
 		}
 
-		Log.d(DTAG, "ProgressBar: DialogFragmentProgress.onCreateDialog()!");
+		Log.d(LocalConst.DTAG, "ProgressBar: DialogFragmentProgress.onCreateDialog()!");
 
 		return builder.create();
 	}
