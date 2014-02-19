@@ -232,7 +232,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	 */
 	ViewPager mViewPager;
 
-	int lastTab = 0; //最近使用的窗口，可能是右窗口，也可能是左窗口
+	int lastWinTab = 0; //最近使用的窗口，可能是右窗口，也可能是左窗口
 
 	SharedPreferences sharedPref;
 	SharedPreferences.Editor prefEditor;
@@ -308,8 +308,8 @@ public class DirPlayerActivity extends FragmentActivity implements
 	public void onFragmentBookMarkClicked(int i) {
 		Log.d(DTAG, "onFragmentBookMarkClicked " + i);
 
-		updateDirInfor(bookMarkItems.get(i).getPath(), lastTab);
-		mViewPager.setCurrentItem(lastTab);
+		updateDirInfor(bookMarkItems.get(i).getPath(), lastWinTab);
+		mViewPager.setCurrentItem(lastWinTab);
 	}
 
 	public void onFragmentBookMarkButton1() {
@@ -1337,20 +1337,22 @@ public class DirPlayerActivity extends FragmentActivity implements
 	private void updateFileInfor(File f, int tab) throws Exception {
 		File files[];
 
-		Log.d(DTAG, "goto this directory: " + f.getPath());
+		Log.d(DTAG, "xtab "+tab+" goto this directory: " + f.getPath());
 		try {
 			files = f.listFiles();
 			if (files == null) {
-				// Log.d(DTAG, "sorry, can't update to this directory: " +
-				// currentPath);
+				Log.d(DTAG, "sorry, xtab "+tab+" can't update to this directory: " +
+				 currentPath);
 				Toast.makeText(this, "Failed to this directory!",
 						Toast.LENGTH_SHORT).show();
 				return;
 			}
 			// update to new directory
+			Log.d(DTAG, "xtab "+tab+" get currentPath and praentPath");
 			currentPath[tab] = f.getPath();
 			parentPath[tab] = f.getParent(); // 如果f是根目录会怎样？
 
+			Log.d(DTAG, "xtab "+tab+" save currentPath");
 			if (tab == 0) {
 				prefEditor.putString(getString(R.string.left_window_path),
 						currentPath[tab]);
@@ -1386,13 +1388,13 @@ public class DirPlayerActivity extends FragmentActivity implements
 			}
 			// Log.d(TAG_DEBUG, "show path: " + parentPath + f.getName());
 		} catch (Exception e) {
-			Log.d(DTAG, "path: " + f.getPath() + "Exception e: " + e.toString());
+			Log.d(DTAG, "xtab path: " + f.getPath() + "Exception e: " + e.toString());
 			e.printStackTrace();
 
 			throw new Exception(pathRoot);
 			// return;
 		} finally {
-			Log.d(DTAG, "3. finally " + currentPath[tab]);
+			Log.d(DTAG, "xtab " + tab + " finally " + currentPath[tab]);
 			// return;
 		}
 
@@ -1912,8 +1914,11 @@ public class DirPlayerActivity extends FragmentActivity implements
 	@Override
 	public void onTabUnselected(ActionBar.Tab tab,
 			FragmentTransaction fragmentTransaction) {
-		lastTab = tab.getPosition();
-		Log.d(DTAG, "last tab: " + lastTab);
+		int lastPosition = tab.getPosition();
+		if(lastPosition < 2) {// 左窗口0，右窗口1
+			lastWinTab = lastPosition;
+		}
+		Log.d(DTAG, "last tab: " + lastWinTab);
 	}
 
 	@Override
