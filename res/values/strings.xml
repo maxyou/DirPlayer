@@ -21,7 +21,7 @@
     </string>
     <string name="title_section2">右窗口
     </string>
-    <string name="title_section3">书签
+    <string name="title_section3">收藏
     </string>
     <string name="title_section4">播放
     </string>
@@ -39,7 +39,7 @@
     </string>
     <string name="fl_act3" >反选
     </string>
-    <string name="fl_act4" >书签
+    <string name="fl_act4" >收藏
     </string>
 	<string name="fl_act6" >向上
     </string>

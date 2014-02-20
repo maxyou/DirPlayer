@@ -142,7 +142,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 //	final int CMD_MKDIR = 5;
 //	final int CMD_PLAY = 6;
 	
-	int tabCount = 3;
+	int tabCount = 2; // 左右两个窗口
 	private static final String pathRoot = Environment
 			.getExternalStorageDirectory().getPath();
 
@@ -267,6 +267,8 @@ public class DirPlayerActivity extends FragmentActivity implements
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}catch (Exception e){
+			Log.d(LocalConst.FRAGMENT_LIFE, "getBookMarkList: "+e.toString());
 		}
 	}
 
@@ -631,7 +633,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 
 	public void onFragmentButton4(int tab) {
 		Log.d(LocalConst.DTAG, "Button4 clicked in fragment " + tab);
-		Toast.makeText(this, "您添加了书签： " + currentPath[tab], Toast.LENGTH_LONG)
+		Toast.makeText(this, "您添加了收藏： " + currentPath[tab], Toast.LENGTH_LONG)
 				.show();
 
 		// 书签
@@ -1467,7 +1469,9 @@ public class DirPlayerActivity extends FragmentActivity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_dir_player);
-
+		
+		Log.d(LocalConst.FRAGMENT_LIFE, "activity onCreate() begin!");
+		
 		/**
 		 * 保存上下文
 		 */
@@ -1542,16 +1546,39 @@ public class DirPlayerActivity extends FragmentActivity implements
 			/**
 			 * 以下设置adapter似乎没有必要
 			 */
-			myArrayAdapter[i] = new MyArrayAdapter(this, R.layout.file_row,
-					viewListItems[i]);
-			Log.d(LocalConst.FRAGMENT_LIFE, "currentPath["+i+"]" + currentPath[i]);
-			fragmentListview[i].setListviewAdapter(myArrayAdapter[i],
-					currentPath[i]);
+//			myArrayAdapter[i] = new MyArrayAdapter(this, R.layout.file_row,
+//					viewListItems[i]);
+//			Log.d(LocalConst.FRAGMENT_LIFE, "currentPath["+i+"]" + currentPath[i]);
+//			fragmentListview[i].setListviewAdapter(myArrayAdapter[i],
+//					currentPath[i]);
 		}
 		Log.d(LocalConst.FRAGMENT_LIFE, "fragment initial code ended!");
 		
 		ImageView bottomIcon = (ImageView)findViewById(R.id.bottom_icon);
 		bottomIcon.setImageResource(R.drawable.bottom);
+		Log.d(LocalConst.FRAGMENT_LIFE, "activity onCreate() end!"); // 要检查这个，这样才知道是否初始化全部完成
+	}
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        
+        Log.d(LocalConst.FRAGMENT_LIFE, "activity onStart() begin!");
+        
+        //是否显示顶部标题条
+        boolean b = settingPref.getBoolean(getString(R.string.setting1_key), false);
+        if(b == true){
+        	actionBar.setDisplayOptions(
+        			actionBar.DISPLAY_SHOW_CUSTOM|actionBar.DISPLAY_SHOW_HOME|actionBar.DISPLAY_SHOW_TITLE,
+        			actionBar.DISPLAY_SHOW_CUSTOM|actionBar.DISPLAY_SHOW_HOME|actionBar.DISPLAY_SHOW_TITLE);
+        	actionBar.setTitle(R.string.app_name);
+        }else{
+        	actionBar.setDisplayOptions(
+        			0,
+        			actionBar.DISPLAY_SHOW_CUSTOM|actionBar.DISPLAY_SHOW_HOME|actionBar.DISPLAY_SHOW_TITLE);
+        }
+
+       
 
 		/**
 		 * 初始化命令处理handler
@@ -1566,6 +1593,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 		// bookMarkArrayAdapter = new BookMarkArrayAdapter(this,
 		// R.layout.bookmark_row, bookMarkItems);
 		// bookMarkArrayAdapter.notifyDataSetChanged();
+		Log.d(LocalConst.FRAGMENT_LIFE, "activity onStart() after updateBookMarkInfor()!");
 		
 		/**
 		 * 初始化左右窗口
@@ -1582,8 +1610,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 		updateDirInfor(lwp, 0);
 		updateDirInfor(rwp, 1);
 
-		// updateDirInfor(pathRoot, 2);
-		Log.d(LocalConst.FRAGMENT_LIFE, "updateDir....");
+		Log.d(LocalConst.FRAGMENT_LIFE, "activity onStart() after updateDirInfor()!");
 
 		/**
 		 * 音视频媒体相关初始化
@@ -1606,19 +1633,20 @@ public class DirPlayerActivity extends FragmentActivity implements
 		//videoController.setEnabled(true);
 		vv.setMediaController(videoController);
 		vv.setOnTouchListener(vvOnTouchListener);
+		Log.d(LocalConst.FRAGMENT_LIFE, "activity onStart() after vv.setOnTouchListener()!");
 		
 		/**
 		 * 播放列表
 		 */
 		getPlayList();
 		updatePlayListAdapter();
-		
+		Log.d(LocalConst.FRAGMENT_LIFE, "activity onStart() after updatePlayListAdapter()!");
 		/**
 		 * 启动音频播放service
 		 */
-		Intent intent = new Intent(this, PlayService.class);
-		startService(intent);
-
+        // Bind to LocalService
+        bindService(new Intent(this, PlayService.class), mConnection, Context.BIND_AUTO_CREATE);
+		startService(new Intent(this, PlayService.class));
 		
 		/**
 		 * 通过广播接收service的播放信息，比如当前曲目
@@ -1635,29 +1663,8 @@ public class DirPlayerActivity extends FragmentActivity implements
         LocalBroadcastManager.getInstance(this).registerReceiver(
         		mServiceInforReceiver,
                 mStatusIntentFilter);
-	}
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        // Bind to LocalService
-        Intent intent = new Intent(this, PlayService.class);
-        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         
-        
-        //是否显示顶部标题条
-        boolean b = settingPref.getBoolean(getString(R.string.setting1_key), false);
-        if(b == true){
-        	actionBar.setDisplayOptions(
-        			actionBar.DISPLAY_SHOW_CUSTOM|actionBar.DISPLAY_SHOW_HOME|actionBar.DISPLAY_SHOW_TITLE,
-        			actionBar.DISPLAY_SHOW_CUSTOM|actionBar.DISPLAY_SHOW_HOME|actionBar.DISPLAY_SHOW_TITLE);
-        	actionBar.setTitle(R.string.app_name);
-        }else{
-        	actionBar.setDisplayOptions(
-        			0,
-        			actionBar.DISPLAY_SHOW_CUSTOM|actionBar.DISPLAY_SHOW_HOME|actionBar.DISPLAY_SHOW_TITLE);
-        }
-        
+        Log.d(LocalConst.FRAGMENT_LIFE, "activity onStart() end!"); // 要检查这个，这样才知道是否初始化全部完成
     }
 
     @Override
@@ -2300,6 +2307,8 @@ public class DirPlayerActivity extends FragmentActivity implements
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}catch (Exception e){
+			Log.d(LocalConst.FRAGMENT_LIFE, "getPlayList:" + e.toString());
 		}
 	}
 

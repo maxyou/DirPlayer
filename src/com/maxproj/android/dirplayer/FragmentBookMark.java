@@ -67,12 +67,7 @@ public class FragmentBookMark  extends Fragment {
         //return super.onCreateView(inflater, container, savedInstanceState);
         Log.d(LocalConst.DTAG,"FragmentBookMark onCreateView() is called!");
         fragmentView =  inflater.inflate(R.layout.fragment_bookmark, container, false);
-        return fragmentView;
-    }
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState){
-        super.onCreate(savedInstanceState);
-        Log.d(LocalConst.DTAG,"FragmentBookMark onActivityCreated() is called!");
+        
         b1 = (Button)fragmentView.findViewById(R.id.bm_b1);
         b1.setOnClickListener(new View.OnClickListener() { // 全选
             @Override
@@ -114,6 +109,13 @@ public class FragmentBookMark  extends Fragment {
 
         listView.setOnItemClickListener(new ItemClicklistener());
         Log.d(LocalConst.DTAG,"FragmentBookMark listView.setOnItemClickListener(new ItemClicklistener())!");
+
+        return fragmentView;
+    }
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+        Log.d(LocalConst.DTAG,"FragmentBookMark onActivityCreated() is called!");
 
         if (listAdapter != null){
             listView.setAdapter(listAdapter);
