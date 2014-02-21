@@ -26,7 +26,12 @@
             android:layout_height="wrap_content"
             android:text="@string/pl_act3" />
 
-
+        <Button
+            android:id="@+id/pl_b4"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:text="@string/pl_act4" />
+        
         <Button
             android:id="@+id/pl_b5"
             android:layout_width="50dp"
@@ -39,21 +44,6 @@
             android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:text="@string/pl_act6" />
-        
-        
-        <Button
-            android:id="@+id/pl_b7"
-            android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:text="@string/pl_act7" 
-            android:visibility="gone" />
-        
-        <Button
-            android:id="@+id/pl_b4"
-            android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:text="@string/pl_act4" />
-
         
     </LinearLayout>
 

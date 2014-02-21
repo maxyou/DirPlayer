@@ -346,6 +346,19 @@ public class DirPlayerActivity extends FragmentActivity implements
 
 	public void onFragmentBookMarkButton4() {
 		Log.d(LocalConst.DTAG, "onFragmentBookMarkButton4 ");
+		// 上移
+		
+	}
+
+	public void onFragmentBookMarkButton5() {
+		Log.d(LocalConst.DTAG, "onFragmentBookMarkButton5 ");
+		// 下移
+		
+
+	}
+	
+	public void onFragmentBookMarkButton6() {
+		Log.d(LocalConst.DTAG, "onFragmentBookMarkButton6 ");
 		// 删除
 		Iterator<BookMarkRow> iter = bookMarkItems.iterator();
 		while (iter.hasNext()) {
@@ -356,13 +369,6 @@ public class DirPlayerActivity extends FragmentActivity implements
 
 		saveBookMark2File();
 	}
-
-	public void onFragmentBookMarkButton5() {
-		Log.d(LocalConst.DTAG, "onFragmentBookMarkButton5 ");
-		// 修改
-
-	}
-
 	private void updateBookMarkInfor() {
 		// 本函数和bookMarkArrayAdapter.notifyDataSetChanged()有什么区别？回头想下能否去掉
 
@@ -631,35 +637,6 @@ public class DirPlayerActivity extends FragmentActivity implements
 
 	public void onFragmentButton4(int tab) {
 		Log.d(LocalConst.DTAG, "Button4 clicked in fragment " + tab);
-		Toast.makeText(this, "您添加了收藏： " + currentPath[tab], Toast.LENGTH_LONG)
-				.show();
-
-		// 书签
-		for (BookMarkRow bmr : bookMarkItems) {
-			if (bmr.getPath().equals(currentPath[tab]))
-				return;
-		}
-		BookMarkRow bmr = new BookMarkRow(currentPath[tab]);
-		bookMarkItems.add(bmr);
-		appendBookMark2File(bmr);
-		updateBookMarkInfor();
-
-	}
-
-	public void onFragmentButton5(int tab) {
-		Log.d(LocalConst.DTAG, "Button5 clicked in fragment " + tab);
-		// Toast.makeText(this, "Button5 clicked in fragment " + tab,
-		// Toast.LENGTH_LONG).show();
-
-		// 操作
-		commandMenu(tab);
-	}
-
-	public void onFragmentButton6(int tab) {
-		Log.d(LocalConst.DTAG, "Button6 clicked in fragment " + tab);
-		// Toast.makeText(this, "Button5 clicked in fragment " + tab,
-		// Toast.LENGTH_LONG).show();
-
 		// 向上
 		if ((currentPath[tab].equals(LocalConst.pathRoot))){
 			Toast.makeText(this, "只能到这一层啦",
@@ -668,6 +645,33 @@ public class DirPlayerActivity extends FragmentActivity implements
 		else{// 如果已经到顶层了，什么也不做
 			updateDirInfor(parentPath[tab], tab);
 		}
+	}
+
+	public void onFragmentButton5(int tab) {
+		Log.d(LocalConst.DTAG, "Button5 clicked in fragment " + tab);
+		Toast.makeText(this, "您添加了收藏： " + currentPath[tab], Toast.LENGTH_LONG)
+		.show();
+
+		// 书签
+		for (BookMarkRow bmr : bookMarkItems) {
+			if (bmr.getPath().equals(currentPath[tab]))
+				return;
+		}
+
+		BookMarkRow bmr = new BookMarkRow(currentPath[tab]);
+		bookMarkItems.add(bmr);
+		appendBookMark2File(bmr);
+		updateBookMarkInfor();
+
+	}
+
+	public void onFragmentButton6(int tab) {
+		Log.d(LocalConst.DTAG, "Button6 clicked in fragment " + tab);
+		// Toast.makeText(this, "Button5 clicked in fragment " + tab,
+		// Toast.LENGTH_LONG).show();
+
+		// 操作
+		commandMenu(tab);
 	}
 
 	private void commandMenu(int tab) { // operate selected files
@@ -2191,17 +2195,6 @@ public class DirPlayerActivity extends FragmentActivity implements
 	}
 
 	public void onFragmentPlayListButton4() {
-		// 删除
-		Iterator<LvRow> iter = playListItems.iterator();
-		while (iter.hasNext()) {
-			if (iter.next().getSelected() == true)
-				iter.remove();
-		}
-		playListArrayAdapter.notifyDataSetChanged();
-
-		savePlayList2File();
-	}
-	public void onFragmentPlayListButton5() {
 		// 上移
 		Log.d(LocalConst.DTAG, "move up ....");
 		if (playListItems.size() < 2)
@@ -2234,7 +2227,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 
 		savePlayList2File();
 	}
-	public void onFragmentPlayListButton6() {
+	public void onFragmentPlayListButton5() {
 		// 下移
 		Log.d(LocalConst.DTAG, "move down ....");
 		if (playListItems.size() < 2)
@@ -2266,6 +2259,18 @@ public class DirPlayerActivity extends FragmentActivity implements
 		playListArrayAdapter.notifyDataSetChanged();
 
 		savePlayList2File();
+	}
+	public void onFragmentPlayListButton6() {
+		// 删除
+		Iterator<LvRow> iter = playListItems.iterator();
+		while (iter.hasNext()) {
+			if (iter.next().getSelected() == true)
+				iter.remove();
+		}
+		playListArrayAdapter.notifyDataSetChanged();
+
+		savePlayList2File();
+
 	}
 	public void onFragmentPlayListButton7() {
 		// 操作

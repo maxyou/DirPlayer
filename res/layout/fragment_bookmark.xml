@@ -2,50 +2,53 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
+
     <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/bm_b1"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
-        >
-    <Button
-        android:id="@+id/bm_b1"
-        android:layout_width="60dp"
-        android:layout_height="50dp"
-        android:text="@string/bm_act1" />
+            android:text="@string/bm_act1" />
 
-    <Button
-        android:id="@+id/bm_b2"
-        android:layout_width="60dp"
-        android:layout_height="50dp"
-        android:text="@string/bm_act2" />
+        <Button
+            android:id="@+id/bm_b2"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:text="@string/bm_act2" />
 
-    <Button
-        android:id="@+id/bm_b3"
-        android:layout_width="60dp"
-        android:layout_height="50dp"
-        android:text="@string/bm_act3" />
+        <Button
+            android:id="@+id/bm_b3"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:text="@string/bm_act3" />
 
-    <Button
-        android:id="@+id/bm_b4"
-        android:layout_width="60dp"
-        android:layout_height="50dp"
-        android:text="@string/bm_act4" />
+        <Button
+            android:id="@+id/bm_b4"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:text="@string/bm_act4" />
 
-    <Button
-        android:id="@+id/bm_b5"
-        android:layout_width="60dp"
-        android:layout_height="50dp"
-        android:text="@string/bm_act5"
-        android:visibility="gone" 
-        />
-    
-  </LinearLayout>
-    <ListView        
+        <Button
+            android:id="@+id/bm_b5"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:text="@string/bm_act5" />
+
+        <Button
+            android:id="@+id/bm_b6"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:text="@string/bm_act6" />
+    </LinearLayout>
+
+    <ListView
         android:id="@+id/fragment_bookmark"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
     </ListView>
-
-
 
 </LinearLayout>

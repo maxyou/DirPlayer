@@ -39,11 +39,11 @@
     </string>
     <string name="fl_act3" >反选
     </string>
-    <string name="fl_act4" >收藏
+    <string name="fl_act4" >向上
     </string>
-	<string name="fl_act6" >向上
+	<string name="fl_act5" >收藏
     </string>
-    <string name="fl_act5" >操作
+    <string name="fl_act6" >操作
     </string>
 
 	<string name="bm_act1" >全选
@@ -52,9 +52,11 @@
     </string>
     <string name="bm_act3" >反选
     </string>
-    <string name="bm_act4" >删除
+    <string name="bm_act4" >上移
     </string>
-	<string name="bm_act5" >修改
+	<string name="bm_act5" >下移
+    </string>
+    <string name="bm_act6" >删除
     </string>
     
 	<string name="pl_act1" >全选
@@ -63,13 +65,11 @@
     </string>
     <string name="pl_act3" >反选
     </string>
-    <string name="pl_act4" >删除
+    <string name="pl_act4" >上移
     </string>
-	<string name="pl_act5" >上移
+	<string name="pl_act5" >下移
     </string>
-	<string name="pl_act6" >下移
-    </string>
-	<string name="pl_act7" >操作
+	<string name="pl_act6" >删除
     </string>
 		
 	<string name="bar_b1" >A->B

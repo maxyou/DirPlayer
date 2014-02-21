@@ -20,7 +20,7 @@ public class FragmentBookMark  extends Fragment {
     ListView listView = null;
     View fragmentView;
 
-    Button b1, b2, b3, b4, b5;
+    Button b1, b2, b3, b4, b5, b6;
 
     public interface FragmentBookMarkInterface{
         void onFragmentBookMarkClicked(int i);
@@ -29,6 +29,7 @@ public class FragmentBookMark  extends Fragment {
         void onFragmentBookMarkButton3();
         void onFragmentBookMarkButton4();
         void onFragmentBookMarkButton5();
+        void onFragmentBookMarkButton6();
     }
     private FragmentBookMarkInterface fragmentBookMarkInterface = null;
 
@@ -90,17 +91,24 @@ public class FragmentBookMark  extends Fragment {
             }
         });
         b4 = (Button)fragmentView.findViewById(R.id.bm_b4);
-        b4.setOnClickListener(new View.OnClickListener() { // 删除
+        b4.setOnClickListener(new View.OnClickListener() { // 上移
             @Override
             public void onClick(View view) {
             	fragmentBookMarkInterface.onFragmentBookMarkButton4();
             }
         });
         b5 = (Button)fragmentView.findViewById(R.id.bm_b5);
-        b5.setOnClickListener(new View.OnClickListener() { // 修改
+        b5.setOnClickListener(new View.OnClickListener() { // 下移
             @Override
             public void onClick(View view) {
             	fragmentBookMarkInterface.onFragmentBookMarkButton5();
+            }
+        });
+        b6 = (Button)fragmentView.findViewById(R.id.bm_b6);
+        b6.setOnClickListener(new View.OnClickListener() { // 删除
+            @Override
+            public void onClick(View view) {
+            	fragmentBookMarkInterface.onFragmentBookMarkButton6();
             }
         });
 

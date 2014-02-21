@@ -108,7 +108,7 @@ public class FragmentListview extends Fragment {
             }
         });
         b4 = (Button)fragmentView.findViewById(R.id.fl_b4);
-        b4.setOnClickListener(new View.OnClickListener() { // 书签
+        b4.setOnClickListener(new View.OnClickListener() { // 向上
             @Override
             public void onClick(View view) {
             	Log.d(LocalConst.DTAG,"button test: b4 is clicked....");
@@ -116,7 +116,7 @@ public class FragmentListview extends Fragment {
             }
         });
         b5 = (Button)fragmentView.findViewById(R.id.fl_b5);
-        b5.setOnClickListener(new View.OnClickListener() { // 操作
+        b5.setOnClickListener(new View.OnClickListener() { // 收藏
             @Override
             public void onClick(View view) {
             	Log.d(LocalConst.DTAG,"button test: b5 is clicked....");
@@ -124,7 +124,7 @@ public class FragmentListview extends Fragment {
             }
         });
         b6 = (Button)fragmentView.findViewById(R.id.fl_b6);
-        b6.setOnClickListener(new View.OnClickListener() { // 向上
+        b6.setOnClickListener(new View.OnClickListener() { // 操作
             @Override
             public void onClick(View view) {
             	Log.d(LocalConst.DTAG,"button test: b6 is clicked....");
