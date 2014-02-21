@@ -16,7 +16,7 @@ import android.widget.TextView;
 
 public class FragmentListview extends Fragment {
     int tab;
-    String currentPath = "test null path";
+    String currentPath = null;
     MyArrayAdapter listAdapter = null;
     ListView listView = null;
     TextView show_path = null;
@@ -52,6 +52,10 @@ public class FragmentListview extends Fragment {
         listAdapter = a;
         this.currentPath = currentPath;
 
+        LocalConst.currentPath_fragmentList[tab] = currentPath;
+        LocalConst.myArrayAdapter_fragmentList[tab] = a;
+        
+        
 		//show path at upper of listview
 		//show_path = (TextView)fragmentView.findViewById(R.id.show_path);
         if(show_path !=null){
@@ -137,11 +141,11 @@ public class FragmentListview extends Fragment {
                 
         
 		//show path at upper of listview
-		show_path = (TextView)fragmentView.findViewById(R.id.show_path);
-        if(show_path !=null){
-        	show_path.setText("当前路径是"+currentPath);
-            Log.d(LocalConst.DTAG,"setListviewAdapter(): show_path is set to "+currentPath);
-        }
+//		show_path = (TextView)fragmentView.findViewById(R.id.show_path);
+//        if(show_path !=null){
+//        	show_path.setText("当前路径是"+currentPath);
+//            Log.d(LocalConst.DTAG,"setListviewAdapter(): show_path is set to "+currentPath);
+//        }
 		Log.d(LocalConst.FRAGMENT_LIFE, "fragment onCreateView("+tab+") end!");
         return fragmentView;
     }
@@ -150,6 +154,21 @@ public class FragmentListview extends Fragment {
         super.onCreate(savedInstanceState);
         Log.d(LocalConst.FRAGMENT_LIFE,"onActivityCreated() is called!");
 
+//        if (savedInstanceState != null) {
+//        	currentPath = savedInstanceState.getString("currentPath", LocalConst.pathRoot);
+//        }
+        if (currentPath == null){
+        	currentPath = LocalConst.currentPath_fragmentList[tab];
+        }
+        if (listAdapter == null){
+        	listAdapter = LocalConst.myArrayAdapter_fragmentList[tab];
+        }
+        
+        if(show_path !=null){
+        	show_path.setText("当前路径是"+currentPath);
+            Log.d(LocalConst.DTAG,"setListviewAdapter(): show_path is "+currentPath);
+        }
+        
         if (listAdapter != null){
             listView.setAdapter(listAdapter);
             Log.d(LocalConst.DTAG,"(maa != null) and adapter is set!");
@@ -192,13 +211,14 @@ public class FragmentListview extends Fragment {
         }
         Log.d(LocalConst.FRAGMENT_LIFE,"onAttach() is ended!");
     }
+
 	@Override
-	public void onPause() {
+	public void onStop() {
 		// TODO Auto-generated method stub
-		super.onPause();
+		super.onStop();
 		
-		// 关掉本tab关联的媒体？
-		
+		Log.d(LocalConst.FRAGMENT_LIFE,"onStop() is called!");
+		this.currentPath = "path after onStop";
 		
 	}
 

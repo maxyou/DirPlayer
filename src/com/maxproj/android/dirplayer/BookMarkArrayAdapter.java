@@ -32,7 +32,7 @@ public class BookMarkArrayAdapter extends ArrayAdapter {
 		BookMarkRow bmr = (BookMarkRow) getItem(position);
 
 		if (convertView == null) {
-			Log.d(LocalConst.DTAG, "getView: new view, position: " + position);
+//			Log.d(LocalConst.DTAG, "getView: new view, position: " + position);
 			fileView = new LinearLayout(getContext());
 			String inflater = Context.LAYOUT_INFLATER_SERVICE;
 			LayoutInflater li;
@@ -40,40 +40,40 @@ public class BookMarkArrayAdapter extends ArrayAdapter {
 			li.inflate(resource, fileView, true);
 		} else {
 			fileView = (LinearLayout) convertView;
-			Log.d(LocalConst.DTAG, "getView: converView, position: " + position);
+//			Log.d(LocalConst.DTAG, "getView: converView, position: " + position);
 		}
 
 		TextView path = (TextView) fileView.findViewById(R.id.bookmark);
 		path.setText(bmr.getPath());
-		Log.d(LocalConst.DTAG, "getView: path: " + path.getText());
+//		Log.d(LocalConst.DTAG, "getView: path: " + path.getText());
 
 		CheckBox cb = (CheckBox) fileView.findViewById(R.id.bm_checkbox);
 		// 2. add tag to view
 		cb.setTag(position); // sava position in view
-		Log.d(LocalConst.DTAG, "getView: setTag " + cb.getTag());
+//		Log.d(LocalConst.DTAG, "getView: setTag " + cb.getTag());
 
 		cb.setVisibility(cb.VISIBLE);
 		cb.setChecked(listItems.get(position).getSelected()); // restore check
 																// state
-		Log.d(LocalConst.DTAG,
-				"getView: listItems " + position + " is "
-						+ listItems.get(position).getSelected());
+//		Log.d(LocalConst.DTAG,
+//				"getView: listItems " + position + " is "
+//						+ listItems.get(position).getSelected());
 
 		cb.setOnClickListener(new View.OnClickListener() {
 
 			@Override
 			public void onClick(View view) {
 				CheckBox cb = (CheckBox) view;
-				Log.d(LocalConst.DTAG,
-						"getView: listItems getTag " + (Integer) view.getTag()
-								+ " set " + cb.isChecked());
+//				Log.d(LocalConst.DTAG,
+//						"getView: listItems getTag " + (Integer) view.getTag()
+//								+ " set " + cb.isChecked());
 				listItems.get((Integer) view.getTag()).setSelected(
 						cb.isChecked());
 				// listItems.get(p).setSelected(cb.isChecked());
 			}
 		});
 
-		Log.d(LocalConst.DTAG, "getView: " + bmr.getPath());
+//		Log.d(LocalConst.DTAG, "getView: " + bmr.getPath());
 
 		// Log.d(TAG_DEBUG, "date: " + date.getText());
 

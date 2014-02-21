@@ -1,7 +1,11 @@
 package com.maxproj.android.dirplayer;
 
+import java.io.File;
+
 import android.app.Application;
 import android.content.Context;
+import android.os.Bundle;
+import android.os.Environment;
 
 public class LocalConst {
 
@@ -9,8 +13,30 @@ public class LocalConst {
 		// TODO Auto-generated constructor stub
 	}
 
+	/**
+	 * 系统相关
+	 */
 	public static Context app = null;
 	public static Context dirPlayerActivity = null;
+	
+	public static final String pathRoot = Environment
+			.getExternalStorageDirectory().getPath();
+
+	/**
+	 * 保存listview的adapter
+	 */
+	public static Bundle adapters;
+	public static final int tabCount = 2;
+	public static MyArrayAdapter[] myArrayAdapter_fragmentList = new MyArrayAdapter[tabCount];
+	public static String[] currentPath_fragmentList = new String[tabCount];
+	
+	
+	/**
+	 * Log到文件
+	 */
+	public static final String logFileName = "dirplayer_log";
+	public static File logFile = null;
+
 	
 	/**
 	 * Log switch

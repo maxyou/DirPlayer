@@ -80,13 +80,6 @@ public class FragmentPlayList  extends Fragment {
         Log.d(LocalConst.DTAG,"FragmentPlayList onCreateView() is called!");
         fragmentView =  inflater.inflate(R.layout.fragment_playlist, container, false);
         
-
-        return fragmentView;
-    }
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState){
-        super.onCreate(savedInstanceState);
-        Log.d(LocalConst.DTAG,"FragmentPlayList onActivityCreated() is called!");
         b1 = (Button)fragmentView.findViewById(R.id.pl_b1);
         b1.setOnClickListener(new View.OnClickListener() { // 全选
             @Override
@@ -143,14 +136,21 @@ public class FragmentPlayList  extends Fragment {
         listView.setOnItemClickListener(new ItemClicklistener());
         Log.d(LocalConst.DTAG,"FragmentPlayList listView.setOnItemClickListener(new ItemClicklistener())!");
 
+        pathView = (TextView)fragmentView.findViewById(R.id.current_play);
+
+        return fragmentView;
+    }
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+        Log.d(LocalConst.DTAG,"FragmentPlayList onActivityCreated() is called!");
+
         if (listAdapter != null){
             listView.setAdapter(listAdapter);
             Log.d(LocalConst.DTAG,"FragmentPlayList (maa != null) and adapter is set!");
         }else{
             Log.d(LocalConst.DTAG,"FragmentPlayList maa is null pointer!");
         }
-        
-        pathView = (TextView)fragmentView.findViewById(R.id.current_play);
         
         mService = FragmentPlayListInterface.getServiceConnection();
 		

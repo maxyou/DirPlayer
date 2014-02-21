@@ -36,7 +36,7 @@ public class MyArrayAdapter extends ArrayAdapter{
         LvRow lr = (LvRow)getItem(position);
 
         if (convertView == null){
-            Log.d(LocalConst.DTAG, "getView: new view, position: " + position);
+//            Log.d(LocalConst.DTAG, "getView: new view, position: " + position);
             fileView = new LinearLayout(getContext());
             String inflater = Context.LAYOUT_INFLATER_SERVICE;
             LayoutInflater li;
@@ -44,13 +44,13 @@ public class MyArrayAdapter extends ArrayAdapter{
             li.inflate(resource, fileView, true);
         }else{
             fileView = (LinearLayout)convertView;
-            Log.d(LocalConst.DTAG, "getView: converView, position: " + position);
+//            Log.d(LocalConst.DTAG, "getView: converView, position: " + position);
         }
 
         TextView name = (TextView)fileView.findViewById(R.id.text1);
         String fileName = lr.getName(); 
         name.setText(fileName);
-        Log.d(LocalConst.DTAG, "getView: name: " + name.getText());
+//        Log.d(LocalConst.DTAG, "getView: name: " + name.getText());
 
         ImageView iv = (ImageView)fileView.findViewById(R.id.fileicon);
         if (lr.getType() == 0){        	
@@ -97,31 +97,31 @@ public class MyArrayAdapter extends ArrayAdapter{
         CheckBox cb = (CheckBox)fileView.findViewById(R.id.checkbox);
         // 2. add tag to view
         cb.setTag(position); // sava position in view
-        Log.d(LocalConst.DTAG, "getView: setTag " + cb.getTag());
+//        Log.d(LocalConst.DTAG, "getView: setTag " + cb.getTag());
 
 
         //if (lr.getName().charAt(0) == '/') // can't choose a directory
         if (fileName.equals("/..")) // can't choose parent directory
         {
             cb.setVisibility(cb.INVISIBLE);
-            Log.d(LocalConst.DTAG,"getView: " + lr.getName());
+//            Log.d(LocalConst.DTAG,"getView: " + lr.getName());
         }else{
             cb.setVisibility(cb.VISIBLE);
             cb.setChecked(listItems.get(position).getSelected()); // restore check state
-            Log.d(LocalConst.DTAG,"getView: listItems "+ position +" is "+ listItems.get(position).getSelected());
+//            Log.d(LocalConst.DTAG,"getView: listItems "+ position +" is "+ listItems.get(position).getSelected());
 
             cb.setOnClickListener(new View.OnClickListener() {
 
                 @Override
                 public void onClick(View view) {
                     CheckBox cb = (CheckBox)view;
-                    Log.d(LocalConst.DTAG, "getView: listItems getTag " + (Integer)view.getTag() + " set " + cb.isChecked());
+//                    Log.d(LocalConst.DTAG, "getView: listItems getTag " + (Integer)view.getTag() + " set " + cb.isChecked());
                     listItems.get((Integer)view.getTag()).setSelected(cb.isChecked());
                     // listItems.get(p).setSelected(cb.isChecked());
                 }
             });
 
-            Log.d(LocalConst.DTAG,"getView: " + lr.getName());
+//            Log.d(LocalConst.DTAG,"getView: " + lr.getName());
         }
 
         //Log.d(TAG_DEBUG, "date: " + date.getText());

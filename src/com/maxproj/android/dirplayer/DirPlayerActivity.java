@@ -142,9 +142,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 //	final int CMD_MKDIR = 5;
 //	final int CMD_PLAY = 6;
 	
-	int tabCount = 2; // 左右两个窗口
-	private static final String pathRoot = Environment
-			.getExternalStorageDirectory().getPath();
+//	int tabCount = 2; // 左右两个窗口
 
 	/**
 	 * 系统状态
@@ -209,14 +207,14 @@ public class DirPlayerActivity extends FragmentActivity implements
 	/**
 	 * 左右窗口相关定义
 	 */
-	FragmentListview[] fragmentListview = new FragmentListview[tabCount];
-	MyArrayAdapter[] myArrayAdapter = new MyArrayAdapter[tabCount];
-	LinkedList<LvRow>[] viewListItems = new LinkedList[tabCount];
-	LinkedList<LvRow>[] selectedItems = new LinkedList[tabCount];
-	LinkedList<File>[] dirList = new LinkedList[tabCount];
-	LinkedList<File>[] fileList = new LinkedList[tabCount];
-	String[] currentPath = new String[tabCount];
-	String[] parentPath = new String[tabCount];
+	FragmentListview[] fragmentListview = new FragmentListview[LocalConst.tabCount];
+	MyArrayAdapter[] myArrayAdapter = new MyArrayAdapter[LocalConst.tabCount];
+	LinkedList<LvRow>[] viewListItems = new LinkedList[LocalConst.tabCount];
+	LinkedList<LvRow>[] selectedItems = new LinkedList[LocalConst.tabCount];
+	LinkedList<File>[] dirList = new LinkedList[LocalConst.tabCount];
+	LinkedList<File>[] fileList = new LinkedList[LocalConst.tabCount];
+	String[] currentPath = new String[LocalConst.tabCount];
+	String[] parentPath = new String[LocalConst.tabCount];
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
 	 * fragments for each of the sections. We use a
@@ -417,8 +415,8 @@ public class DirPlayerActivity extends FragmentActivity implements
 			try {
 				updateFileInfor(f, tab);
 			} catch (Exception e) {
-				if (e.getMessage().equals(pathRoot)) {
-					updateDirInfor(pathRoot, tab);
+				if (e.getMessage().equals(LocalConst.pathRoot)) {
+					updateDirInfor(LocalConst.pathRoot, tab);
 				}
 			}
 		} else {
@@ -663,7 +661,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 		// Toast.LENGTH_LONG).show();
 
 		// 向上
-		if ((currentPath[tab].equals(pathRoot))){
+		if ((currentPath[tab].equals(LocalConst.pathRoot))){
 			Toast.makeText(this, "只能到这一层啦",
 					Toast.LENGTH_LONG).show();			
 		}
@@ -1326,8 +1324,8 @@ public class DirPlayerActivity extends FragmentActivity implements
 			try {
 				updateFileInfor(f, tab);
 			} catch (Exception e) {
-				if (e.getMessage().equals(pathRoot)) {
-					updateDirInfor(pathRoot, tab);
+				if (e.getMessage().equals(LocalConst.pathRoot)) {
+					updateDirInfor(LocalConst.pathRoot, tab);
 				}
 			}
 		} else {
@@ -1370,8 +1368,8 @@ public class DirPlayerActivity extends FragmentActivity implements
 			// Log.d(TAG_DEBUG, "3.2 should not come here if Exception");
 			constructViewList(tab);
 
-			Log.d(LocalConst.FRAGMENT_LIFE, "check viewListItems[" + tab + "]:"
-					+ viewListItems[tab].toString());
+//			Log.d(LocalConst.FRAGMENT_LIFE, "check viewListItems[" + tab + "]:"
+//					+ viewListItems[tab].toString());
 			myArrayAdapter[tab] = new MyArrayAdapter(this, R.layout.file_row,
 					viewListItems[tab]);
 			Log.d(LocalConst.FRAGMENT_LIFE, "after new MyArrayAdapter");
@@ -1393,7 +1391,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 			Log.d(LocalConst.FRAGMENT_LIFE, "xtab path: " + f.getPath() + "Exception e: " + e.toString());
 			e.printStackTrace();
 
-			throw new Exception(pathRoot);
+			throw new Exception(LocalConst.pathRoot);
 			// return;
 		} finally {
 			Log.d(LocalConst.FRAGMENT_LIFE, "xtab " + tab + " finally " + currentPath[tab]);
@@ -1413,10 +1411,10 @@ public class DirPlayerActivity extends FragmentActivity implements
 		fileList[tab].clear();
 		for (File f : files) {
 			if (f.isDirectory()) {
-				Log.d(LocalConst.DTAG, "find directory: " + f.getName());
+//				Log.d(LocalConst.DTAG, "find directory: " + f.getName());
 				dirList[tab].add(f);
 			} else if (f.isFile()) {
-				Log.d(LocalConst.DTAG, "find file: " + f.getName());
+//				Log.d(LocalConst.DTAG, "find file: " + f.getName());
 				fileList[tab].add(f);
 			} else
 				Log.d(LocalConst.DTAG, "File error~~~");
@@ -1438,7 +1436,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 
 		// viewListFiles.clear();
 		viewListItems[tab].clear();
-		if (!currentPath[tab].equals(pathRoot)) {
+		if (!currentPath[tab].equals(LocalConst.pathRoot)) {
 			Log.d(LocalConst.DTAG, "add parentPath: " + parentPath[tab]);
 			// viewListFiles.add(new File(parentPath));
 			LvRow lr = new LvRow("/..", "", "", new File(parentPath[tab]), false, 0, null, LocalConst.clear);
@@ -1450,7 +1448,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 			// viewListFiles.add(f);
 			LvRow lr = new LvRow("/" + f.getName(), "", ""
 					+ sdf.format(f.lastModified()), f, false, 1, null, LocalConst.clear);
-			Log.d(LocalConst.DTAG, "add directory: " + lr.getName());
+//			Log.d(LocalConst.DTAG, "add directory: " + lr.getName());
 			viewListItems[tab].add(lr);
 		}
 		for (File f : fileList[tab]) {
@@ -1458,7 +1456,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 			LvRow lr = new LvRow("" + f.getName(), "" + f.length(), ""
 					+ sdf.format(f.lastModified()), f, false, 2, 
 					URLConnection.getFileNameMap().getContentTypeFor(f.getName()), LocalConst.clear);
-			Log.d(LocalConst.DTAG, "add file: " + lr.getName());
+//			Log.d(LocalConst.DTAG, "add file: " + lr.getName());
 			viewListItems[tab].add(lr);
 		}
 		// System.out.println(viewListItems);
@@ -1534,12 +1532,12 @@ public class DirPlayerActivity extends FragmentActivity implements
 		 */
 		
 		Log.d(LocalConst.FRAGMENT_LIFE, "fragment initial code begin...");
-		for (int i = 0; i < tabCount; i++) {
+		for (int i = 0; i < LocalConst.tabCount; i++) {
 			viewListItems[i] = new LinkedList<LvRow>();
 			selectedItems[i] = new LinkedList<LvRow>();
 			dirList[i] = new LinkedList<File>();
 			fileList[i] = new LinkedList<File>();
-			currentPath[i] = pathRoot;
+			currentPath[i] = LocalConst.pathRoot;
 			parentPath[i] = null;
 			fragmentListview[i] = FragmentListview.newInstance(i);
 			
@@ -1602,11 +1600,11 @@ public class DirPlayerActivity extends FragmentActivity implements
 		prefEditor = sharedPref.edit();
 		
 		String lwp = sharedPref.getString(getString(R.string.left_window_path),
-				pathRoot);
+				LocalConst.pathRoot);
 		String rwp = sharedPref.getString(
-				getString(R.string.right_window_path), pathRoot);
+				getString(R.string.right_window_path), LocalConst.pathRoot);
 		Log.d(LocalConst.FRAGMENT_LIFE,
-				"lwp: " + lwp + " rwp:" + rwp + " pathRoot: " + pathRoot);
+				"lwp: " + lwp + " rwp:" + rwp + " LocalConst.pathRoot: " + LocalConst.pathRoot);
 		updateDirInfor(lwp, 0);
 		updateDirInfor(rwp, 1);
 
@@ -2382,7 +2380,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 				 * 也即更新listview的adapter
 				 * 这里应该主动更新
 				 */
-				for (int i = 0; i < tabCount; i++) {
+				for (int i = 0; i < LocalConst.tabCount; i++) {
 					for(LvRow lr:viewListItems[i]){
 						if(lr.getFile().getPath().equals(fileListPath)){
 							lr.setPlayingStatus(playStatus);
