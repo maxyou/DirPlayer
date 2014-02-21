@@ -2286,32 +2286,36 @@ public class DirPlayerActivity extends FragmentActivity implements
     public PlayService getServiceConnection(){
     	return mService;
     }
+    
 	/**
 	 * 播放目录用什么格式保存呢？
 	 */
 	private void getPlayList() {
+		getListFromFile(playListItems, getString(R.string.playlist_file));
+	}
+	
+	private void getListFromFile(LinkedList<LvRow> list, String fileName) {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy");
 		String line;
-		File playlist = new File(getFilesDir(),
-				getString(R.string.playlist_file));
+		File listFile = new File(getFilesDir(),fileName);
 
-		playListItems.clear();
+		list.clear();
 		try {
-			BufferedReader br = new BufferedReader(new FileReader(playlist));
+			BufferedReader br = new BufferedReader(new FileReader(listFile));
 
 			while ((line = br.readLine()) != null) {
 				File f = new File(line);
 				LvRow lr = new LvRow("" + f.getName(), "" + f.length(), ""
 						+ sdf.format(f.lastModified()), f, false, 2, 
 						URLConnection.getFileNameMap().getContentTypeFor(f.getName()), LocalConst.clear);
-				playListItems.add(lr);
+				list.add(lr);
 			}
 			br.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}catch (Exception e){
-			Log.d(LocalConst.FRAGMENT_LIFE, "getPlayList:" + e.toString());
+			Log.d(LocalConst.FRAGMENT_LIFE, "listItems:" + e.toString());
 		}
 	}
 
@@ -2320,12 +2324,13 @@ public class DirPlayerActivity extends FragmentActivity implements
 	 * 
 	 */
 	private void appendPlayList2File(LvRow lr) {
-
-		File playlist = new File(getFilesDir(),
-				getString(R.string.playlist_file));
+		appendList2File(lr, getString(R.string.playlist_file));
+	}
+	private void appendList2File(LvRow lr, String fileName) {
+		File listFile = new File(getFilesDir(),fileName);
 
 		try {
-			BufferedWriter bw = new BufferedWriter(new FileWriter(playlist,
+			BufferedWriter bw = new BufferedWriter(new FileWriter(listFile,
 					true));
 			bw.write(lr.getFile().getPath() + "\n");
 			bw.close();
@@ -2340,13 +2345,17 @@ public class DirPlayerActivity extends FragmentActivity implements
 	 * 以后改成onStop的时候存
 	 */
 	private void savePlayList2File() {
-
-		File playlist = new File(getFilesDir(),
-				getString(R.string.playlist_file));
+		saveList2File(playListItems, getString(R.string.playlist_file));
+		
+		if(mService != null)
+			mService.updatePlayList();
+	}
+	private void saveList2File(LinkedList<LvRow> list, String fileName) {
+		File listFile = new File(getFilesDir(),fileName);
 
 		try {
-			BufferedWriter bw = new BufferedWriter(new FileWriter(playlist));
-			for (LvRow lr : playListItems) {
+			BufferedWriter bw = new BufferedWriter(new FileWriter(listFile));
+			for (LvRow lr : list) {
 				bw.write(lr.getFile().getPath() + "\n");
 			}
 			bw.close();
@@ -2355,8 +2364,6 @@ public class DirPlayerActivity extends FragmentActivity implements
 			e.printStackTrace();
 		}
 		
-		if(mService != null)
-			mService.updatePlayList();
 	}
 
 	private class ServiceInforReceiver extends BroadcastReceiver
