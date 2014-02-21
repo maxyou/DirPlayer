@@ -141,7 +141,7 @@ public class FragmentListview extends Fragment {
                 
         
 		//show path at upper of listview
-//		show_path = (TextView)fragmentView.findViewById(R.id.show_path);
+		show_path = (TextView)fragmentView.findViewById(R.id.show_path);
 //        if(show_path !=null){
 //        	show_path.setText("当前路径是"+currentPath);
 //            Log.d(LocalConst.DTAG,"setListviewAdapter(): show_path is set to "+currentPath);
@@ -218,8 +218,6 @@ public class FragmentListview extends Fragment {
 		super.onStop();
 		
 		Log.d(LocalConst.FRAGMENT_LIFE,"onStop() is called!");
-		this.currentPath = "path after onStop";
-		
 	}
 
 }

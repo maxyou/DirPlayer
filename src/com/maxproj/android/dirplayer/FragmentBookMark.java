@@ -16,7 +16,7 @@ import android.widget.ListView;
 
 public class FragmentBookMark  extends Fragment {
 
-    BookMarkArrayAdapter listAdapter = null;
+	MyArrayAdapter listAdapter = null;
     ListView listView = null;
     View fragmentView;
 
@@ -45,7 +45,7 @@ public class FragmentBookMark  extends Fragment {
         return fragment;
     }
 
-    public void setListviewAdapter(BookMarkArrayAdapter a){
+    public void setListviewAdapter(MyArrayAdapter a){
         listAdapter = a;
 
         if (listView != null){

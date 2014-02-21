@@ -197,8 +197,8 @@ public class DirPlayerActivity extends FragmentActivity implements
 	 * 书签窗口相关定义
 	 */
 	FragmentBookMark fragmentBookMark = FragmentBookMark.newInstance();
-	LinkedList<BookMarkRow> bookMarkItems = new LinkedList<BookMarkRow>();
-	BookMarkArrayAdapter bookMarkArrayAdapter;// = new
+	LinkedList<LvRow> bookMarkItems = new LinkedList<LvRow>();
+	MyArrayAdapter bookMarkArrayAdapter;// = new
 												// BookMarkArrayAdapter(this,
 												// R.layout.bookmark_row,
 												// bookMarkItems);
@@ -247,75 +247,35 @@ public class DirPlayerActivity extends FragmentActivity implements
 	 * 每个书签占一行
 	 */
 	private void getBookMarkList() {
-		String line;
-		File bookmark = new File(getFilesDir(),
-				getString(R.string.bookmark_file));
-
-		bookMarkItems.clear();
-		try {
-			BufferedReader br = new BufferedReader(new FileReader(bookmark));
-
-			while ((line = br.readLine()) != null) {
-				bookMarkItems.add(new BookMarkRow(line, false));
-				Log.d(LocalConst.DTAG, "get book mark from file" + line);
-				// Toast.makeText(this, "您获取了书签： " + line, Toast.LENGTH_LONG)
-				// .show();
-			}
-			br.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}catch (Exception e){
-			Log.d(LocalConst.FRAGMENT_LIFE, "getBookMarkList: "+e.toString());
-		}
+		getListFromFile(bookMarkItems, getString(R.string.bookmark_file));
 	}
 
-	private void appendBookMark2File(BookMarkRow bmr) {
-
-		File bookmark = new File(getFilesDir(),
-				getString(R.string.bookmark_file));
-
-		try {
-			BufferedWriter bw = new BufferedWriter(new FileWriter(bookmark,
-					true));
-			bw.write(bmr.getPath() + "\n");
-			bw.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
+	private void appendBookMark2File(LvRow bmr) {
+		appendList2File(bmr, getString(R.string.bookmark_file));
 	}
 
 	private void saveBookMark2File() {
-
-		File bookmark = new File(getFilesDir(),
-				getString(R.string.bookmark_file));
-
-		try {
-			BufferedWriter bw = new BufferedWriter(new FileWriter(bookmark));
-			for (BookMarkRow bmr : bookMarkItems) {
-				bw.write(bmr.getPath() + "\n");
-			}
-			bw.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
+		saveList2File(bookMarkItems, getString(R.string.bookmark_file));
 	}
 
 	public void onFragmentBookMarkClicked(int i) {
 		Log.d(LocalConst.DTAG, "onFragmentBookMarkClicked " + i);
 
-		updateDirInfor(bookMarkItems.get(i).getPath(), lastWinTab);
+		// 如果是目录。如果是文件呢？
+		File f = bookMarkItems.get(i).getFile();
+		if(f.isDirectory()){
+			updateDirInfor(bookMarkItems.get(i).getFile().getPath(), lastWinTab);
+		}else if(f.isFile()){
+			updateDirInfor(bookMarkItems.get(i).getFile().getParent(), lastWinTab);
+		}
+		
 		mViewPager.setCurrentItem(lastWinTab);
 	}
 
 	public void onFragmentBookMarkButton1() {
 		Log.d(LocalConst.DTAG, "onFragmentBookMarkButton1 ");
 		// 全选
-		for (BookMarkRow bmr : bookMarkItems) {
+		for (LvRow bmr : bookMarkItems) {
 			bmr.setSelected(true);
 		}
 		bookMarkArrayAdapter.notifyDataSetChanged();
@@ -324,7 +284,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	public void onFragmentBookMarkButton2() {
 		Log.d(LocalConst.DTAG, "onFragmentBookMarkButton2 ");
 		// 全清
-		for (BookMarkRow bmr : bookMarkItems) {
+		for (LvRow bmr : bookMarkItems) {
 			bmr.setSelected(false);
 		}
 		bookMarkArrayAdapter.notifyDataSetChanged();
@@ -334,7 +294,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	public void onFragmentBookMarkButton3() {
 		Log.d(LocalConst.DTAG, "onFragmentBookMarkButton3 ");
 		// 反选
-		for (BookMarkRow bmr : bookMarkItems) {
+		for (LvRow bmr : bookMarkItems) {
 			if (bmr.getSelected() == true)
 				bmr.setSelected(false);
 			else
@@ -360,7 +320,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	public void onFragmentBookMarkButton6() {
 		Log.d(LocalConst.DTAG, "onFragmentBookMarkButton6 ");
 		// 删除
-		Iterator<BookMarkRow> iter = bookMarkItems.iterator();
+		Iterator<LvRow> iter = bookMarkItems.iterator();
 		while (iter.hasNext()) {
 			if (iter.next().getSelected() == true)
 				iter.remove();
@@ -371,9 +331,10 @@ public class DirPlayerActivity extends FragmentActivity implements
 	}
 	private void updateBookMarkInfor() {
 		// 本函数和bookMarkArrayAdapter.notifyDataSetChanged()有什么区别？回头想下能否去掉
+		// 总得设置一次adapter？
 
-		bookMarkArrayAdapter = new BookMarkArrayAdapter(this,
-				R.layout.bookmark_row, bookMarkItems);
+		bookMarkArrayAdapter = new MyArrayAdapter(this,
+				R.layout.file_row, bookMarkItems);
 		Log.d(LocalConst.DTAG, "after new BookMarkArrayAdapter");
 
 		if (fragmentBookMark != null) {
@@ -649,20 +610,35 @@ public class DirPlayerActivity extends FragmentActivity implements
 
 	public void onFragmentButton5(int tab) {
 		Log.d(LocalConst.DTAG, "Button5 clicked in fragment " + tab);
-		Toast.makeText(this, "您添加了收藏： " + currentPath[tab], Toast.LENGTH_LONG)
-		.show();
+		Toast.makeText(this, "您添加了收藏： " + currentPath[tab], Toast.LENGTH_LONG).show();
 
 		// 书签
-		for (BookMarkRow bmr : bookMarkItems) {
-			if (bmr.getPath().equals(currentPath[tab]))
-				return;
+		
+		/**
+		 * 如果有文件夹或文件被选择，添加这些
+		 * 如果没有任何东西被选择，添加当前目录
+		 */
+		calcSelectItems(tab);
+		if(selectedItems[tab].size() == 0){
+			Log.d(LocalConst.DTAG, "Button5 add current directory");
+			File f = new File(currentPath[tab]);
+			LvRow lr = new LvRow("" + f.getName(), "" + f.length(), ""
+					+ new SimpleDateFormat(getString(R.string.time_format)).format(f.lastModified()), 
+					f, false, 1, null, LocalConst.clear);
+			bookMarkItems.add(lr);
+		}else{
+			Log.d(LocalConst.DTAG, "Button5 add a dir or a file");
+			for (LvRow lr : selectedItems[tab]) {
+				for (LvRow bmr : bookMarkItems) {
+					if (lr.getFile().getPath().endsWith(bmr.getFile().getPath()))
+						return;
+				}
+				bookMarkItems.add(lr);
+			}
 		}
-
-		BookMarkRow bmr = new BookMarkRow(currentPath[tab]);
-		bookMarkItems.add(bmr);
-		appendBookMark2File(bmr);
-		updateBookMarkInfor();
-
+		Log.d(LocalConst.DTAG, "total bookMarkItems: " + bookMarkItems.size());
+		bookMarkArrayAdapter.notifyDataSetChanged();
+		saveList2File(bookMarkItems, getString(R.string.bookmark_file));
 	}
 
 	public void onFragmentButton6(int tab) {
@@ -1159,7 +1135,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	 * @param file
 	 */
 	private void addToPlayList(File f) {
-		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy");
+		SimpleDateFormat sdf = new SimpleDateFormat(getString(R.string.time_format));
 		
 		if (f.isFile()){//file
 			//直接添加;
@@ -1212,6 +1188,17 @@ public class DirPlayerActivity extends FragmentActivity implements
 				iter.remove();
 		}
 	}
+	public void calcSelectItems(int tab){
+		selectedItems[tab].clear();
+		for (LvRow lr : viewListItems[tab]) {
+			if (lr.getSelected() == true) {
+				selectedItems[tab].add(lr);
+				Log.d(LocalConst.DTAG,
+						"operateMenu(): tab " + tab + " selected: "
+							+ lr.getName());
+			}
+		}
+	}
 	/*
 	 * 将用户命令添加到list 
 	 */
@@ -1224,17 +1211,8 @@ public class DirPlayerActivity extends FragmentActivity implements
 		Log.d(LocalConst.DTAG, "cmd: " + cmdPosition + ", path A: " + currentPath[0]
 				+ ", path B: " + currentPath[1]);
 
-		for (int i = 0; i < 2; i++) {// A是0，B是1
-
-			selectedItems[i].clear();
-			for (LvRow lr : viewListItems[i]) {
-				if (lr.getSelected() == true) {
-					selectedItems[i].add(lr);
-					Log.d(LocalConst.DTAG,
-							"operateMenu(): tab " + i + " selected: "
-									+ lr.getName());
-				}
-			}
+		for (int i = 0; i < LocalConst.tabCount; i++) {// A是0，B是1
+			calcSelectItems(i);
 		}
 		
 		Log.d(LocalConst.DTAG, "dir copy: cmdList.clear() in addCmds()"
@@ -1435,7 +1413,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	 * 初始化左右窗口的view list items
 	 */
 	private void constructViewList(int tab) {
-		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy");
+		SimpleDateFormat sdf = new SimpleDateFormat(getString(R.string.time_format));
 		String date;
 
 		// viewListFiles.clear();
@@ -2295,7 +2273,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	}
 	
 	private void getListFromFile(LinkedList<LvRow> list, String fileName) {
-		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy");
+		SimpleDateFormat sdf = new SimpleDateFormat(getString(R.string.time_format));
 		String line;
 		File listFile = new File(getFilesDir(),fileName);
 
@@ -2306,7 +2284,8 @@ public class DirPlayerActivity extends FragmentActivity implements
 			while ((line = br.readLine()) != null) {
 				File f = new File(line);
 				LvRow lr = new LvRow("" + f.getName(), "" + f.length(), ""
-						+ sdf.format(f.lastModified()), f, false, 2, 
+						+ sdf.format(f.lastModified()), f, false, 
+						f.isDirectory()?1:2, 
 						URLConnection.getFileNameMap().getContentTypeFor(f.getName()), LocalConst.clear);
 				list.add(lr);
 			}

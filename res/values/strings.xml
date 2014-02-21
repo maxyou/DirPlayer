@@ -110,7 +110,8 @@
     <string name="pl_path" >当前播放曲目：
     </string>
 
-    
+    <string name="time_format" >dd/MM/yy
+    </string>
 
     <string name="setting1_key">setting1_key
     </string>
