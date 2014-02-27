@@ -622,34 +622,60 @@ public class DirPlayerActivity extends FragmentActivity implements
 			updateDirInfor(parentPath[tab], tab);
 		}
 	}
-
+	public boolean checkFileInLvRowList(File f, LinkedList<LvRow> list){
+		for (LvRow lr : list) {
+			if (lr.getFile().getPath().equals(f.getPath())){
+				return true;
+			}
+		}
+		return false;		
+	}
+	
 	public void onFragmentButton5(int tab) {
 		Log.d(LocalConst.DTAG, "Button5 clicked in fragment " + tab);
-		Toast.makeText(this, "您添加了收藏： " + currentPath[tab], Toast.LENGTH_LONG).show();
 
-		// 书签
+		// 收藏
 		
 		/**
 		 * 如果有文件夹或文件被选择，添加这些
 		 * 如果没有任何东西被选择，添加当前目录
 		 */
+		
 		calcSelectItems(tab);
 		if(selectedItems[tab].size() == 0){
 			Log.d(LocalConst.DTAG, "Button5 add current directory");
+			
+			Toast.makeText(this, "您添加了收藏： " + currentPath[tab], Toast.LENGTH_LONG).show();
+			
 			File f = new File(currentPath[tab]);
-			LvRow lr = new LvRow("" + f.getName(), "" + f.length(), ""
-					+ new SimpleDateFormat(getString(R.string.time_format)).format(f.lastModified()), 
-					f, false, 1, null, LocalConst.clear);
+			
+			// 判断当前目录是否已经收藏
+			if(checkFileInLvRowList(f, bookMarkItems))
+				return;
+			
+			LvRow lr = new LvRow("/" + f.getName(), 
+					"", // 文件夹不显示大小 
+					"" + new SimpleDateFormat(getString(R.string.time_format)).format(f.lastModified()), 
+					f, 
+					false, 
+					1, 
+					null, 
+					LocalConst.clear);
 			bookMarkItems.add(lr);
 		}else{
 			Log.d(LocalConst.DTAG, "Button5 add a dir or a file");
 			for (LvRow lr : selectedItems[tab]) {
-				for (LvRow bmr : bookMarkItems) {
-					if (lr.getFile().getPath().endsWith(bmr.getFile().getPath()))
-						return;
+				
+				// 判断是否已经收藏
+				if(checkFileInLvRowList(lr.getFile(), bookMarkItems)){
+					continue;
+				}else{
+					bookMarkItems.add(lr);
 				}
-				bookMarkItems.add(lr);
 			}
+			
+			Toast.makeText(this, "您添加了收藏： " + selectedItems[tab].getFirst().getFile().getPath()+"等等", Toast.LENGTH_LONG).show();
+
 		}
 		Log.d(LocalConst.DTAG, "total bookMarkItems: " + bookMarkItems.size());
 		bookMarkArrayAdapter.notifyDataSetChanged();
@@ -1467,13 +1493,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 		
 		Log.d(LocalConst.LIFECYCLE, "DirPlayerActivity.onCreate()");
 		
-		/**
-		 * 如果系统帮忙attach了fragment，说明当前不是一个干净的系统，重启activity
-		 */
-//		if(sysAttachFragment != 0){
-//			Log.d(LocalConst.LIFECYCLE, "DirPlayerActivity.onCreate().recreate() "+sysAttachFragment);
-//			recreate();
-//		}
+
 		/**
 		 * 保存上下文
 		 */
@@ -2354,8 +2374,11 @@ public class DirPlayerActivity extends FragmentActivity implements
 
 			while ((line = br.readLine()) != null) {
 				File f = new File(line);
-				LvRow lr = new LvRow("" + f.getName(), "" + f.length(), ""
-						+ sdf.format(f.lastModified()), f, false, 
+				LvRow lr = new LvRow("" + f.getName(), 
+						f.isDirectory()?"":"" + f.length(), 
+						"" + sdf.format(f.lastModified()), 
+						f, 
+						false, 
 						f.isDirectory()?1:2, 
 						URLConnection.getFileNameMap().getContentTypeFor(f.getName()), LocalConst.clear);
 				list.add(lr);
