@@ -48,6 +48,8 @@ public class LocalConst {
 	public static final String BM = "bm";
 	public static final String PL = "pl";
 	public static final String DTAG = "dirplayer";
+	public static final String TMP = "tmp";
+	
 	/**
 	 * 系统状态
 	 */

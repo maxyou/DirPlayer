@@ -322,13 +322,18 @@ public class DirPlayerActivity extends FragmentActivity implements
 	public void onFragmentBookMarkButton4() {
 		Log.d(LocalConst.DTAG, "onFragmentBookMarkButton4 ");
 		// 上移
+		moveUpSelected(bookMarkItems);
+		bookMarkArrayAdapter.notifyDataSetChanged();
+		saveBookMark2File();
 		
 	}
 
 	public void onFragmentBookMarkButton5() {
 		Log.d(LocalConst.DTAG, "onFragmentBookMarkButton5 ");
 		// 下移
-		
+		moveDownSelected(bookMarkItems);
+		bookMarkArrayAdapter.notifyDataSetChanged();
+		saveBookMark2File();
 
 	}
 	
@@ -341,7 +346,6 @@ public class DirPlayerActivity extends FragmentActivity implements
 				iter.remove();
 		}
 		bookMarkArrayAdapter.notifyDataSetChanged();
-
 		saveBookMark2File();
 	}
 	private void updateBookMarkInfor() {
@@ -2262,57 +2266,59 @@ public class DirPlayerActivity extends FragmentActivity implements
 		playListArrayAdapter.notifyDataSetChanged();
 
 	}
-
-	public void onFragmentPlayListButton4() {
-		// 上移
-		Log.d(LocalConst.DTAG, "move up ....");
-		if (playListItems.size() < 2)
+	public void moveUpSelected(LinkedList<LvRow> list){
+		Log.d(LocalConst.TMP, "move up ....");
+		if (list.size() < 2)
 			return;
 		
-		for(int i = 0;i < playListItems.size() - 1 ;i++){
-			Log.d(LocalConst.DTAG, "compare in pair: " + i);
+		for(int i = 0;i < list.size() - 1 ;i++){
+			Log.d(LocalConst.TMP, "compare in pair: " + i);
 			// 用冒泡的方式来实现被选择项上移
 			// 首先获取一对
-			LvRow lr_first = playListItems.get(i);
+			LvRow lr_first = list.get(i);
 			if (lr_first.getSelected()){
-				Log.d(LocalConst.DTAG, "the first in pair is selected");
+				Log.d(LocalConst.TMP, "the first in pair is selected");
 				continue; // 如果第一个被选择了，无论第二个是什么，什么也不做
 			}
 			
-			LvRow lr_second = playListItems.get(i+1);
+			LvRow lr_second = list.get(i+1);
 			if (!lr_second.getSelected()){
-				Log.d(LocalConst.DTAG, "the second in pair is not selected");
+				Log.d(LocalConst.TMP, "the second in pair is not selected");
 				continue; // 由于第一个没有被选择，第二个如果也没被选择，那么什么也不做
 			}
 			
 			// 第二个被选择了，所以要交换
-			LvRow lr = playListItems.remove(i+1);
-			playListItems.add(i,lr);
+			LvRow lr = list.remove(i+1);
+			list.add(i,lr);
 			
-			Log.d(LocalConst.DTAG, "move up in pair: " + i);
+			Log.d(LocalConst.TMP, "move up in pair: " + i);
 		}
 		
+	}
+	public void onFragmentPlayListButton4() {
+		// 上移
+		moveUpSelected(playListItems);
 		playListArrayAdapter.notifyDataSetChanged();
 
 		savePlayList2File();
 	}
-	public void onFragmentPlayListButton5() {
-		// 下移
+	
+	public void moveDownSelected(LinkedList<LvRow> list){
 		Log.d(LocalConst.DTAG, "move down ....");
-		if (playListItems.size() < 2)
+		if (list.size() < 2)
 			return;
 		
-		for(int i = playListItems.size() - 1; i > 0;i--){
+		for(int i = list.size() - 1; i > 0;i--){
 			Log.d(LocalConst.DTAG, "compare in pair: " + i);
 			// 用冒泡的方式来实现被选择项上移
 			// 首先获取一对
-			LvRow lr_second = playListItems.get(i);
+			LvRow lr_second = list.get(i);
 			if (lr_second.getSelected()){
 				Log.d(LocalConst.DTAG, "the second in pair is selected");
 				continue; // 如果第二个被选择了，无论第一个是什么，什么也不做
 			}
 
-			LvRow lr_first = playListItems.get(i-1);
+			LvRow lr_first = list.get(i-1);
 			if (!lr_first.getSelected()){
 				Log.d(LocalConst.DTAG, "the first in pair is not selected");
 				continue; // 由于第二个没有被选择，第一个如果也没被选择，那么什么也不做 
@@ -2320,13 +2326,16 @@ public class DirPlayerActivity extends FragmentActivity implements
 			
 			
 			// 第一个被选择了，所以要交换
-			LvRow lr = playListItems.remove(i-1);
-			playListItems.add(i,lr);
+			LvRow lr = list.remove(i-1);
+			list.add(i,lr);
 			
 			Log.d(LocalConst.DTAG, "move down in pair: " + i);
 		}
+	}
+	public void onFragmentPlayListButton5() {
+		// 下移
+		moveDownSelected(playListItems);
 		playListArrayAdapter.notifyDataSetChanged();
-
 		savePlayList2File();
 	}
 	public void onFragmentPlayListButton6() {
