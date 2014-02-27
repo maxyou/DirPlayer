@@ -1880,21 +1880,28 @@ public class DirPlayerActivity extends FragmentActivity implements
 					float distanceX, float distanceY) {
 				
 				//如果从底部滑出，并且媒体播放器存在的话，调用其show方法
-				Log.d(LocalConst.DTAG,"onScroll().getY(): "+e1.getY()
-						+ ", bottom is: "+ (widthHeightInPixels[1] - 20));
+				Log.d(LocalConst.DTAG,"onScroll(): "
+						+e1.getX()+"/"+(widthHeightInPixels[0] - 20)+" "
+						+e1.getY()+"/"+(widthHeightInPixels[1] - 20));
 				
-				if (e1.getY() > (widthHeightInPixels[1] - 20)) {
-					Log.d(LocalConst.DTAG,"onScroll() find scroll from bottom!");
-					if(
-							(dirPlayerState == LocalConst.STATE_MUSIC)
-							&&(mService!=null)
-//							&&(mService.isPlaying())
-							&&(mediaController != null)){
+				if(
+						(dirPlayerState == LocalConst.STATE_MUSIC)
+						&&(mService!=null)
+//						&&(mService.isPlaying())
+						&&(mediaController != null))
+				{
+					
+				    if (
+				    		(orientation == Configuration.ORIENTATION_PORTRAIT)?
+		    				(e1.getY() > (widthHeightInPixels[1] - 20)):
+		    					(e1.getY() > (widthHeightInPixels[0] - 20))
+				    	)
+					{
+						Log.d(LocalConst.DTAG,"onScroll() find scroll from bottom!");
 						mediaController.show();
-					}
-					return true;
-			    }
-				
+						return true;
+				    }
+				}
 				// TODO Auto-generated method stub
 				return super.onScroll(e1, e2, distanceX, distanceY);
 			}
