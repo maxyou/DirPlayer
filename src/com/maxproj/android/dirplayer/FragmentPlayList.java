@@ -52,13 +52,13 @@ public class FragmentPlayList  extends Fragment {
     */
     public static FragmentPlayList newInstance() {
     	FragmentPlayList fragment = new FragmentPlayList();        
-    	Log.d(LocalConst.DTAG,"FragmentPlayList newInstance()");
+    	Log.d(LocalConst.PL, "FragmentPlayList.newInstance()");
         return fragment;
     }
 
     public void setListviewAdapter(MyArrayAdapter a){
         listAdapter = a;
-
+        Log.d(LocalConst.PL, "FragmentPlayList.setListviewAdapter() "+listAdapter);
         if (listView != null){
             listView.setAdapter(listAdapter);
             Log.d(LocalConst.DTAG,"FragmentPlayList setListviewAdapter(): adapter is set!");
@@ -77,7 +77,7 @@ public class FragmentPlayList  extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         //return super.onCreateView(inflater, container, savedInstanceState);
-        Log.d(LocalConst.DTAG,"FragmentPlayList onCreateView() is called!");
+    	Log.d(LocalConst.PL, "FragmentPlayList.onCreateView() "+listAdapter);
         fragmentView =  inflater.inflate(R.layout.fragment_playlist, container, false);
         
         b1 = (Button)fragmentView.findViewById(R.id.pl_b1);
@@ -137,7 +137,7 @@ public class FragmentPlayList  extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        Log.d(LocalConst.DTAG,"FragmentPlayList onActivityCreated() is called!");
+        Log.d(LocalConst.PL, "FragmentPlayList.onActivityCreated() "+listAdapter);
 
         if (listAdapter != null){
             listView.setAdapter(listAdapter);
@@ -168,7 +168,7 @@ public class FragmentPlayList  extends Fragment {
     @Override
     public void onAttach(Activity activity){
         super.onAttach(activity);
-        Log.d(LocalConst.DTAG,"FragmentPlayList onAttach() is called!");
+        Log.d(LocalConst.PL, "FragmentPlayList.onAttach() "+listAdapter);
         try{
         	Log.d(LocalConst.DTAG,"FragmentPlayList check if activity implement interface....");
         	FragmentPlayListInterface = (FragmentPlayListInterface)activity;

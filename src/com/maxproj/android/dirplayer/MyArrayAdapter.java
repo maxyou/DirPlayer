@@ -15,7 +15,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class MyArrayAdapter extends ArrayAdapter{
+public class MyArrayAdapter extends ArrayAdapter<LvRow>{
 
     int resource;
     final List<LvRow> listItems;// = new List<LvRow>();
@@ -24,7 +24,7 @@ public class MyArrayAdapter extends ArrayAdapter{
         super(context, textViewResourceId, objects);
         resource = textViewResourceId;
         listItems = objects;
-        Log.d(LocalConst.DTAG,"initialize MyArrayAdapter...end");
+        Log.d(LocalConst.LIFECYCLE,"MyArrayAdapter.MyArrayAdapter()");
     }
 
 

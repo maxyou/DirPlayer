@@ -15,8 +15,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 public class FragmentListview extends Fragment {
-    int tab;
-    String currentPath = null;
+    int tab = 3;
+    String currentPath = "static_ini_code_null";
     MyArrayAdapter listAdapter = null;
     ListView listView = null;
     TextView show_path = null;
@@ -33,6 +33,7 @@ public class FragmentListview extends Fragment {
         void onFragmentButton4(int tab);
         void onFragmentButton5(int tab);
         void onFragmentButton6(int tab);
+        void updateFragmentListviewWhenRecreate(int tab, FragmentListview fragment);
     }
     private FragmentListviewInterface fragmentListviewInterface = null;
 
@@ -42,24 +43,29 @@ public class FragmentListview extends Fragment {
         this.tab = tab;
     }
     */
-    public static FragmentListview newInstance(int tab) {
+    public static FragmentListview newInstance(int tab) {    	
+        
         FragmentListview fragment = new FragmentListview();
         fragment.tab = tab;
+
+        Log.d(LocalConst.LIFECYCLE, "FragmentListview.newInstance() "+tab+" "+fragment);
         return fragment;
     }
 
-    public void setListviewAdapter(MyArrayAdapter a, String currentPath){
+    public void setListviewAdapter(MyArrayAdapter a, String newPath){
         listAdapter = a;
-        this.currentPath = currentPath;
-
-        LocalConst.currentPath_fragmentList[tab] = currentPath;
-        LocalConst.myArrayAdapter_fragmentList[tab] = a;
+    	Log.d(LocalConst.LIFECYCLE, "FragmentListview.setListviewAdapter() "+tab+":"+currentPath+" "+this);
+        currentPath = newPath;
+        Log.d(LocalConst.LIFECYCLE, "FragmentListview.setListviewAdapter() "+tab+":"+currentPath+" "+this);
+        
+//        LocalConst.currentPath_fragmentList[tab] = currentPath;
+//        LocalConst.myArrayAdapter_fragmentList[tab] = a;
         
         
 		//show path at upper of listview
 		//show_path = (TextView)fragmentView.findViewById(R.id.show_path);
         if(show_path !=null){
-        	show_path.setText("当前路径是"+this.currentPath);
+        	show_path.setText("当前路径是"+currentPath);
             Log.d(LocalConst.FRAGMENT_LIFE,"setListviewAdapter(): show_path is set to "+currentPath);
         }else{
             Log.d(LocalConst.FRAGMENT_LIFE,"setListviewAdapter(): show_path is null pointer!");
@@ -83,7 +89,7 @@ public class FragmentListview extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         //return super.onCreateView(inflater, container, savedInstanceState);
-        Log.d(LocalConst.FRAGMENT_LIFE,"onCreateView() is called!");
+    	Log.d(LocalConst.LIFECYCLE, "FragmentListview.onCreateView() "+tab+":"+currentPath+" "+this);
         fragmentView =  inflater.inflate(R.layout.fragment_listview, container, false);
         
         b1 = (Button)fragmentView.findViewById(R.id.fl_b1);
@@ -152,21 +158,21 @@ public class FragmentListview extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        Log.d(LocalConst.FRAGMENT_LIFE,"onActivityCreated() is called!");
+        Log.d(LocalConst.LIFECYCLE, "FragmentListview.onActivityCreated() "+tab+":"+currentPath+" "+this);
 
 //        if (savedInstanceState != null) {
 //        	currentPath = savedInstanceState.getString("currentPath", LocalConst.pathRoot);
 //        }
         if (currentPath == null){
-        	currentPath = LocalConst.currentPath_fragmentList[tab];
+//        	currentPath = LocalConst.currentPath_fragmentList[tab];
         }
         if (listAdapter == null){
-        	listAdapter = LocalConst.myArrayAdapter_fragmentList[tab];
+//        	listAdapter = LocalConst.myArrayAdapter_fragmentList[tab];
         }
         
         if(show_path !=null){
         	show_path.setText("当前路径是"+currentPath);
-            Log.d(LocalConst.DTAG,"setListviewAdapter(): show_path is "+currentPath);
+            Log.d(LocalConst.DTAG,"setListviewAdapter(): show_path is "+tab+":"+currentPath);
         }
         
         if (listAdapter != null){
@@ -199,7 +205,8 @@ public class FragmentListview extends Fragment {
     @Override
     public void onAttach(Activity activity){
         super.onAttach(activity);
-        Log.d(LocalConst.FRAGMENT_LIFE,"onAttach() is called!");
+        
+        Log.d(LocalConst.LIFECYCLE, "FragmentListview.onAttach() "+tab+":"+currentPath+" "+this);
         try{
         	Log.d(LocalConst.DTAG,"check if activity implement interface....");
             fragmentListviewInterface = (FragmentListviewInterface)activity;
@@ -210,14 +217,73 @@ public class FragmentListview extends Fragment {
                     +fragmentListviewInterface.toString());
         }
         Log.d(LocalConst.FRAGMENT_LIFE,"onAttach() is ended!");
+        
+        /**
+         * 有时候系统会帮我重建fragment，但是却不交给我指针
+         * 这里试验一下能否自己更新指针
+         * 
+         * 首先判断，自己是app创建的，还是系统帮忙创建的
+         */
+
+        if (tab == 3){ // 系统帮忙创建的，更新到activity
+        	tab = ((DirPlayerActivity) getActivity()).sysAttachFragment;
+        	fragmentListviewInterface.updateFragmentListviewWhenRecreate(
+        			tab, 
+        			this);
+        	((DirPlayerActivity) getActivity()).sysAttachFragment++;
+        }
     }
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onCreate(savedInstanceState);
+		Log.d(LocalConst.LIFECYCLE, "FragmentListview.onCreate() "+tab+":"+currentPath+" "+this);
+		
+
+	}
+	@Override
+	public void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+		Log.d(LocalConst.LIFECYCLE, "FragmentListview.onDestroy() "+tab+":"+currentPath+" "+this);
+	}
+	@Override
+	public void onDetach() {
+		// TODO Auto-generated method stub
+		super.onDetach();
+		Log.d(LocalConst.LIFECYCLE, "FragmentListview.onDetach() "+tab+":"+currentPath+" "+this);
+	}
+	@Override
+	public void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+		Log.d(LocalConst.LIFECYCLE, "FragmentListview.onPause() "+tab+":"+currentPath+" "+this);
+	}
+	@Override
+	public void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		Log.d(LocalConst.LIFECYCLE, "FragmentListview.onResume() "+tab+":"+currentPath+" "+this);
+	}
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		// TODO Auto-generated method stub
+		super.onSaveInstanceState(outState);
+		Log.d(LocalConst.LIFECYCLE, "FragmentListview.onSaveInstanceState() "+tab+":"+currentPath+" "+this);
+	}
+	@Override
+	public void onStart() {
+		// TODO Auto-generated method stub
+		super.onStart();
+		Log.d(LocalConst.LIFECYCLE, "FragmentListview.onStart() "+tab+":"+currentPath+" "+this);
+	}
 
 	@Override
 	public void onStop() {
 		// TODO Auto-generated method stub
 		super.onStop();
-		
-		Log.d(LocalConst.FRAGMENT_LIFE,"onStop() is called!");
+		Log.d(LocalConst.LIFECYCLE, "FragmentListview.onStop() "+tab+":"+currentPath+" "+this);
 	}
 
 }

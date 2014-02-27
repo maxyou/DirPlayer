@@ -43,6 +43,10 @@ public class LocalConst {
 	 */
 	public static final String ACTIVITY_LIFE = "activity_life";
 	public static final String FRAGMENT_LIFE = "fragment_life";
+	public static final String LIFECYCLE = "lifecycle";
+	public static final String FL = "fl";
+	public static final String BM = "bm";
+	public static final String PL = "pl";
 	public static final String DTAG = "dirplayer";
 	/**
 	 * 系统状态

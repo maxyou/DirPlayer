@@ -93,6 +93,20 @@ public class DirPlayerActivity extends FragmentActivity implements
 		{
 
 	
+	/**
+	 * 系统控制
+	 * 
+	 * 现在存在一个bug：
+	 * 	在本app由于种种原因隐藏后，比如home键，如果马上调回本app，无问题
+	 * 	如果经历了很长时间，或者大量开启其他耗费内存的应用，其后再调回本app，则出现bug
+	 * 	根据目前的调试判断，该bug是由于android系统帮助恢复fragment造成的
+	 * 	因为内存紧缺时系统会删除fragment，在app调出时帮忙恢复这些被删除的fragment
+	 * 	但是系统帮忙的恢复操作非常不好处理，app不知怎样接收这个fragment，隐患实在非常的多
+	 * 	而且不知道如何阻止系统的这一鲁莽行径
+	 * 	暂时的解决方法是，在attach里面判断，如果是系统帮忙创建的，则覆盖掉自己创建的
+	 */
+	int sysAttachFragment = 0;
+	
 	ActionBar actionBar = null;
 	
 	/**
@@ -241,6 +255,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	public void setShowCopyProcess(boolean enable){
 		showCopyProcess = enable;
 	}
+
 
 	/**
 	 * 书签用文本文件保存
@@ -1363,8 +1378,8 @@ public class DirPlayerActivity extends FragmentActivity implements
 				//debug, should be deleted
 				//fragmentPlayList.setListviewAdapter(myArrayAdapter[tab]);
 				
-				Log.d(LocalConst.FRAGMENT_LIFE,
-						"fragmentListview.setListviewAdapter(myArrayAdapter)!");
+				Log.d(LocalConst.LIFECYCLE,
+						"DirPlayerActivity.updateFileInfor()!"+" "+fragmentListview[tab]+" "+myArrayAdapter);
 			} else {
 				Log.d(LocalConst.FRAGMENT_LIFE, "fragmentListview is null!");
 			}
@@ -1450,8 +1465,15 @@ public class DirPlayerActivity extends FragmentActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_dir_player);
 		
-		Log.d(LocalConst.FRAGMENT_LIFE, "activity onCreate() begin!");
+		Log.d(LocalConst.LIFECYCLE, "DirPlayerActivity.onCreate()");
 		
+		/**
+		 * 如果系统帮忙attach了fragment，说明当前不是一个干净的系统，重启activity
+		 */
+//		if(sysAttachFragment != 0){
+//			Log.d(LocalConst.LIFECYCLE, "DirPlayerActivity.onCreate().recreate() "+sysAttachFragment);
+//			recreate();
+//		}
 		/**
 		 * 保存上下文
 		 */
@@ -1494,6 +1516,24 @@ public class DirPlayerActivity extends FragmentActivity implements
 		}
 		
 		/**
+		 * 初始化文件浏览数据结构
+		 */
+		{
+			for (int i = 0; i < LocalConst.tabCount; i++) {
+				viewListItems[i] = new LinkedList<LvRow>();
+				selectedItems[i] = new LinkedList<LvRow>();
+				dirList[i] = new LinkedList<File>();
+				fileList[i] = new LinkedList<File>();
+				currentPath[i] = LocalConst.pathRoot;
+				parentPath[i] = null;
+				if(sysAttachFragment == 0){ // 正常启动，而不是系统帮忙恢复
+					fragmentListview[i] = FragmentListview.newInstance(i);
+				}
+				Log.d(LocalConst.LIFECYCLE, "DirPlayerActivity.StaticCodeIniFragment{} "+i+" "+fragmentListview[i]);
+			}
+		}
+		
+		/**
 		 * 初始化setting
 		 */
 		
@@ -1508,32 +1548,6 @@ public class DirPlayerActivity extends FragmentActivity implements
 		mDetector = new GestureDetectorCompat(this, new MyGestureListener());
 		mDetectorVideoView = new GestureDetectorCompat(this, new VideoViewGestureListener());
 
-		/**
-		 * 初始化所有窗口的fragment/adapter/listview
-		 * 好像多初始化了一个fragment，以后改
-		 */
-		
-		Log.d(LocalConst.FRAGMENT_LIFE, "fragment initial code begin...");
-		for (int i = 0; i < LocalConst.tabCount; i++) {
-			viewListItems[i] = new LinkedList<LvRow>();
-			selectedItems[i] = new LinkedList<LvRow>();
-			dirList[i] = new LinkedList<File>();
-			fileList[i] = new LinkedList<File>();
-			currentPath[i] = LocalConst.pathRoot;
-			parentPath[i] = null;
-			fragmentListview[i] = FragmentListview.newInstance(i);
-			
-			/**
-			 * 以下设置adapter似乎没有必要
-			 */
-//			myArrayAdapter[i] = new MyArrayAdapter(this, R.layout.file_row,
-//					viewListItems[i]);
-//			Log.d(LocalConst.FRAGMENT_LIFE, "currentPath["+i+"]" + currentPath[i]);
-//			fragmentListview[i].setListviewAdapter(myArrayAdapter[i],
-//					currentPath[i]);
-		}
-		Log.d(LocalConst.FRAGMENT_LIFE, "fragment initial code ended!");
-		
 		ImageView bottomIcon = (ImageView)findViewById(R.id.bottom_icon);
 		bottomIcon.setImageResource(R.drawable.bottom);
 		Log.d(LocalConst.FRAGMENT_LIFE, "activity onCreate() end!"); // 要检查这个，这样才知道是否初始化全部完成
@@ -1543,7 +1557,7 @@ public class DirPlayerActivity extends FragmentActivity implements
     protected void onStart() {
         super.onStart();
         
-        Log.d(LocalConst.FRAGMENT_LIFE, "activity onStart() begin!");
+        Log.d(LocalConst.LIFECYCLE, "DirPlayerActivity.onStart()");
         
         //是否显示顶部标题条
         boolean b = settingPref.getBoolean(getString(R.string.setting1_key), false);
@@ -1650,6 +1664,9 @@ public class DirPlayerActivity extends FragmentActivity implements
     @Override
     protected void onStop() {
         super.onStop();
+        
+        Log.d(LocalConst.LIFECYCLE, "DirPlayerActivity.onStop()");
+        
         // Unbind from the service
         if (mBound) {
             unbindService(mConnection);
@@ -1657,6 +1674,42 @@ public class DirPlayerActivity extends FragmentActivity implements
         }
     }
 	
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+		Log.d(LocalConst.LIFECYCLE, "DirPlayerActivity.onDestroy()");
+	}
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		Log.d(LocalConst.LIFECYCLE, "DirPlayerActivity.onResume()");
+	}
+	@Override
+	protected void onResumeFragments() {
+		// TODO Auto-generated method stub
+		super.onResumeFragments();
+		Log.d(LocalConst.LIFECYCLE, "DirPlayerActivity.onResumeFragments()");
+	}
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		// TODO Auto-generated method stub
+		super.onSaveInstanceState(outState);
+		Log.d(LocalConst.LIFECYCLE, "DirPlayerActivity.onSaveInstanceState()");
+	}
+	@Override
+	protected void onRestart() {
+		// TODO Auto-generated method stub
+		super.onRestart();
+		Log.d(LocalConst.LIFECYCLE, "DirPlayerActivity.onRestart()");
+	}
+	@Override
+	public void recreate() {
+		// TODO Auto-generated method stub
+		super.recreate();
+		Log.d(LocalConst.LIFECYCLE, "DirPlayerActivity.recreate()");
+	}
     /** Defines callbacks for service binding, passed to bindService() */
     private ServiceConnection mConnection = new ServiceConnection() {
 
@@ -1940,14 +1993,25 @@ public class DirPlayerActivity extends FragmentActivity implements
 			// below) with the page number as its lone argument.
 
 			if (position == 3) { // 第四个tab为播放列表
-				Log.d(LocalConst.FRAGMENT_LIFE, "getItem(" + position + ") return fragmentPlayList");
+//				Log.d(LocalConst.FRAGMENT_LIFE, "getItem(" + position + ") return fragmentPlayList");
+				Log.d(LocalConst.PL,
+						"DirPlayerActivity.SectionsPagerAdapter.getItem()"
+						+" "+position+" "+fragmentPlayList);
+
 				return fragmentPlayList;
 			}
 			if (position == 2) { // 第三个tab为标签
-				Log.d(LocalConst.FRAGMENT_LIFE, "getItem(" + position + ") return fragmentBookMark");
+//				Log.d(LocalConst.FRAGMENT_LIFE, "getItem(" + position + ") return fragmentBookMark");
+				Log.d(LocalConst.BM,
+						"DirPlayerActivity.SectionsPagerAdapter.getItem()"
+						+" "+position+" "+fragmentBookMark);
+
 				return fragmentBookMark;
 			} else { // 第一个tab为左窗口，第二个tab为右窗口
-				Log.d(LocalConst.FRAGMENT_LIFE, "getItem(" + position + ") return fragmentListview");
+//				Log.d(LocalConst.FRAGMENT_LIFE, "getItem(" + position + ") return fragmentListview");
+				Log.d(LocalConst.LIFECYCLE,
+						"DirPlayerActivity.SectionsPagerAdapter.getItem()"
+						+" "+position+" "+fragmentListview[position]);
 				return fragmentListview[position];
 			}
 
@@ -1985,6 +2049,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	protected void onPause() {
 		// TODO Auto-generated method stub
 		super.onPause();
+		Log.d(LocalConst.LIFECYCLE, "DirPlayerActivity.onPause()");
 	}
 	
 	private boolean backPressed = false;
@@ -2440,6 +2505,15 @@ public class DirPlayerActivity extends FragmentActivity implements
 	    }
 	}
 
-	
+    /**
+     * 有时候系统会帮我重建fragment，但是却不交给我指针
+     * 这里试验一下能否自己更新指针
+     */
+	public void updateFragmentListviewWhenRecreate(int tab, FragmentListview fragment){
+//		if(fragmentListview[tab] != null)
+		Log.d(LocalConst.LIFECYCLE, "DirPlayerActivity.updateFragmentListviewWhenRecreate() "+tab+":"+"before "+fragmentListview[tab]);
+			fragmentListview[tab] = fragment;
+			Log.d(LocalConst.LIFECYCLE, "DirPlayerActivity.updateFragmentListviewWhenRecreate() "+tab+":"+"after "+fragment);
+	}
 
 }

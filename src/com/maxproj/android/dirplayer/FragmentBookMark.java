@@ -40,14 +40,17 @@ public class FragmentBookMark  extends Fragment {
     }
     */
     public static FragmentBookMark newInstance() {
-    	FragmentBookMark fragment = new FragmentBookMark();        
-    	Log.d(LocalConst.DTAG,"FragmentBookMark newInstance()");
+    	FragmentBookMark fragment = new FragmentBookMark();
+    	
+    	Log.d(LocalConst.BM, "FragmentBookMark.newInstance()");
+    	
         return fragment;
     }
 
     public void setListviewAdapter(MyArrayAdapter a){
         listAdapter = a;
-
+        Log.d(LocalConst.BM, "FragmentBookMark.setListviewAdapter() "+listAdapter);
+        
         if (listView != null){
             listView.setAdapter(listAdapter);
             Log.d(LocalConst.DTAG,"FragmentBookMark setListviewAdapter(): adapter is set!");
@@ -66,7 +69,7 @@ public class FragmentBookMark  extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         //return super.onCreateView(inflater, container, savedInstanceState);
-        Log.d(LocalConst.DTAG,"FragmentBookMark onCreateView() is called!");
+    	Log.d(LocalConst.BM, "FragmentBookMark.onCreateView() "+listAdapter);
         fragmentView =  inflater.inflate(R.layout.fragment_bookmark, container, false);
         
         b1 = (Button)fragmentView.findViewById(R.id.bm_b1);
@@ -123,7 +126,7 @@ public class FragmentBookMark  extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        Log.d(LocalConst.DTAG,"FragmentBookMark onActivityCreated() is called!");
+        Log.d(LocalConst.BM, "FragmentBookMark.onActivityCreated() "+listAdapter);
 
         if (listAdapter != null){
             listView.setAdapter(listAdapter);
@@ -143,7 +146,7 @@ public class FragmentBookMark  extends Fragment {
     @Override
     public void onAttach(Activity activity){
         super.onAttach(activity);
-        Log.d(LocalConst.DTAG,"FragmentBookMark onAttach() is called!");
+        Log.d(LocalConst.BM, "FragmentBookMark.onAttach() "+listAdapter);
         try{
         	Log.d(LocalConst.DTAG,"FragmentBookMark check if activity implement interface....");
         	fragmentBookMarkInterface = (FragmentBookMarkInterface)activity;
