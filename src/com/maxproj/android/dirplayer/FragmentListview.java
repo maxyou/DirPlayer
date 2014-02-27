@@ -15,7 +15,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 public class FragmentListview extends Fragment {
-    int tab = 3;
+    int tab = -1; // attach时如果为-1，说明是系统帮忙恢复的。正常初始化后会被设置为0和1
     String currentPath = "static_ini_code_null";
     MyArrayAdapter listAdapter = null;
     ListView listView = null;
@@ -225,7 +225,7 @@ public class FragmentListview extends Fragment {
          * 首先判断，自己是app创建的，还是系统帮忙创建的
          */
 
-        if (tab == 3){ // 系统帮忙创建的，更新到activity
+        if (tab == -1){ // 系统帮忙创建的，更新到activity
         	tab = ((DirPlayerActivity) getActivity()).sysAttachFragment;
         	fragmentListviewInterface.sysAttachFragmentListviewLowMem(
         			tab, 
