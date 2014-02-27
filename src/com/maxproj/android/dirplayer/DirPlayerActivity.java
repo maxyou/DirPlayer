@@ -190,7 +190,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	 * 播放列表PlayList
 	 */
 	LinkedList<LvRow> playListItems = new LinkedList<LvRow>();
-	FragmentPlayList fragmentPlayList = FragmentPlayList.newInstance();
+	FragmentPlayList fragmentPlayList = null;
 	MyArrayAdapter playListArrayAdapter;
 	
 	
@@ -210,7 +210,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	/**
 	 * 书签窗口相关定义
 	 */
-	FragmentBookMark fragmentBookMark = FragmentBookMark.newInstance();
+	FragmentBookMark fragmentBookMark = null;
 	LinkedList<LvRow> bookMarkItems = new LinkedList<LvRow>();
 	MyArrayAdapter bookMarkArrayAdapter;// = new
 												// BookMarkArrayAdapter(this,
@@ -1531,6 +1531,12 @@ public class DirPlayerActivity extends FragmentActivity implements
 				}
 				Log.d(LocalConst.LIFECYCLE, "DirPlayerActivity.StaticCodeIniFragment{} "+i+" "+fragmentListview[i]);
 			}
+			if(fragmentPlayList == null){
+				fragmentPlayList = FragmentPlayList.newInstance();
+			}
+			if(fragmentBookMark == null){
+				fragmentBookMark = FragmentBookMark.newInstance();
+			}
 		}
 		
 		/**
@@ -2509,11 +2515,22 @@ public class DirPlayerActivity extends FragmentActivity implements
      * 有时候系统会帮我重建fragment，但是却不交给我指针
      * 这里试验一下能否自己更新指针
      */
-	public void updateFragmentListviewWhenRecreate(int tab, FragmentListview fragment){
+	public void sysAttachFragmentListviewLowMem(int tab, FragmentListview fragment){
 //		if(fragmentListview[tab] != null)
-		Log.d(LocalConst.LIFECYCLE, "DirPlayerActivity.updateFragmentListviewWhenRecreate() "+tab+":"+"before "+fragmentListview[tab]);
+		Log.d(LocalConst.LIFECYCLE, "DirPlayerActivity.sysAttachFragmentListviewLowMem() "+tab+":"+"before "+fragmentListview[tab]);
 			fragmentListview[tab] = fragment;
-			Log.d(LocalConst.LIFECYCLE, "DirPlayerActivity.updateFragmentListviewWhenRecreate() "+tab+":"+"after "+fragment);
+			Log.d(LocalConst.LIFECYCLE, "DirPlayerActivity.sysAttachFragmentListviewLowMem() "+tab+":"+"after "+fragment);
 	}
-
+	public void sysAttachFragmentPlayListLowMem(FragmentPlayList fragment){
+//		if(fragmentListview[tab] != null)
+		Log.d(LocalConst.LIFECYCLE, "DirPlayerActivity.sysAttachFragmentPlayListLowMem():"+"before "+fragmentPlayList);
+			fragmentPlayList = fragment;
+			Log.d(LocalConst.LIFECYCLE, "DirPlayerActivity.sysAttachFragmentPlayListLowMem():"+"after "+fragment);
+	}
+	public void sysAttachFragmentBookMarkLowMem(FragmentBookMark fragment){
+//		if(fragmentListview[tab] != null)
+		Log.d(LocalConst.LIFECYCLE, "DirPlayerActivity.sysAttachFragmentBookMarkLowMem():"+"before "+fragmentBookMark);
+			fragmentBookMark = fragment;
+			Log.d(LocalConst.LIFECYCLE, "DirPlayerActivity.sysAttachFragmentBookMarkLowMem():"+"after "+fragment);
+	}
 }

@@ -30,6 +30,7 @@ public class FragmentBookMark  extends Fragment {
         void onFragmentBookMarkButton4();
         void onFragmentBookMarkButton5();
         void onFragmentBookMarkButton6();
+        void sysAttachFragmentBookMarkLowMem(FragmentBookMark fragment);
     }
     private FragmentBookMarkInterface fragmentBookMarkInterface = null;
 
@@ -157,6 +158,8 @@ public class FragmentBookMark  extends Fragment {
                     +fragmentBookMarkInterface.toString());
         }
         Log.d(LocalConst.DTAG,"FragmentBookMark onAttach() is ended!");
+        
+        fragmentBookMarkInterface.sysAttachFragmentBookMarkLowMem(this);
     }
 
 }

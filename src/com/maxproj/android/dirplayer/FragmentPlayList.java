@@ -36,8 +36,9 @@ public class FragmentPlayList  extends Fragment {
         void onFragmentPlayListButton6();
         void onFragmentPlayListButton7();
         PlayService getServiceConnection();
+        void sysAttachFragmentPlayListLowMem(FragmentPlayList fragment);
     }
-    private FragmentPlayListInterface FragmentPlayListInterface = null;
+    private FragmentPlayListInterface fragmentPlayListInterface = null;
 
     /**
      * play service control
@@ -84,42 +85,42 @@ public class FragmentPlayList  extends Fragment {
         b1.setOnClickListener(new View.OnClickListener() { // 全选
             @Override
             public void onClick(View view) {
-            	FragmentPlayListInterface.onFragmentPlayListButton1();
+            	fragmentPlayListInterface.onFragmentPlayListButton1();
             }
         });
         b2 = (Button)fragmentView.findViewById(R.id.pl_b2);
         b2.setOnClickListener(new View.OnClickListener() { // 清除
             @Override
             public void onClick(View view) {
-            	FragmentPlayListInterface.onFragmentPlayListButton2();
+            	fragmentPlayListInterface.onFragmentPlayListButton2();
             }
         });
         b3 = (Button)fragmentView.findViewById(R.id.pl_b3);
         b3.setOnClickListener(new View.OnClickListener() { // 反选
             @Override
             public void onClick(View view) {
-            	FragmentPlayListInterface.onFragmentPlayListButton3();
+            	fragmentPlayListInterface.onFragmentPlayListButton3();
             }
         });
         b4 = (Button)fragmentView.findViewById(R.id.pl_b4);
         b4.setOnClickListener(new View.OnClickListener() { // 上移
             @Override
             public void onClick(View view) {
-            	FragmentPlayListInterface.onFragmentPlayListButton4();
+            	fragmentPlayListInterface.onFragmentPlayListButton4();
             }
         });
         b5 = (Button)fragmentView.findViewById(R.id.pl_b5);
         b5.setOnClickListener(new View.OnClickListener() { // 下移
             @Override
             public void onClick(View view) {
-            	FragmentPlayListInterface.onFragmentPlayListButton5();
+            	fragmentPlayListInterface.onFragmentPlayListButton5();
             }
         });
         b6 = (Button)fragmentView.findViewById(R.id.pl_b6);
         b6.setOnClickListener(new View.OnClickListener() { // 删除
             @Override
             public void onClick(View view) {
-            	FragmentPlayListInterface.onFragmentPlayListButton6();
+            	fragmentPlayListInterface.onFragmentPlayListButton6();
             }
         });
 
@@ -146,7 +147,7 @@ public class FragmentPlayList  extends Fragment {
             Log.d(LocalConst.DTAG,"FragmentPlayList maa is null pointer!");
         }
         
-        mService = FragmentPlayListInterface.getServiceConnection();
+        mService = fragmentPlayListInterface.getServiceConnection();
 		
     }
     public void setPathView(String path){
@@ -160,7 +161,7 @@ public class FragmentPlayList  extends Fragment {
     private class ItemClicklistener implements AdapterView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        	FragmentPlayListInterface.onFragmentPlayListClicked(i);
+        	fragmentPlayListInterface.onFragmentPlayListClicked(i);
 
             Log.d(LocalConst.DTAG,"FragmentPlayList ItemClicklistener is called!");
         }
@@ -171,14 +172,18 @@ public class FragmentPlayList  extends Fragment {
         Log.d(LocalConst.PL, "FragmentPlayList.onAttach() "+listAdapter);
         try{
         	Log.d(LocalConst.DTAG,"FragmentPlayList check if activity implement interface....");
-        	FragmentPlayListInterface = (FragmentPlayListInterface)activity;
+        	fragmentPlayListInterface = (FragmentPlayListInterface)activity;
             Log.d(LocalConst.DTAG,"activity implemented interface!");
         }catch(ClassCastException e){
             Log.d(LocalConst.DTAG,"FragmentPlayList onAttach() throw new ClassCastException!");
             throw new ClassCastException(activity.toString()+ " must implement "
-                    +FragmentPlayListInterface.toString());
+                    +fragmentPlayListInterface.toString());
         }
         Log.d(LocalConst.DTAG,"FragmentPlayList onAttach() is ended!");
+        
+        fragmentPlayListInterface.sysAttachFragmentPlayListLowMem(this);
+        
+        
     }
 
 }

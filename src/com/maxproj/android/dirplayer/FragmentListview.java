@@ -33,7 +33,7 @@ public class FragmentListview extends Fragment {
         void onFragmentButton4(int tab);
         void onFragmentButton5(int tab);
         void onFragmentButton6(int tab);
-        void updateFragmentListviewWhenRecreate(int tab, FragmentListview fragment);
+        void sysAttachFragmentListviewLowMem(int tab, FragmentListview fragment);
     }
     private FragmentListviewInterface fragmentListviewInterface = null;
 
@@ -227,7 +227,7 @@ public class FragmentListview extends Fragment {
 
         if (tab == 3){ // 系统帮忙创建的，更新到activity
         	tab = ((DirPlayerActivity) getActivity()).sysAttachFragment;
-        	fragmentListviewInterface.updateFragmentListviewWhenRecreate(
+        	fragmentListviewInterface.sysAttachFragmentListviewLowMem(
         			tab, 
         			this);
         	((DirPlayerActivity) getActivity()).sysAttachFragment++;
