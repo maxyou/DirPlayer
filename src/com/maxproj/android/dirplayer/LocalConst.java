@@ -87,17 +87,19 @@ public class LocalConst {
 	/**
 	 * 文件命令
 	 */
-    public static final int CMD_COPY = 1;
-    public static final int CMD_MOVE = 2;
-    public static final int CMD_DELETE = 3;
-    public static final int CMD_FRESH = 4;
-    public static final int CMD_MKDIR = 5;
-    public static final int CMD_PLAY = 6;
+    public static final int CMD_PLAY = 1;
+    public static final int CMD_COPY = 2;
+    public static final int CMD_MOVE = 3;
+    public static final int CMD_DELETE = 4;
+    public static final int CMD_FRESH = 5;
+    public static final int CMD_MKDIR = 6;
+    public static final int CMD_RENAME = 7;
     
     
     public static String byteConvert(long bytes){
     	return humanReadableByteCount(bytes, true);
     }
+    //copy from http://stackoverflow.com/questions/3758606/how-to-convert-byte-size-into-human-readable-format-in-java
     public static String humanReadableByteCount(long bytes, boolean si) {
         int unit = si ? 1000 : 1024;
         if (bytes < unit) return bytes + " B";

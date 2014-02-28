@@ -73,6 +73,7 @@ public class DialogFragmentProgress extends DialogFragment {
 					public void onClick(DialogInterface dialog, int which) {
 						// TODO Auto-generated method stub
 						((DirPlayerActivity) getActivity()).cancelCopy();
+						((DirPlayerActivity) getActivity()).activateNextCmd();
 					}
 				})
 				.setPositiveButton(R.string.background_copy, new OnClickListener() {

@@ -757,6 +757,10 @@ public class DirPlayerActivity extends FragmentActivity implements
 					case LocalConst.CMD_PLAY:
 						Log.d(LocalConst.DTAG, "mkdir at tab: " + fc.fresh);
 						//servicePlay();
+					case LocalConst.CMD_RENAME:
+						Log.d(LocalConst.DTAG, "mkdir at tab: " + fc.fresh);
+						rename(fc.src, fc.force);
+						break;
 					default:
 					}
 
@@ -781,6 +785,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 			}
 		}
 	}
+
 	private void mkDir(final String newDirParantStr, boolean force){
 		
 		new DialogFragment() {
@@ -1084,6 +1089,43 @@ public class DirPlayerActivity extends FragmentActivity implements
 
 	}
 	
+	private void rename(File f , boolean force){
+
+		DialogFragmentRename dfr = DialogFragmentRename.newInstance(f);
+		dfr.show(getSupportFragmentManager(), "");
+		
+		// 注意不能在这里激活handler，要在本次对话操作完成之后
+//		cmdHandler.sendEmptyMessage(1);
+		
+	}
+	public void cancelRename(){
+		/**
+		 * rename之外的其他命令继续执行，包括frash
+		 * 似乎也只有frash
+		 */
+		Iterator<FileCmd> iter = cmdList.iterator();
+		while (iter.hasNext()) {
+			if (iter.next().cmd == LocalConst.CMD_RENAME)
+				iter.remove();
+		}
+	}
+	
+
+	public void activateNextCmd(){
+		cmdHandler.sendEmptyMessage(1);
+	}
+	
+	public void cancelCopy(){
+		/**
+		 * copy之外的其他命令继续执行，包括frash
+		 * 似乎也只有frash
+		 */
+		Iterator<FileCmd> iter = cmdList.iterator();
+		while (iter.hasNext()) {
+			if (iter.next().cmd == LocalConst.CMD_COPY)
+				iter.remove();
+		}
+	}
 	/**
 	 * 被Handler调用
 	 * 
@@ -1225,14 +1267,8 @@ public class DirPlayerActivity extends FragmentActivity implements
 		
 		setShowCopyProcess(true);
 	}
-	public void cancelCopy(){
 
-		Iterator<FileCmd> iter = cmdList.iterator();
-		while (iter.hasNext()) {
-			if (iter.next().cmd == LocalConst.CMD_COPY)
-				iter.remove();
-		}
-	}
+	
 	public void calcSelectItems(int tab){
 		selectedItems[tab].clear();
 		for (LvRow lr : viewListItems[tab]) {
@@ -1273,14 +1309,22 @@ public class DirPlayerActivity extends FragmentActivity implements
 		 * 右窗口 == B窗口 == 数组下边1 == tab 1
 		 * 注意移动时需要刷新两边
 		 */
-		case 0: // 从A拷贝到B
+		case 0: // 添加到播放列表
+			for (LvRow lr : selectedItems[tab]) {
+				addToPlayList(lr.getFile());
+			}
+			savePlayList2File();
+			updatePlayListAdapter();
+			Log.d(LocalConst.DTAG, "cmdList.size(): "+cmdList.size());
+			break;
+		case 1: // 从A拷贝到B
 			for (LvRow lr : selectedItems[0]) {
 				cmdList.add(new FileCmd(lr.getFile(), currentPath[1], true,
 						LocalConst.CMD_COPY, 0));
 			}
 			cmdList.add(new FileCmd(null, null, true, LocalConst.CMD_FRESH, 1));
 			break;
-		case 1: // 从A移动到B
+		case 2: // 从A移动到B
 			for (LvRow lr : selectedItems[0]) {
 				cmdList.add(new FileCmd(lr.getFile(), currentPath[1], true,
 						LocalConst.CMD_MOVE, 0));
@@ -1288,14 +1332,14 @@ public class DirPlayerActivity extends FragmentActivity implements
 			cmdList.add(new FileCmd(null, null, true, LocalConst.CMD_FRESH, 0));// 两边都刷新
 			cmdList.add(new FileCmd(null, null, true, LocalConst.CMD_FRESH, 1));
 			break;
-		case 2: // 从B拷贝到A
+		case 3: // 从B拷贝到A
 			for (LvRow lr : selectedItems[1]) {
 				cmdList.add(new FileCmd(lr.getFile(), currentPath[0], true,
 						LocalConst.CMD_COPY, 0));
 			}
 			cmdList.add(new FileCmd(null, null, true, LocalConst.CMD_FRESH, 0));
 			break;
-		case 3: // 从B移动到A
+		case 4: // 从B移动到A
 			for (LvRow lr : selectedItems[1]) {
 				cmdList.add(new FileCmd(lr.getFile(), currentPath[0], true,
 						LocalConst.CMD_MOVE, 0));
@@ -1303,25 +1347,24 @@ public class DirPlayerActivity extends FragmentActivity implements
 			cmdList.add(new FileCmd(null, null, true, LocalConst.CMD_FRESH, 0));
 			cmdList.add(new FileCmd(null, null, true, LocalConst.CMD_FRESH, 1));
 			break;
-		case 4: // 删除当前窗口所选
+		case 5: // 删除当前窗口所选
 			for (LvRow lr : selectedItems[tab]) {
 				cmdList.add(new FileCmd(lr.getFile(), null, false, LocalConst.CMD_DELETE,
 						0));
 			}
 			cmdList.add(new FileCmd(null, null, true, LocalConst.CMD_FRESH, tab));
 			break;
-		case 5: // 创建文件夹
+		case 6: // 创建文件夹
 			cmdList.add(new FileCmd(null, currentPath[tab], false, LocalConst.CMD_MKDIR, tab));
 			cmdList.add(new FileCmd(null, null, true, LocalConst.CMD_FRESH, tab));
 			Log.d(LocalConst.DTAG, "cmdList.size(): "+cmdList.size());
 			break;
-		case 6: // 添加到播放列表
+		case 7: // 改名
 			for (LvRow lr : selectedItems[tab]) {
-				addToPlayList(lr.getFile());
+				cmdList.add(new FileCmd(lr.getFile(), null, false, LocalConst.CMD_RENAME,
+						0));
 			}
-			savePlayList2File();
-			updatePlayListAdapter();
-			Log.d(LocalConst.DTAG, "cmdList.size(): "+cmdList.size());
+			cmdList.add(new FileCmd(null, null, true, LocalConst.CMD_FRESH, tab));
 			break;
 
 		default:

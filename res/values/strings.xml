@@ -7,7 +7,7 @@
     </string>
     <string name="dealby" >请选择处理程序
     </string>
-    <string name="about">关于(DirPlayer ver0.94 hyyou@foxmail.com)
+    <string name="about">DirPlayer / ver0.95 / dev@dirplayer.com)
     </string>
     <string name="help">帮助
     </string>
@@ -120,6 +120,23 @@
     <string name="seting1_summ">目前选择显示顶部标题条
     </string>
     <string name="seting1_summ2">目前选择隐藏顶部标题条
+    </string>
+
+    
+    <string name="rename_prompt">改名
+    </string>
+    <string name="rename_origin_prompt">原名：
+    </string>
+    <string name="rename_new_prompt">改为：
+    </string>
+    
+    <string name="rename_negative">取消
+    </string>
+    <string name="rename_neutral">取消所有
+    </string>
+    <string name="rename_positive">确定
+    </string>
+    <string name="rename_fail_notice">由于某种原因，本次改名失败
     </string>
     
 </resources>
