@@ -1190,7 +1190,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 			 */
 			if (mime !=null){
 				if(mime.startsWith("audio/")){	
-					LvRow lr = new LvRow("" + f.getName(), "" + f.length(), ""
+					LvRow lr = new LvRow("" + f.getName(), "" + LocalConst.byteConvert(f.length()), ""
 						+ sdf.format(f.lastModified()), f, false, 2, mime, LocalConst.clear);
 					playListItems.add(lr);
 				}
@@ -1480,7 +1480,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 		}
 		for (File f : fileList[tab]) {
 			// viewListFiles.add(f);
-			LvRow lr = new LvRow("" + f.getName(), "" + f.length(), ""
+			LvRow lr = new LvRow("" + f.getName(), "" + LocalConst.byteConvert(f.length()), ""
 					+ sdf.format(f.lastModified()), f, false, 2, 
 					URLConnection.getFileNameMap().getContentTypeFor(f.getName()), LocalConst.clear);
 //			Log.d(LocalConst.DTAG, "add file: " + lr.getName());
@@ -2391,7 +2391,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 			while ((line = br.readLine()) != null) {
 				File f = new File(line);
 				LvRow lr = new LvRow("" + f.getName(), 
-						f.isDirectory()?"":"" + f.length(), 
+						f.isDirectory()?"":"" + LocalConst.byteConvert(f.length()), 
 						"" + sdf.format(f.lastModified()), 
 						f, 
 						false, 

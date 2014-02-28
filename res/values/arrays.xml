@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="cmdList">
-        <item >从左拷贝到右 ==&gt;</item>  
-        <item >从左移动到右 &#8212;&#8212;&gt;</item>  
-        <item >从右拷贝到左 &lt;==</item>  
-        <item >从右移动到左 &lt;&#8212;&#8212;</item>  
-        <item >删除当前窗口所选</item>
+        <item >从左拷贝到右</item>  
+        <item >从左移动到右</item>  
+        <item >从右拷贝到左</item>  
+        <item >从右移动到左</item>  
+        <item >删除当前所选</item>
         <item >创建文件夹</item>
-        <item >添加到播放列表</item>    
+        <item >加入播放列表</item>    
     </string-array>
     
     <string-array name="forceOption">

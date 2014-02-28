@@ -10,38 +10,50 @@
 
         <Button
             android:id="@+id/bm_b1"
-            android:layout_width="50dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"  
             android:layout_height="wrap_content"
+            android:padding="2dp"
             android:text="@string/bm_act1" />
 
         <Button
             android:id="@+id/bm_b2"
-            android:layout_width="50dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"  
             android:layout_height="wrap_content"
+            android:padding="2dp"
             android:text="@string/bm_act2" />
 
         <Button
             android:id="@+id/bm_b3"
-            android:layout_width="50dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"  
             android:layout_height="wrap_content"
+            android:padding="2dp"
             android:text="@string/bm_act3" />
 
         <Button
             android:id="@+id/bm_b4"
-            android:layout_width="50dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"  
             android:layout_height="wrap_content"
+            android:padding="2dp"
             android:text="@string/bm_act4" />
 
         <Button
             android:id="@+id/bm_b5"
-            android:layout_width="50dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"  
             android:layout_height="wrap_content"
+            android:padding="2dp"
             android:text="@string/bm_act5" />
 
         <Button
             android:id="@+id/bm_b6"
-            android:layout_width="50dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"  
             android:layout_height="wrap_content"
+            android:padding="2dp"
             android:text="@string/bm_act6" />
     </LinearLayout>
 

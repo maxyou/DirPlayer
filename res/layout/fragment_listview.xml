@@ -10,38 +10,50 @@
 
         <Button
             android:id="@+id/fl_b1"
-            android:layout_width="50dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"  
             android:layout_height="wrap_content"
+            android:padding="2dp"
             android:text="@string/fl_act1" />
 
         <Button
             android:id="@+id/fl_b2"
-            android:layout_width="50dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"  
             android:layout_height="wrap_content"
+            android:padding="2dp"
             android:text="@string/fl_act2" />
 
         <Button
             android:id="@+id/fl_b3"
-            android:layout_width="50dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"  
             android:layout_height="wrap_content"
+            android:padding="2dp"
             android:text="@string/fl_act3" />
 
         <Button
             android:id="@+id/fl_b4"
-            android:layout_width="50dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"  
             android:layout_height="wrap_content"
+            android:padding="2dp"
             android:text="@string/fl_act4" />
 
         <Button
             android:id="@+id/fl_b5"
-            android:layout_width="50dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"  
             android:layout_height="wrap_content"
+            android:padding="2dp"
             android:text="@string/fl_act5" />
         
         <Button
             android:id="@+id/fl_b6"
-            android:layout_width="50dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"  
             android:layout_height="wrap_content"
+            android:padding="2dp"
             android:text="@string/fl_act6" />
 
         
