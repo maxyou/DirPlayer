@@ -30,6 +30,10 @@ public class DialogFragmentRename extends DialogFragment {
 	    LayoutInflater inflater = getActivity().getLayoutInflater();
 	    final View v = inflater.inflate(R.layout.rename, null);
 	    
+		EditText et = (EditText) v.findViewById(R.id.rename_new);
+		et.setText(mf.getName());
+//		et.requestFocus();
+		
 		TextView tv = (TextView) v.findViewById(R.id.rename_origin);
 		tv.setText(mf.getName());
 
@@ -63,8 +67,6 @@ public class DialogFragmentRename extends DialogFragment {
 	        		Log.d(LocalConst.DTAG, "rename onClick()");
 	        		
 	        		EditText et = (EditText) v.findViewById(R.id.rename_new);
-	        		Log.d(LocalConst.DTAG, "rename find EditText()");
-
 	        		String newName = et.getText().toString();
 	        		Log.d(LocalConst.DTAG, "rename get new name"+newName);
 	        		
