@@ -186,4 +186,9 @@ public class FragmentPlayList  extends Fragment {
         
     }
 
+    @Override
+    public void onResume(){
+		super.onResume();
+		((DirPlayerActivity)getActivity()).updateFragmentLight();
+    }
 }

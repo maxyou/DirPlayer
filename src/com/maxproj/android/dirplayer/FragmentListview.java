@@ -65,7 +65,7 @@ public class FragmentListview extends Fragment {
 		//show path at upper of listview
 		//show_path = (TextView)fragmentView.findViewById(R.id.show_path);
         if(show_path !=null){
-        	show_path.setText("当前路径是"+currentPath);
+        	show_path.setText(getResources().getString(R.string.current_path_prompt) + currentPath);
             Log.d(LocalConst.FRAGMENT_LIFE,"setListviewAdapter(): show_path is set to "+currentPath);
         }else{
             Log.d(LocalConst.FRAGMENT_LIFE,"setListviewAdapter(): show_path is null pointer!");
@@ -149,7 +149,7 @@ public class FragmentListview extends Fragment {
 		//show path at upper of listview
 		show_path = (TextView)fragmentView.findViewById(R.id.show_path);
 //        if(show_path !=null){
-//        	show_path.setText("当前路径是"+currentPath);
+//        	show_path.setText(getResources().getString(R.string.current_path_prompt) + currentPath);
 //            Log.d(LocalConst.DTAG,"setListviewAdapter(): show_path is set to "+currentPath);
 //        }
 		Log.d(LocalConst.FRAGMENT_LIFE, "fragment onCreateView("+tab+") end!");
@@ -171,7 +171,7 @@ public class FragmentListview extends Fragment {
         }
         
         if(show_path !=null){
-        	show_path.setText("当前路径是"+currentPath);
+        	show_path.setText(getResources().getString(R.string.current_path_prompt) + currentPath);
             Log.d(LocalConst.DTAG,"setListviewAdapter(): show_path is "+tab+":"+currentPath);
         }
         
@@ -265,6 +265,9 @@ public class FragmentListview extends Fragment {
 		// TODO Auto-generated method stub
 		super.onResume();
 		Log.d(LocalConst.LIFECYCLE, "FragmentListview.onResume() "+tab+":"+currentPath+" "+this);
+
+		((DirPlayerActivity) getActivity()).updateFragmentLight();
+		
 	}
 	@Override
 	public void onSaveInstanceState(Bundle outState) {

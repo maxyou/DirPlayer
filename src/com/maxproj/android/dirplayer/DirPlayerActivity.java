@@ -472,6 +472,8 @@ public class DirPlayerActivity extends FragmentActivity implements
 					Log.d(LocalConst.DTAG, "audio/video: after mService.play(f, null)");
 					// mediaController.show(); // 开始播放时是否要显示一下控制面板？
 					Log.d(LocalConst.DTAG, "audio/video: after mediaController.show()");
+					Toast.makeText(this, getResources().getString(R.string.mediacontroller_prompt), 
+							Toast.LENGTH_LONG).show();
 				}
 			}
 			else if (mime.startsWith("video/")){
@@ -2282,6 +2284,10 @@ public class DirPlayerActivity extends FragmentActivity implements
 			clearVideoViewPlaying();
 			mService.playList(i);
 			//mediaController.show();
+			
+			Toast.makeText(this, getResources().getString(R.string.mediacontroller_prompt), 
+					Toast.LENGTH_LONG).show();
+			
 		}
 	}
 
@@ -2553,8 +2559,9 @@ public class DirPlayerActivity extends FragmentActivity implements
 					 * 其一是notifyDataSetChanged()-----发现这个可以
 					 * 其二是重新设置adapter
 					 */
-					
-					myArrayAdapter[i].notifyDataSetChanged();
+					if(myArrayAdapter[i] != null){
+						myArrayAdapter[i].notifyDataSetChanged();
+					}
 				}
 				Log.d(LocalConst.DTAG, "audio/video single: " + playStatus + " " + playType + " " + fileListPath);
 				return;
@@ -2580,10 +2587,18 @@ public class DirPlayerActivity extends FragmentActivity implements
 						lr.setPlayingStatus(LocalConst.clear);
 					}
 				}
-				playListArrayAdapter.notifyDataSetChanged();
+				if(playListArrayAdapter != null){
+					playListArrayAdapter.notifyDataSetChanged();
+				}
 				return;
 			}
 	    }
+	}
+
+	public void updateFragmentLight(){
+		if(mService != null){
+			mService.updateLight();
+		}
 	}
 	
 	@Override

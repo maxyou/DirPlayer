@@ -268,13 +268,11 @@ public class PlayService extends Service implements MediaPlayerControl {
 			*/
 			if(playingType == LocalConst.ListPlay){
 				mediaPlayer.setOnCompletionListener(listPlayListener);
-				lightenPlayList();
-				// 发送到notification
-				sendNotification();
 			}else if(playingType == LocalConst.SinglePlay){
 				mediaPlayer.setOnCompletionListener(singlePlayListener);
-				lightenFileList();
 			}
+			updateLight();
+			sendNotification();
 			
 			Log.d(LocalConst.DTAG, "audio/video: after sendNotification()");
 		} catch (IllegalStateException e) {
@@ -293,7 +291,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 			NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
 					.setSmallIcon(R.drawable.bottom)
 					.setContentTitle(playingFile.getName())
-					.setContentText("click to back!");
+					.setContentText(getResources().getString(R.string.notification_back_msg));
 			
 			Intent resultIntent = new Intent(this, DirPlayerActivity.class);
 			PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0,
@@ -336,17 +334,29 @@ public class PlayService extends Service implements MediaPlayerControl {
 			mediaPlayer.stop();
 	}
 
+	public void updateLight(){
+		if (mediaPlayer != null){
+			if(isPlaying()){
+				if(playingType == LocalConst.ListPlay){
+					lightenPlayList();
+					unLightenFileList();
+				}else if(playingType == LocalConst.SinglePlay){
+					lightenFileList();
+					unLightenPlayList();
+				}
+			}else{
+				unLightenPlayList();
+				unLightenFileList();
+			}
+		}
+	}
+	
 	public void clearMusicPlaying() {
 		// TODO Auto-generated method stub
 		Log.d(LocalConst.DTAG, "audio/video: begin clear music playing");
 		if (mediaPlayer != null){
-			if(playingType == LocalConst.ListPlay){
-				unLightenPlayList();
-				// 发送到notification
-				sendNotification();
-			}else if(playingType == LocalConst.SinglePlay){
-				unLightenFileList();
-			}
+			updateLight();
+			cancelNotification();
 
 			mediaPlayer.stop();
 			mediaPlayer.release();

@@ -7,7 +7,7 @@
     </string>
     <string name="dealby" >请选择处理程序
     </string>
-    <string name="about">联系邮箱： dev@dirplayer.com
+    <string name="about">联系开发者： dev@dirplayer.com
     </string>
     <string name="help">帮助
     </string>
@@ -16,6 +16,10 @@
     <string name="hello_world" >Hello world!
     </string>
     
+    <string name="notification_back_msg" >点击这里返回到播放器!
+    </string>
+    <string name="mediacontroller_prompt">从底部往上可以划出播放控制按钮
+    </string>
     
     <string name="title_section1">左窗口
     </string>
@@ -137,6 +141,10 @@
     <string name="rename_positive">确定
     </string>
     <string name="rename_fail_notice">由于某种原因，本次改名失败
+    </string>
+
+    
+    <string name="current_path_prompt">当前位置是
     </string>
     
 </resources>
