@@ -201,11 +201,13 @@ public class DirPlayerActivity extends FragmentActivity implements
     boolean mBound = false;    
 
     int playStatus = 0; //播放状态
+    int playStatus_fl_record = 0; //播放状态
     int playType = 0; //播放类型
     int playListIndex = 0; //列表下标
     int playListItemIndex = 0; //播放下标
     String playListPath; //列表播放的路径
     String fileListPath; //文件播放的路径
+    
     
     /**
      * 下面两个，放在这里初始化，还是放在onCreate()更好？
@@ -1560,15 +1562,22 @@ public class DirPlayerActivity extends FragmentActivity implements
 			viewListItems[tab].add(lr);
 		}
 		for (File f : fileList[tab]) {
+			
+			
 			// viewListFiles.add(f);
 			LvRow lr = new LvRow("" + f.getName(), "" + LocalConst.byteConvert(f.length()), ""
 					+ sdf.format(f.lastModified()), f, false, 2, 
-					URLConnection.getFileNameMap().getContentTypeFor(f.getName()), LocalConst.clear);
+					URLConnection.getFileNameMap().getContentTypeFor(f.getName()),
+//					((playType == LocalConst.SinglePlay)&&(f.getPath().equals(fileListPath)))?
+//							LocalConst.playing:LocalConst.clear
+					((f.getPath().equals(fileListPath)))?
+							playStatus_fl_record:LocalConst.clear
+					);
 //			Log.d(LocalConst.DTAG, "add file: " + lr.getName());
 			viewListItems[tab].add(lr);
 		}
 		// System.out.println(viewListItems);
-		Log.d(LocalConst.DTAG, "viewListItems is constructed!");
+		Log.d(LocalConst.TMP, "playType " + playType + " playStatus_fl_record " + playStatus_fl_record);
 	}
 
 	@Override
@@ -2340,23 +2349,23 @@ public class DirPlayerActivity extends FragmentActivity implements
 
 	}
 	public void moveUpSelected(LinkedList<LvRow> list){
-		Log.d(LocalConst.TMP, "move up ....");
+		Log.d(LocalConst.DTAG, "move up ....");
 		if (list.size() < 2)
 			return;
 		
 		for(int i = 0;i < list.size() - 1 ;i++){
-			Log.d(LocalConst.TMP, "compare in pair: " + i);
+			Log.d(LocalConst.DTAG, "compare in pair: " + i);
 			// 用冒泡的方式来实现被选择项上移
 			// 首先获取一对
 			LvRow lr_first = list.get(i);
 			if (lr_first.getSelected()){
-				Log.d(LocalConst.TMP, "the first in pair is selected");
+				Log.d(LocalConst.DTAG, "the first in pair is selected");
 				continue; // 如果第一个被选择了，无论第二个是什么，什么也不做
 			}
 			
 			LvRow lr_second = list.get(i+1);
 			if (!lr_second.getSelected()){
-				Log.d(LocalConst.TMP, "the second in pair is not selected");
+				Log.d(LocalConst.DTAG, "the second in pair is not selected");
 				continue; // 由于第一个没有被选择，第二个如果也没被选择，那么什么也不做
 			}
 			
@@ -2364,7 +2373,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 			LvRow lr = list.remove(i+1);
 			list.add(i,lr);
 			
-			Log.d(LocalConst.TMP, "move up in pair: " + i);
+			Log.d(LocalConst.DTAG, "move up in pair: " + i);
 		}
 		
 	}
@@ -2540,6 +2549,14 @@ public class DirPlayerActivity extends FragmentActivity implements
 			playStatus =  intent.getIntExtra(LocalConst.PLAY_STATUS, -1);
 			playType = intent.getIntExtra(LocalConst.PLAY_TYPE, -1);
 			if(playType == LocalConst.SinglePlay){
+				
+				/**
+				 * 是否正在播放左右窗口的文件？
+				 * 这里做一个记录
+				 * 如果没有播放了，那么这里应该能记录到
+				 */
+				playStatus_fl_record = playStatus;
+				
 				fileListPath = intent.getStringExtra(LocalConst.FILELIST_PATH);
 				
 				/**
@@ -2564,7 +2581,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 						myArrayAdapter[i].notifyDataSetChanged();
 					}
 				}
-				Log.d(LocalConst.DTAG, "audio/video single: " + playStatus + " " + playType + " " + fileListPath);
+				Log.d(LocalConst.DTAG, "audio/video single: " + playStatus_fl_record + " " + playType + " " + fileListPath);
 				return;
 			}else if(playType == LocalConst.ListPlay){
 				playListPath = intent.getStringExtra(LocalConst.PLAYLIST_PATH);
