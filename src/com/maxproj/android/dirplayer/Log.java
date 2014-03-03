@@ -28,7 +28,7 @@ public class Log {
 	 * 		outputSwitch = 2
 	 * 			output all
 	 */
-	public static int outputSwitch = 1;	
+	public static int outputSwitch = 2;	
 	public static String tagFilter = LocalConst.TMP;
 //	public static ArrayList<String> tagFilter = new ArrayList<String>();
 

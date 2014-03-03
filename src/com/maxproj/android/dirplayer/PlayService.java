@@ -289,30 +289,33 @@ public class PlayService extends Service implements MediaPlayerControl {
 
 	public void sendNotification() {
 		String songName;
-		if (playListItemsService != null) {
-			LvRow lr = playListItemsService.get(playListItemIndex);
-			if (lr != null) {
-				NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
-						.setSmallIcon(R.drawable.bottom)
-						.setContentTitle(lr.getName())
-						.setContentText("click to back!");
-				
-				Intent resultIntent = new Intent(this, DirPlayerActivity.class);
-				PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0,
-						resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+		if (playingFile != null) {
+			NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
+					.setSmallIcon(R.drawable.bottom)
+					.setContentTitle(playingFile.getName())
+					.setContentText("click to back!");
+			
+			Intent resultIntent = new Intent(this, DirPlayerActivity.class);
+			PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0,
+					resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-				mBuilder.setContentIntent(resultPendingIntent);
-				// Sets an ID for the notification
-				int mNotificationId = 001;
-				// Gets an instance of the NotificationManager service
-				NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-				// Builds the notification and issues it.
-				mNotifyMgr.notify(mNotificationId, mBuilder.build());
-			}
+			mBuilder.setContentIntent(resultPendingIntent);
+			// Sets an ID for the notification
+			int mNotificationId = 001;
+			// Gets an instance of the NotificationManager service
+			NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+			// Builds the notification and issues it.
+			mNotifyMgr.notify(mNotificationId, mBuilder.build());
 		}
-
 	}
 
+	public void cancelNotification(){
+		// Gets an instance of the NotificationManager service
+		NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+		// Builds the notification and issues it.
+		mNotifyMgr.cancelAll();
+	}
+	
 	@Override
 	public void start() {
 		// TODO Auto-generated method stub

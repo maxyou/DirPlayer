@@ -206,7 +206,43 @@ public class DirPlayerActivity extends FragmentActivity implements
     int playListItemIndex = 0; //播放下标
     String playListPath; //列表播放的路径
     String fileListPath; //文件播放的路径
-	
+    
+    /**
+     * 下面两个，放在这里初始化，还是放在onCreate()更好？
+     */
+    
+    /** Defines callbacks for service binding, passed to bindService() */
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            LocalBinder binder = (LocalBinder) service;
+            mService = binder.getService();
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+
+
+    };
+
+	View.OnTouchListener vvOnTouchListener = new View.OnTouchListener(){
+
+		@Override
+		public boolean onTouch(View v, MotionEvent event) {
+			// TODO Auto-generated method stub
+			
+			mDetectorVideoView.onTouchEvent(event);
+			return true;
+		}
+		
+	};
+
 	/**
 	 * 书签窗口相关定义
 	 */
@@ -1692,7 +1728,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 		mediaController.setAnchorView(mainWindow);
 		mediaController.setEnabled(true);					
 
-		// 视频控制器使用vitamio内含的
+		// 视频控制器使用videoview内含的
 		vv = (VideoView)findViewById(R.id.videoview); // 视频播放窗口
 		videoController = new MediaController(this);
 		//videoController.setMediaPlayer(videoPlayerControl);
@@ -1752,6 +1788,14 @@ public class DirPlayerActivity extends FragmentActivity implements
 		// TODO Auto-generated method stub
 		super.onDestroy();
 		Log.d(LocalConst.LIFECYCLE, "DirPlayerActivity.onDestroy()");
+		
+		/**
+		 * 如果不是正在播放状态，退出app时关掉notification
+		 */
+		if(!mService.isPlaying()){
+			mService.cancelNotification();
+		}
+		
 	}
 	@Override
 	protected void onResume() {
@@ -1783,37 +1827,6 @@ public class DirPlayerActivity extends FragmentActivity implements
 		super.recreate();
 		Log.d(LocalConst.LIFECYCLE, "DirPlayerActivity.recreate()");
 	}
-    /** Defines callbacks for service binding, passed to bindService() */
-    private ServiceConnection mConnection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName className,
-                IBinder service) {
-            // We've bound to LocalService, cast the IBinder and get LocalService instance
-            LocalBinder binder = (LocalBinder) service;
-            mService = binder.getService();
-            mBound = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            mBound = false;
-        }
-
-
-    };
-
-	View.OnTouchListener vvOnTouchListener = new View.OnTouchListener(){
-
-		@Override
-		public boolean onTouch(View v, MotionEvent event) {
-			// TODO Auto-generated method stub
-			
-			mDetectorVideoView.onTouchEvent(event);
-			return true;
-		}
-		
-	};
 
 	 class VideoViewGestureListener extends GestureDetector.SimpleOnGestureListener {
 	        
@@ -1923,15 +1936,14 @@ public class DirPlayerActivity extends FragmentActivity implements
 					float distanceX, float distanceY) {
 				
 				//如果从底部滑出，并且媒体播放器存在的话，调用其show方法
-				Log.d(LocalConst.DTAG,"onScroll(): "
-						+e1.getX()+"/"+(widthHeightInPixels[0] - 20)+" "
-						+e1.getY()+"/"+(widthHeightInPixels[1] - 20));
+//				Log.d(LocalConst.DTAG,"onScroll(): "
+//						+e1.getX()+"/"+(widthHeightInPixels[0] - 20)+" "
+//						+e1.getY()+"/"+(widthHeightInPixels[1] - 20));
 				
 				if(
 						(dirPlayerState == LocalConst.STATE_MUSIC)
-						&&(mService!=null)
-//						&&(mService.isPlaying())
-						&&(mediaController != null))
+						||(mService.isPlaying())
+						)
 				{
 					
 				    if (
@@ -1941,7 +1953,11 @@ public class DirPlayerActivity extends FragmentActivity implements
 				    	)
 					{
 						Log.d(LocalConst.DTAG,"onScroll() find scroll from bottom!");
-						mediaController.show();
+						if(mediaController != null){
+							mediaController.show();
+						}else{
+							Toast.makeText(LocalConst.dirPlayerActivity, "mediaController is null!", Toast.LENGTH_SHORT).show();
+						}
 						return true;
 				    }
 				}
