@@ -65,14 +65,28 @@ public class LocalConst {
     public static final int SinglePlay       = 1;
     public static final int ListPlay      = 2;
     
+    // status
     public static final int clear       = 0;
     public static final int playing       = 1;
-    public static final int pause       = 2;
-    public static final int stop      = 3;
+    public static final int paused       = 2;
+    public static final int stopped      = 3;
+    
+    // notification operation
+    public static final int op_play       = 1;
+    public static final int op_pause       = 2;
+    public static final int op_stop      = 3;
+    public static final int op_last      = 4;
+    public static final int op_next      = 5;
     
     
 	// 过滤器
-	public static final String BROADCAST_ACTION = "com.maxproj.android.dirplayer.BROADCAST";
+	public static final String BROADCAST_ACTION = "com.maxproj.android.dirplayer.BROADCAST_ACTION";
+	public static final String NOTIFICATION_ACTION = "com.maxproj.android.dirplayer.NOTIFICATION_ACTION";
+	public static final String NOTIFICATION_OP = "OP";	
+	public static final String NOTIFICATION_GOTO_LAST = "com.maxproj.android.dirplayer.NOTIFICATION_LAST";
+	public static final String NOTIFICATION_GOTO_PLAY = "com.maxproj.android.dirplayer.NOTIFICATION_PLAY";
+	public static final String NOTIFICATION_GOTO_PAUSE = "com.maxproj.android.dirplayer.NOTIFICATION_PAUSE";
+	public static final String NOTIFICATION_GOTO_NEXT = "com.maxproj.android.dirplayer.NOTIFICATION_NEXT";
 	// 消息类别
 	public static final String 	PLAY_TYPE = "com.maxproj.android.dirplayer.PLAY_TYPE";
 	// 消息动作

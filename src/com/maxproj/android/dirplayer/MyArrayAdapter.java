@@ -78,12 +78,12 @@ public class MyArrayAdapter extends ArrayAdapter<LvRow>{
 
         ImageView fpi = (ImageView)fileView.findViewById(R.id.fileplayingicon);
         if ((lr.getPlayingStatus() == LocalConst.playing)
-        		|| (lr.getPlayingStatus() == LocalConst.pause))
+        		|| (lr.getPlayingStatus() == LocalConst.paused))
         {
         	fpi.setVisibility(View.VISIBLE);
         	fpi.setImageResource(R.drawable.playingmusic);
         }else if ((lr.getPlayingStatus() == LocalConst.clear)
-        		|| (lr.getPlayingStatus() == LocalConst.stop))
+        		|| (lr.getPlayingStatus() == LocalConst.stopped))
         {
         	fpi.setVisibility(View.GONE);
         }

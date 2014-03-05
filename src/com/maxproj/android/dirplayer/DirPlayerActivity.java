@@ -1577,7 +1577,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 			viewListItems[tab].add(lr);
 		}
 		// System.out.println(viewListItems);
-		Log.d(LocalConst.TMP, "playType " + playType + " playStatus_fl_record " + playStatus_fl_record);
+		Log.d(LocalConst.DTAG, "playType " + playType + " playStatus_fl_record " + playStatus_fl_record);
 	}
 
 	@Override

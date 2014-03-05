@@ -13,7 +13,10 @@ import java.util.LinkedList;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 //import io.vov.vitamio.MediaPlayer;
 //import io.vov.vitamio.MediaPlayer.OnCompletionListener;
 //import io.vov.vitamio.MediaPlayer.OnPreparedListener;
@@ -27,7 +30,9 @@ import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 
+import android.view.View;
 import android.widget.MediaController.MediaPlayerControl;
+import android.widget.RemoteViews;
 
 /**
  * @author Max You
@@ -37,7 +42,9 @@ public class PlayService extends Service implements MediaPlayerControl {
 
 
 	private final IBinder mBinder = new LocalBinder();
-
+	
+	NotificationInforReceiver mNotificationInforReceiver;
+	
 	/**
 	 * 播放列表
 	 */
@@ -161,15 +168,40 @@ public class PlayService extends Service implements MediaPlayerControl {
 
 		Log.d(LocalConst.DTAG, "service: onCreate()");
 		updatePlayList();
+	
 		
+		/**
+		 * notification上面的按键将发送intent给service
+		 * notification上面其他部分被点击后发送pendingIntent给activity
+		 */
+        IntentFilter mNotificationIntentFilter = new IntentFilter();
+        mNotificationIntentFilter.addAction(LocalConst.NOTIFICATION_GOTO_LAST);
+        mNotificationIntentFilter.addAction(LocalConst.NOTIFICATION_GOTO_NEXT);
+        mNotificationIntentFilter.addAction(LocalConst.NOTIFICATION_GOTO_PLAY);
+        mNotificationIntentFilter.addAction(LocalConst.NOTIFICATION_GOTO_PAUSE);
+   
+        mNotificationInforReceiver =
+                new NotificationInforReceiver();
+        /**
+         * 注意，使用LocalBroadcastManager注册的receiver只能接收本app内部的intent
+         * 但notification在本app之外
+         * 所以这里需要直接使用registerReceiver来注册
+         */
+        registerReceiver(
+        		mNotificationInforReceiver,
+        		mNotificationIntentFilter);
 		// Vitamio.initialize(this);
 	}
 
 	@Override
 	public void onDestroy() {
 		Log.d(LocalConst.DTAG, "service: onDestroy()");
-		if (mediaPlayer != null)
+		if (mediaPlayer != null){
 			mediaPlayer.release();
+		}
+		
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(
+        		mNotificationInforReceiver);
 	}
 
 	/**
@@ -272,7 +304,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 				mediaPlayer.setOnCompletionListener(singlePlayListener);
 			}
 			updateLight();
-			sendNotification();
+			sendNotification(LocalConst.playing);
 			
 			Log.d(LocalConst.DTAG, "audio/video: after sendNotification()");
 		} catch (IllegalStateException e) {
@@ -284,8 +316,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 		}
 
 	}
-
-	public void sendNotification() {
+	public void sendNotification_old() {
 		String songName;
 		if (playingFile != null) {
 			NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
@@ -306,6 +337,71 @@ public class PlayService extends Service implements MediaPlayerControl {
 			mNotifyMgr.notify(mNotificationId, mBuilder.build());
 		}
 	}
+	public void sendNotification(int status) {
+		
+		if (playingFile != null) {
+			
+			/**
+			 * 给notification构建remoteView
+			 */
+			RemoteViews notifyView = new RemoteViews(this.getPackageName(), R.layout.notification);
+			
+			notifyView.setTextViewText(R.id.notification_name, playingFile.getName());
+			notifyView.setImageViewResource(R.id.notification_icon, R.drawable.icon);
+			if(status == LocalConst.playing){
+				notifyView.setViewVisibility(R.id.notification_goto_pause, View.VISIBLE);
+				notifyView.setViewVisibility(R.id.notification_goto_play, View.GONE);
+			}else{
+				notifyView.setViewVisibility(R.id.notification_goto_pause, View.GONE);
+				notifyView.setViewVisibility(R.id.notification_goto_play, View.VISIBLE);
+			}			
+			notifyView.setOnClickPendingIntent(R.id.notification_goto_pause, 
+					PendingIntent.getBroadcast(this, 0,
+							new Intent(LocalConst.NOTIFICATION_GOTO_PAUSE),
+							PendingIntent.FLAG_UPDATE_CURRENT));			
+			notifyView.setOnClickPendingIntent(R.id.notification_goto_last, 
+					PendingIntent.getBroadcast(this, 0,
+							new Intent(LocalConst.NOTIFICATION_GOTO_LAST),
+							PendingIntent.FLAG_UPDATE_CURRENT));
+			notifyView.setOnClickPendingIntent(R.id.notification_goto_next, 
+					PendingIntent.getBroadcast(this, 0,
+							new Intent(LocalConst.NOTIFICATION_GOTO_NEXT),
+							PendingIntent.FLAG_UPDATE_CURRENT));
+			notifyView.setOnClickPendingIntent(R.id.notification_goto_play, 
+					PendingIntent.getBroadcast(this, 0,
+							new Intent(LocalConst.NOTIFICATION_GOTO_PLAY),
+							PendingIntent.FLAG_UPDATE_CURRENT));
+			
+			
+			NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
+						
+					.setSmallIcon(R.drawable.bottom)
+					.setContentTitle(playingFile.getName())
+					.setContentText(getResources().getString(R.string.notification_back_msg))					
+			
+					/**
+					 * 非常奇怪，上面三个set不能省略，否则notification就不显示
+					 * 但上面三项并不显示，因为使用了remoteView及其布局
+					 */
+					
+					.setContent(notifyView);
+			
+			
+			Intent resultIntent = new Intent(this, DirPlayerActivity.class);
+			PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0,
+					resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+			mBuilder.setContentIntent(resultPendingIntent);
+			// Sets an ID for the notification
+			int mNotificationId = 001;
+			// Gets an instance of the NotificationManager service
+			NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+			// Builds the notification and issues it.
+			mNotifyMgr.notify(mNotificationId, mBuilder.build());
+			
+//			Log.d(LocalConst.TMP, "end of sendNotification()");
+		}
+	}
 
 	public void cancelNotification(){
 		// Gets an instance of the NotificationManager service
@@ -314,6 +410,47 @@ public class PlayService extends Service implements MediaPlayerControl {
 		mNotifyMgr.cancelAll();
 	}
 	
+
+	private class NotificationInforReceiver extends BroadcastReceiver
+	{
+		private NotificationInforReceiver(){ // Prevents instantiation
+		}
+	    // Called when the BroadcastReceiver gets an Intent it's registered to receive
+		@Override
+	    public void onReceive(Context context, Intent intent) {
+			
+			Log.d(LocalConst.TMP, "service: onReceive()");
+			
+			/**
+			 * 接收如下信息
+			 * 		播放、暂停、上一首、下一首
+			 */
+			if(mediaPlayer == null)
+				return;
+			
+		    String action = intent.getAction();
+
+		    if(LocalConst.NOTIFICATION_GOTO_LAST.equals(action)) {
+		        Log.d(LocalConst.TMP,"Pressed last");
+		        
+		        
+		    } else if(LocalConst.NOTIFICATION_GOTO_NEXT.equals(action)) {
+		        Log.d(LocalConst.TMP,"Pressed next");
+		        
+		        
+		    } else if(LocalConst.NOTIFICATION_GOTO_PLAY.equals(action)) {
+		        Log.d(LocalConst.TMP,"Pressed play");
+				mediaPlayer.start();
+				sendNotification(LocalConst.playing);
+				
+				
+		    } else if(LocalConst.NOTIFICATION_GOTO_PAUSE.equals(action)) {
+		        Log.d(LocalConst.TMP,"Pressed pause");
+				mediaPlayer.pause();
+				sendNotification(LocalConst.paused);
+		    }
+	    }
+	}
 	@Override
 	public void start() {
 		// TODO Auto-generated method stub

@@ -16,6 +16,16 @@
     <string name="hello_world" >Hello world!
     </string>
     
+    
+    
+    <string name="notification_goto_last" >上一首
+    </string>
+    <string name="notification_goto_next" >下一首
+    </string>
+    <string name="notification_goto_pause" >按我暂停
+    </string>
+    <string name="notification_goto_play" >按我播放
+    </string>
     <string name="notification_back_msg" >点击这里返回到播放器!
     </string>
     <string name="mediacontroller_prompt">从底部往上可以划出播放控制按钮
