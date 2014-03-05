@@ -348,13 +348,23 @@ public class PlayService extends Service implements MediaPlayerControl {
 			
 			notifyView.setTextViewText(R.id.notification_name, playingFile.getName());
 			notifyView.setImageViewResource(R.id.notification_icon, R.drawable.icon);
+			
 			if(status == LocalConst.playing){
 				notifyView.setViewVisibility(R.id.notification_goto_pause, View.VISIBLE);
 				notifyView.setViewVisibility(R.id.notification_goto_play, View.GONE);
 			}else{
 				notifyView.setViewVisibility(R.id.notification_goto_pause, View.GONE);
 				notifyView.setViewVisibility(R.id.notification_goto_play, View.VISIBLE);
-			}			
+			}
+			
+			if(playingType == LocalConst.ListPlay){
+				notifyView.setViewVisibility(R.id.notification_goto_last, View.VISIBLE);
+				notifyView.setViewVisibility(R.id.notification_goto_next, View.VISIBLE);
+			}else if(playingType == LocalConst.SinglePlay){
+				notifyView.setViewVisibility(R.id.notification_goto_last, View.GONE);
+				notifyView.setViewVisibility(R.id.notification_goto_next, View.GONE);
+			}
+			
 			notifyView.setOnClickPendingIntent(R.id.notification_goto_pause, 
 					PendingIntent.getBroadcast(this, 0,
 							new Intent(LocalConst.NOTIFICATION_GOTO_PAUSE),
@@ -436,8 +446,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 		        
 		    } else if(LocalConst.NOTIFICATION_GOTO_NEXT.equals(action)) {
 		        Log.d(LocalConst.TMP,"Pressed next");
-		        
-		        
+		        mediaPlayer.seekTo(mediaPlayer.getDuration());
 		    } else if(LocalConst.NOTIFICATION_GOTO_PLAY.equals(action)) {
 		        Log.d(LocalConst.TMP,"Pressed play");
 				mediaPlayer.start();
