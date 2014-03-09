@@ -11,66 +11,198 @@
         <Button
             android:id="@+id/pl_b1"
             android:layout_width="0dp"
-            android:layout_weight="1"  
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:padding="2dp"
             android:text="@string/pl_act1" />
 
         <Button
             android:id="@+id/pl_b2"
             android:layout_width="0dp"
-            android:layout_weight="1"  
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:padding="2dp"
             android:text="@string/pl_act2" />
 
         <Button
             android:id="@+id/pl_b3"
             android:layout_width="0dp"
-            android:layout_weight="1"  
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:padding="2dp"
             android:text="@string/pl_act3" />
 
         <Button
             android:id="@+id/pl_b4"
             android:layout_width="0dp"
-            android:layout_weight="1"  
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:padding="2dp"
             android:text="@string/pl_act4" />
-        
+
         <Button
             android:id="@+id/pl_b5"
             android:layout_width="0dp"
-            android:layout_weight="1"  
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:padding="2dp"
             android:text="@string/pl_act5" />
 
-        
         <Button
             android:id="@+id/pl_b6"
             android:layout_width="0dp"
-            android:layout_weight="1"  
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:padding="2dp"
             android:text="@string/pl_act6" />
-        
     </LinearLayout>
 
-    	<ListView 
-        android:id="@+id/fragment_playlist"
-    	android:layout_width="match_parent"
-        android:layout_height="0dp"          
-        android:layout_weight="1"
-        />
-    	
-    <TextView
-        android:id="@+id/current_play"
-        style="@style/lvRowText"
+    <RelativeLayout
         android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" >
+
+        <LinearLayout
+            android:id="@+id/fragment_playlist_path_1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="invisible" >
+
+            <ListView
+                android:id="@+id/fragment_playlist_1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/current_play_1"
+                style="@style/lvRowText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/pl_path" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/fragment_playlist_path_2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="invisible" >
+
+            <ListView
+                android:id="@+id/fragment_playlist_2"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/current_play_2"
+                style="@style/lvRowText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/pl_path" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/fragment_playlist_path_3"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="invisible" >
+
+            <ListView
+                android:id="@+id/fragment_playlist_3"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/current_play_3"
+                style="@style/lvRowText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/pl_path" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/fragment_playlist_path_4"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="invisible" >
+
+            <ListView
+                android:id="@+id/fragment_playlist_4"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/current_play_4"
+                style="@style/lvRowText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/pl_path" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/fragment_playlist_path_5"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="invisible" >
+
+            <ListView
+                android:id="@+id/fragment_playlist_5"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/current_play_5"
+                style="@style/lvRowText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/pl_path" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <RadioGroup
+        android:id="@+id/pl_tab_radiogroup"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="@string/pl_path" />
-        
+        android:orientation="horizontal" >
+
+        <RadioButton
+            android:id="@+id/pl_radio_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="表1" />
+
+        <RadioButton
+            android:id="@+id/pl_radio_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="表2" />
+
+        <RadioButton
+            android:id="@+id/pl_radio_3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="表3" />
+
+        <RadioButton
+            android:id="@+id/pl_radio_4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="表4" />
+
+        <RadioButton
+            android:id="@+id/pl_radio_5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="表5" />
+    </RadioGroup>
+
 </LinearLayout>

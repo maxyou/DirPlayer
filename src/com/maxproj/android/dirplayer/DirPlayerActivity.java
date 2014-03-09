@@ -91,7 +91,6 @@ public class DirPlayerActivity extends FragmentActivity implements
 		FragmentBookMark.FragmentBookMarkInterface,
 		FragmentPlayList.FragmentPlayListInterface
 		{
-
 	
 	/**
 	 * 系统控制
@@ -189,10 +188,10 @@ public class DirPlayerActivity extends FragmentActivity implements
 	/**
 	 * 播放列表PlayList
 	 */
-	LinkedList<LvRow> playListItems = new LinkedList<LvRow>();
 	FragmentPlayList fragmentPlayList = null;
-	MyArrayAdapter playListArrayAdapter;
-	
+	public int plTab = 0;
+	LinkedList<LvRow>[] playListItems = new LinkedList[LocalConst.plCount];
+	MyArrayAdapter[] playListArrayAdapter = new MyArrayAdapter[LocalConst.plCount];
 	
 	/**
 	 * PlayService音频播放
@@ -300,15 +299,15 @@ public class DirPlayerActivity extends FragmentActivity implements
 	 * 每个书签占一行
 	 */
 	private void getBookMarkList() {
-		getListFromFile(bookMarkItems, getString(R.string.bookmark_file));
+		getListFromFile(bookMarkItems, LocalConst.bookmark_file);
 	}
 
 	private void appendBookMark2File(LvRow bmr) {
-		appendList2File(bmr, getString(R.string.bookmark_file));
+		appendList2File(bmr, LocalConst.bookmark_file);
 	}
 
 	private void saveBookMark2File() {
-		saveList2File(bookMarkItems, getString(R.string.bookmark_file));
+		saveList2File(bookMarkItems, LocalConst.bookmark_file);
 	}
 
 	public void onFragmentBookMarkClicked(int i) {
@@ -723,7 +722,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 		}
 		Log.d(LocalConst.DTAG, "total bookMarkItems: " + bookMarkItems.size());
 		bookMarkArrayAdapter.notifyDataSetChanged();
-		saveList2File(bookMarkItems, getString(R.string.bookmark_file));
+		saveList2File(bookMarkItems, LocalConst.bookmark_file);
 	}
 
 	public void onFragmentButton6(int tab) {
@@ -1274,7 +1273,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 				if(mime.startsWith("audio/")){	
 					LvRow lr = new LvRow("" + f.getName(), "" + LocalConst.byteConvert(f.length()), ""
 						+ sdf.format(f.lastModified()), f, false, 2, mime, LocalConst.clear);
-					playListItems.add(lr);
+					playListItems[plTab].add(lr);
 				}
 			}
 		}else if(f.isDirectory()){//dir
@@ -1283,16 +1282,18 @@ public class DirPlayerActivity extends FragmentActivity implements
 				addToPlayList(subFile);
 			}
 		}
+		Log.d(LocalConst.DTAG, "current playlist "+plTab+" size is "+playListItems[plTab].size());
 	}
 	
 	private void updatePlayListAdapter()
 	{
 		Log.d(LocalConst.DTAG, "updatePlayListAdapter()");
-		playListArrayAdapter = new MyArrayAdapter(this, R.layout.file_row,
-				playListItems);
+		playListArrayAdapter[plTab] = new MyArrayAdapter(this, R.layout.file_row,
+				playListItems[plTab]);
 
 		if (fragmentPlayList != null) {
-			fragmentPlayList.setListviewAdapter(playListArrayAdapter);
+			fragmentPlayList.setListviewAdapter(playListArrayAdapter[plTab], plTab);
+//			playListArrayAdapter[plTab].notifyDataSetChanged();
 		}
 	}
 	
@@ -1353,7 +1354,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 			for (LvRow lr : selectedItems[tab]) {
 				addToPlayList(lr.getFile());
 			}
-			savePlayList2File();
+			savePlayList2File(plTab);
 			updatePlayListAdapter();
 			Log.d(LocalConst.DTAG, "cmdList.size(): "+cmdList.size());
 			break;
@@ -1586,14 +1587,14 @@ public class DirPlayerActivity extends FragmentActivity implements
 		setContentView(R.layout.activity_dir_player);
 		
 		Log.d(LocalConst.LIFECYCLE, "DirPlayerActivity.onCreate()");
-		
+		{
+			/**
+			 * 保存上下文
+			 */
+			LocalConst.app = getApplicationContext();
+			LocalConst.dirPlayerActivity = this;
 
-		/**
-		 * 保存上下文
-		 */
-		LocalConst.app = getApplicationContext();
-		LocalConst.dirPlayerActivity = this;
-		
+		}
 		// Set up the action bar.
 		actionBar = getActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);		
@@ -1633,6 +1634,10 @@ public class DirPlayerActivity extends FragmentActivity implements
 		 * 初始化文件浏览数据结构
 		 */
 		{
+			for (int i = 0; i < LocalConst.plCount; i++) {
+				playListItems[i] = new LinkedList<LvRow>();
+				playListArrayAdapter[i] = new MyArrayAdapter(this, R.layout.fragment_playlist, null);
+			}
 			for (int i = 0; i < LocalConst.tabCount; i++) {
 				viewListItems[i] = new LinkedList<LvRow>();
 				selectedItems[i] = new LinkedList<LvRow>();
@@ -1752,7 +1757,10 @@ public class DirPlayerActivity extends FragmentActivity implements
 		/**
 		 * 播放列表
 		 */
-		getPlayList();
+		plTab = sharedPref.getInt(LocalConst.PL_TAB_IN_PREF, 0);
+		for(int i=0;i<LocalConst.plCount;i++){
+			getPlayList(i);
+		}
 		updatePlayListAdapter();
 		Log.d(LocalConst.FRAGMENT_LIFE, "activity onStart() after updatePlayListAdapter()!");
 		/**
@@ -2285,14 +2293,14 @@ public class DirPlayerActivity extends FragmentActivity implements
 		};
     }
 
-	public void onFragmentPlayListClicked(int i) {
+	public void onFragmentPlayListClicked(int i, int plTab) {
 		Log.d(LocalConst.DTAG, "onFragmentPlayListClicked: " + i);
 		
 		dirPlayerState = LocalConst.STATE_MUSIC;
 		
 		if(mService != null){
 			clearVideoViewPlaying();
-			mService.playList(i);
+			mService.playList(i, plTab);
 			//mediaController.show();
 			
 			Toast.makeText(this, getResources().getString(R.string.mediacontroller_prompt), 
@@ -2322,30 +2330,30 @@ public class DirPlayerActivity extends FragmentActivity implements
 	}
 	public void onFragmentPlayListButton1() {
 		// 全选
-		for (LvRow lr : playListItems) {
+		for (LvRow lr : playListItems[plTab]) {
 			lr.setSelected(true);
 		}
-		playListArrayAdapter.notifyDataSetChanged();
+		playListArrayAdapter[plTab].notifyDataSetChanged();
 	}
 
 	public void onFragmentPlayListButton2() {
 		// 全清
-		for (LvRow lr : playListItems) {
+		for (LvRow lr : playListItems[plTab]) {
 			lr.setSelected(false);
 		}
-		playListArrayAdapter.notifyDataSetChanged();
+		playListArrayAdapter[plTab].notifyDataSetChanged();
 
 	}
 
 	public void onFragmentPlayListButton3() {
 		// 反选
-		for (LvRow lr : playListItems) {
+		for (LvRow lr : playListItems[plTab]) {
 			if (lr.getSelected() == true)
 				lr.setSelected(false);
 			else
 				lr.setSelected(true);
 		}
-		playListArrayAdapter.notifyDataSetChanged();
+		playListArrayAdapter[plTab].notifyDataSetChanged();
 
 	}
 	public void moveUpSelected(LinkedList<LvRow> list){
@@ -2379,10 +2387,10 @@ public class DirPlayerActivity extends FragmentActivity implements
 	}
 	public void onFragmentPlayListButton4() {
 		// 上移
-		moveUpSelected(playListItems);
-		playListArrayAdapter.notifyDataSetChanged();
+		moveUpSelected(playListItems[plTab]);
+		playListArrayAdapter[plTab].notifyDataSetChanged();
 
-		savePlayList2File();
+		savePlayList2File(plTab);
 	}
 	
 	public void moveDownSelected(LinkedList<LvRow> list){
@@ -2416,32 +2424,32 @@ public class DirPlayerActivity extends FragmentActivity implements
 	}
 	public void onFragmentPlayListButton5() {
 		// 下移
-		moveDownSelected(playListItems);
-		playListArrayAdapter.notifyDataSetChanged();
-		savePlayList2File();
+		moveDownSelected(playListItems[plTab]);
+		playListArrayAdapter[plTab].notifyDataSetChanged();
+		savePlayList2File(plTab);
 	}
 	public void onFragmentPlayListButton6() {
 		// 删除
-		Iterator<LvRow> iter = playListItems.iterator();
+		Iterator<LvRow> iter = playListItems[plTab].iterator();
 		while (iter.hasNext()) {
 			if (iter.next().getSelected() == true)
 				iter.remove();
 		}
-		playListArrayAdapter.notifyDataSetChanged();
+		playListArrayAdapter[plTab].notifyDataSetChanged();
 
-		savePlayList2File();
+		savePlayList2File(plTab);
 
 	}
 	public void onFragmentPlayListButton7() {
 		// 操作
-		Iterator<LvRow> iter = playListItems.iterator();
+		Iterator<LvRow> iter = playListItems[plTab].iterator();
 		while (iter.hasNext()) {
 			if (iter.next().getSelected() == true)
 				iter.remove();
 		}
-		playListArrayAdapter.notifyDataSetChanged();
+		playListArrayAdapter[plTab].notifyDataSetChanged();
 
-		savePlayList2File();
+		savePlayList2File(plTab);
 	}
     public PlayService getServiceConnection(){
     	return mService;
@@ -2450,11 +2458,11 @@ public class DirPlayerActivity extends FragmentActivity implements
 	/**
 	 * 播放目录用什么格式保存呢？
 	 */
-	private void getPlayList() {
-		getListFromFile(playListItems, getString(R.string.playlist_file));
+	private void getPlayList(int plTab) {
+		getListFromFile(playListItems[plTab], LocalConst.playlist_file_prefix + plTab + ".txt");
 	}
 	
-	private void getListFromFile(LinkedList<LvRow> list, String fileName) {
+	public void getListFromFile(LinkedList<LvRow> list, String fileName) {
 		SimpleDateFormat sdf = new SimpleDateFormat(getString(R.string.time_format));
 		String line;
 		File listFile = new File(getFilesDir(),fileName);
@@ -2487,8 +2495,8 @@ public class DirPlayerActivity extends FragmentActivity implements
 	 * 加在链表的末尾
 	 * 
 	 */
-	private void appendPlayList2File(LvRow lr) {
-		appendList2File(lr, getString(R.string.playlist_file));
+	private void _appendPlayList2File(LvRow lr) {
+		appendList2File(lr, LocalConst.playlist_file_prefix + plTab + ".txt");
 	}
 	private void appendList2File(LvRow lr, String fileName) {
 		File listFile = new File(getFilesDir(),fileName);
@@ -2508,13 +2516,15 @@ public class DirPlayerActivity extends FragmentActivity implements
 	 * 暂时每次都存
 	 * 以后改成onStop的时候存
 	 */
-	private void savePlayList2File() {
-		saveList2File(playListItems, getString(R.string.playlist_file));
+	private void savePlayList2File(int plTab) {
+		saveList2File(playListItems[plTab], LocalConst.playlist_file_prefix + plTab + ".txt");
 		
 		if(mService != null)
-			mService.updatePlayList();
+			mService.updatePlayList(plTab);
 	}
-	private void saveList2File(LinkedList<LvRow> list, String fileName) {
+
+	public void saveList2File(LinkedList<LvRow> list, String fileName) {
+		
 		File listFile = new File(getFilesDir(),fileName);
 
 		try {
@@ -2598,15 +2608,15 @@ public class DirPlayerActivity extends FragmentActivity implements
 					fragmentPlayList.setPathView(
 						getResources().getString(R.string.pl_path) + playListPath);
 				}
-				for (LvRow lr : playListItems) {
+				for (LvRow lr : playListItems[plTab]) {
 					if(lr.getFile().getPath().equals(playListPath)){
 						lr.setPlayingStatus(playStatus);
 					}else{
 						lr.setPlayingStatus(LocalConst.clear);
 					}
 				}
-				if(playListArrayAdapter != null){
-					playListArrayAdapter.notifyDataSetChanged();
+				if(playListArrayAdapter[plTab] != null){
+					playListArrayAdapter[plTab].notifyDataSetChanged();
 				}
 				return;
 			}
@@ -2664,4 +2674,6 @@ public class DirPlayerActivity extends FragmentActivity implements
 			fragmentBookMark = fragment;
 			Log.d(LocalConst.LIFECYCLE, "DirPlayerActivity.sysAttachFragmentBookMarkLowMem():"+"after "+fragment);
 	}
+
+
 }

@@ -11,6 +11,11 @@
         <item >改名</item>
     </string-array>
     
+    <string-array name="cmdList_BookMark">
+        <item >加入播放列表</item>    
+        <item >删除当前所选</item>
+    </string-array>
+    
     <string-array name="forceOption">
         <item >文件或文件夹冲突时强制替换</item>  
     </string-array>

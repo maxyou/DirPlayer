@@ -1,6 +1,10 @@
 package com.maxproj.android.dirplayer;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.LinkedList;
 
 import android.app.Application;
 import android.content.Context;
@@ -22,6 +26,13 @@ public class LocalConst {
 	public static final String pathRoot = Environment
 			.getExternalStorageDirectory().getPath();
 
+	
+	/**
+	 * 保存list的文件
+	 */
+	public static final String bookmark_file = "bookmark";
+	public static final String playlist_file_prefix = "playlist";
+	
 	/**
 	 * 保存listview的adapter
 	 */
@@ -29,8 +40,21 @@ public class LocalConst {
 	public static final int tabCount = 2;
 	public static MyArrayAdapter[] myArrayAdapter_fragmentList = new MyArrayAdapter[tabCount];
 	public static String[] currentPath_fragmentList = new String[tabCount];
-	
-	
+
+
+	/**
+	 * playlist tab相关
+	 */
+	public static final int[][] plViewId = {
+		{R.id.fragment_playlist_path_1, R.id.fragment_playlist_1, R.id.current_play_1, R.id.pl_radio_1},
+		{R.id.fragment_playlist_path_2, R.id.fragment_playlist_2, R.id.current_play_2, R.id.pl_radio_2},
+		{R.id.fragment_playlist_path_3, R.id.fragment_playlist_3, R.id.current_play_3, R.id.pl_radio_3},
+		{R.id.fragment_playlist_path_4, R.id.fragment_playlist_4, R.id.current_play_4, R.id.pl_radio_4},
+		{R.id.fragment_playlist_path_5, R.id.fragment_playlist_5, R.id.current_play_5, R.id.pl_radio_5}
+	};
+	public static final int plCount = 5; //如果这个数字改变，fragment_playlist.xml里面的view数目必须同时改变
+	public static final String PL_TAB_IN_PREF = "current_pl_tab";
+
 	/**
 	 * Log到文件
 	 */
@@ -110,6 +134,10 @@ public class LocalConst {
     public static final int CMD_RENAME = 7;
     
     
+    
+    /**
+     *	功能函数 
+     */
     public static String byteConvert(long bytes){
     	return humanReadableByteCount(bytes, true);
     }
@@ -121,4 +149,5 @@ public class LocalConst {
         String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp-1) + (si ? "" : "i");
         return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
     }
+    
 }

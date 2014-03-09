@@ -48,7 +48,13 @@ public class PlayService extends Service implements MediaPlayerControl {
 	/**
 	 * 播放列表
 	 */
-	LinkedList<LvRow> playListItemsService = new LinkedList<LvRow>();
+	public int localPlTab = 0;
+	LinkedList<LvRow>[] playListItemsService = new LinkedList[LocalConst.plCount];
+	{
+		for (int i = 0; i < LocalConst.plCount; i++) {
+			playListItemsService[i] = new LinkedList<LvRow>();
+		}
+	}
 	File playingFile;//当前播放的文件
 	int playingType;//播放fileList或playList？
 	int playListItemIndex = 0; // 第一首
@@ -117,16 +123,16 @@ public class PlayService extends Service implements MediaPlayerControl {
 			/**
 			 * 找到下一首歌曲，并调用play()
 			 */
-			if (playListItemsService.size() == 0) {
+			if (playListItemsService[localPlTab].size() == 0) {
 				// 没有曲目，停止播放
 				return;
 			}
 
 			playListItemIndex++;
-			if (playListItemIndex >= playListItemsService.size()) {
+			if (playListItemIndex >= playListItemsService[localPlTab].size()) {
 				playListItemIndex = 0;
 			}
-			play(playListItemsService.get(playListItemIndex).getFile(), LocalConst.ListPlay);
+			play(playListItemsService[localPlTab].get(playListItemIndex).getFile(), LocalConst.ListPlay);
 		}
 	};
 	
@@ -167,8 +173,9 @@ public class PlayService extends Service implements MediaPlayerControl {
 		super.onCreate();
 
 		Log.d(LocalConst.DTAG, "service: onCreate()");
-		updatePlayList();
-	
+		for(int i=0;i<LocalConst.plCount;i++){
+			updatePlayList(i);
+		}
 		
 		/**
 		 * notification上面的按键将发送intent给service
@@ -207,8 +214,8 @@ public class PlayService extends Service implements MediaPlayerControl {
 	/**
 	 * service通过文件获取播放列表
 	 */
-	public void updatePlayList() {
-		getPlayList();
+	public void updatePlayList(int plTab) {
+		getPlayList(plTab);
 	}
 
 	@Override
@@ -219,41 +226,54 @@ public class PlayService extends Service implements MediaPlayerControl {
 	}
 
 	/**
-	 * 拷贝自DirPlayerActivity.java，以后重构合并 应该直接new一个list，读取数据后返回这个list
+	 * 拷贝自DirPlayerActivity.java，以后重构合并
+	 * 应该直接new一个list，读取数据后返回这个list
 	 */
-	private void getPlayList() {
-		Log.d(LocalConst.DTAG, "getPlayList()");
-		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy");
+	private void getPlayList(int plTab) {
+		playListItemsService[plTab].clear();
+		getListFromFile(playListItemsService[plTab], LocalConst.playlist_file_prefix + plTab + ".txt");
+		Log.d(LocalConst.DTAG, "play service getPlayList() "+plTab+" size " + playListItemsService[plTab].size());
+	}
+	
+	/**
+	 * 拷贝自DirPlayerActivity.java，以后重构合并
+	 * 应该直接new一个list，读取数据后返回这个list
+	 */
+	public void getListFromFile(LinkedList<LvRow> list, String fileName) {
+		SimpleDateFormat sdf = new SimpleDateFormat(getString(R.string.time_format));
 		String line;
-		File playlist = new File(getFilesDir(),
-				getString(R.string.playlist_file));
+		File listFile = new File(getFilesDir(),fileName);
 
-		playListItemsService.clear();
+		list.clear();
 		try {
-			BufferedReader br = new BufferedReader(new FileReader(playlist));
+			BufferedReader br = new BufferedReader(new FileReader(listFile));
 
 			while ((line = br.readLine()) != null) {
 				File f = new File(line);
-				LvRow lr = new LvRow("" + f.getName(), "" + f.length(), ""
-						+ sdf.format(f.lastModified()), f, false, 2,
-						URLConnection.getFileNameMap().getContentTypeFor(
-								f.getName()),LocalConst.clear);
-				playListItemsService.add(lr);
+				LvRow lr = new LvRow("" + f.getName(), 
+						f.isDirectory()?"":"" + LocalConst.byteConvert(f.length()), 
+						"" + sdf.format(f.lastModified()), 
+						f, 
+						false, 
+						f.isDirectory()?1:2, 
+						URLConnection.getFileNameMap().getContentTypeFor(f.getName()), LocalConst.clear);
+				list.add(lr);
 			}
 			br.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}catch (Exception e){
+			Log.d(LocalConst.FRAGMENT_LIFE, "listItems:" + e.toString());
 		}
 	}
-
 	/**
 	 * 从playlist中获取一首歌曲，并开始播放
 	 */
-	public void playList(int i) {
+	public void playList(int i, int plTab) {
 		Log.d(LocalConst.DTAG, "playList: " + i);
 
-		LvRow lr = playListItemsService.get(i);
+		LvRow lr = playListItemsService[plTab].get(i);
 		if (lr == null)
 			return;
 

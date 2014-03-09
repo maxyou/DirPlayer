@@ -2,6 +2,10 @@ package com.maxproj.android.dirplayer;
 
 
 
+import java.util.LinkedList;
+
+import org.apache.http.impl.io.ChunkedOutputStream;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,23 +15,70 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.RadioGroup;
+import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.ListView;
 import android.widget.MediaController;
 import android.widget.MediaController.MediaPlayerControl;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 
 public class FragmentPlayList  extends Fragment {
 
-    MyArrayAdapter listAdapter = null;
-    ListView listView = null;
     View fragmentView = null;
-
     Button b1, b2, b3, b4, b5, b6;
-    TextView pathView = null;
+    
+    int localPlTab = 0;
+    
+    /**
+     * 由于要保存数据，所以atapter有多个，这个很自然
+     * 但是listview只要一个，还是设为多个？这里比较迷惑
+     * 一个的话节省资源，但是切换的时候需要保存多个view状态，比如scroll到什么位置了，等等，比较麻烦
+     * 进度原因，这里先设置多个view，非当前的view先隐藏
+     */
+    class PlayListTabGroup{
+    	int tabViewId; 
+    	LinearLayout tabView; 
+    	
+    	int listViewId;
+    	ListView listView;
+    	
+    	int pathId;
+    	TextView pathView;
+    	String path;
+    	
+    	MyArrayAdapter listAdapter;
+
+    	int radioId;
+    	
+    	public PlayListTabGroup(
+    			int tabViewId,
+    			LinearLayout tabView,
+    	    	int listViewId,
+    	    	ListView listView,    	    	
+    	    	int pathId,
+    	    	TextView pathView,
+    	    	String path,    	    	
+    	    	MyArrayAdapter listAdapter,
+    	    	int radioId
+    			){
+    		this.tabViewId = tabViewId;
+    		this.tabView = tabView;
+	    	this.listViewId = listViewId;
+	    	this.listView= listView;	    	
+	    	this.pathId = pathId;
+	    	this.pathView = pathView;
+	    	this.path = path;	    	
+	    	this.listAdapter = listAdapter;
+	    	this.radioId = radioId;
+    	}
+    }
+    PlayListTabGroup[] playListTabGroup = new PlayListTabGroup[LocalConst.plCount];
     
     public interface FragmentPlayListInterface{
-        void onFragmentPlayListClicked(int i);
+        void onFragmentPlayListClicked(int i, int plTab);
         void onFragmentPlayListButton1();
         void onFragmentPlayListButton2();
         void onFragmentPlayListButton3();
@@ -57,28 +108,28 @@ public class FragmentPlayList  extends Fragment {
         return fragment;
     }
 
-    public void setListviewAdapter(MyArrayAdapter a){
-        listAdapter = a;
-        Log.d(LocalConst.PL, "FragmentPlayList.setListviewAdapter() "+listAdapter);
-        if (listView != null){
-            listView.setAdapter(listAdapter);
-            Log.d(LocalConst.DTAG,"FragmentPlayList setListviewAdapter(): adapter is set!");
-        }else{
-            Log.d(LocalConst.DTAG,"FragmentPlayList setListviewAdapter(): listView is null pointer!");
-        }
+    public void setListviewAdapter(MyArrayAdapter a, int plTab){
+    	if(playListTabGroup[plTab] != null){
+	        playListTabGroup[plTab].listAdapter = a;
+	        if (playListTabGroup[plTab].listView != null){
+	            playListTabGroup[plTab].listView.setAdapter(playListTabGroup[plTab].listAdapter);
+	            Log.d(LocalConst.DTAG, "setListviewAdapter()");
+	        }else{
+	        	Log.d(LocalConst.DTAG, "setListviewAdapter() when null");
+	        }
+    	}
     }
     public View getItemView(int position){
 
-        if (position > listView.getCount())
+        if (position > playListTabGroup[localPlTab].listView.getCount())
             return null;
         else
-            return listView.getChildAt(position);
+            return playListTabGroup[localPlTab].listView.getChildAt(position);
 
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         //return super.onCreateView(inflater, container, savedInstanceState);
-    	Log.d(LocalConst.PL, "FragmentPlayList.onCreateView() "+listAdapter);
         fragmentView =  inflater.inflate(R.layout.fragment_playlist, container, false);
         
         b1 = (Button)fragmentView.findViewById(R.id.pl_b1);
@@ -124,29 +175,86 @@ public class FragmentPlayList  extends Fragment {
             }
         });
 
+		for (int i = 0; i < LocalConst.plCount; i++) {
+			playListTabGroup[i] = new PlayListTabGroup(
+	    			LocalConst.plViewId[i][0],//tabViewId
+	    			(LinearLayout)fragmentView.findViewById(LocalConst.plViewId[i][0]),//tabView
+	    			LocalConst.plViewId[i][1],//listview id
+	    	    	(ListView)fragmentView.findViewById(LocalConst.plViewId[i][1]),//listview    	    	
+	    	    	LocalConst.plViewId[i][2],//path view id
+	    	    	(TextView)fragmentView.findViewById(LocalConst.plViewId[i][2]),//path view
+	    	    	null,//path
+	    	    	null,//adapter
+	    	    	LocalConst.plViewId[i][3]//radio id
+					);
+			playListTabGroup[i].listView.setOnItemClickListener(new ItemClicklistener());
+		}
 
-        listView = (ListView)fragmentView.findViewById(R.id.fragment_playlist);
+		//更新主activity的plTab到本fragment
+		localPlTab = ((DirPlayerActivity)getActivity()).plTab;
+		showPlayListView(localPlTab);
 
-
-        listView.setOnItemClickListener(new ItemClicklistener());
-        Log.d(LocalConst.DTAG,"FragmentPlayList listView.setOnItemClickListener(new ItemClicklistener())!");
-
-        pathView = (TextView)fragmentView.findViewById(R.id.current_play);
+        RadioGroup rg = (RadioGroup)fragmentView.findViewById(R.id.pl_tab_radiogroup);
+        rg.check(tab2RadioId(localPlTab));
+        
+        
+        rg.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			
+			@Override
+			public void onCheckedChanged(RadioGroup group, int checkedId) {
+				// TODO Auto-generated method stub
+				localPlTab = radioId2Tab(checkedId);
+				((DirPlayerActivity)getActivity()).plTab = localPlTab;
+				showPlayListView(localPlTab);
+			}
+		});
 
         return fragmentView;
     }
+    
+    public void showPlayListView(int plTab){
+		for(int i=0;i<LocalConst.plCount;i++){
+			if(i == plTab){
+				playListTabGroup[i].tabView.setVisibility(View.VISIBLE);
+			}else{
+				playListTabGroup[i].tabView.setVisibility(View.INVISIBLE);				
+			}
+		}
+    }
+    
+    
+    public int tab2RadioId(int plTab){
+		switch(plTab){
+			case 0: return R.id.pl_radio_1;
+			case 1: return R.id.pl_radio_2;
+			case 2: return R.id.pl_radio_3;
+			case 3: return R.id.pl_radio_4;
+			case 4: return R.id.pl_radio_5;
+		}
+		return R.id.pl_radio_1;
+    }
+    public int radioId2Tab(int id){
+		switch(id){
+			case R.id.pl_radio_1: return 0;
+			case R.id.pl_radio_2: return 1;
+			case R.id.pl_radio_3: return 2;
+			case R.id.pl_radio_4: return 3;
+			case R.id.pl_radio_5: return 4;
+		}
+    	return 0; 
+    }
+    
     @Override
     public void onActivityCreated(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        Log.d(LocalConst.PL, "FragmentPlayList.onActivityCreated() "+listAdapter);
 
-        if (listAdapter != null){
-            listView.setAdapter(listAdapter);
-            Log.d(LocalConst.DTAG,"FragmentPlayList (maa != null) and adapter is set!");
-        }else{
-            Log.d(LocalConst.DTAG,"FragmentPlayList maa is null pointer!");
+        if(playListTabGroup[localPlTab] != null){
+	        if (playListTabGroup[localPlTab].listAdapter != null){
+	            playListTabGroup[localPlTab].listView.setAdapter(playListTabGroup[localPlTab].listAdapter);
+	        }else{
+	
+	        }
         }
-        
         mService = fragmentPlayListInterface.getServiceConnection();
 		
     }
@@ -155,13 +263,13 @@ public class FragmentPlayList  extends Fragment {
     	 * 这里有个问题。
     	 * 刚开机，还没有切换到播放tab，也即这个tab还没有初始化，此刻设置pathView导致空指针异常
     	 */
-    	if(pathView != null)
-    		pathView.setText(path);
+    	if(playListTabGroup[localPlTab].pathView != null)
+    		playListTabGroup[localPlTab].pathView.setText(path);
     }
     private class ItemClicklistener implements AdapterView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        	fragmentPlayListInterface.onFragmentPlayListClicked(i);
+        	fragmentPlayListInterface.onFragmentPlayListClicked(i, localPlTab);
 
             Log.d(LocalConst.DTAG,"FragmentPlayList ItemClicklistener is called!");
         }
@@ -169,17 +277,12 @@ public class FragmentPlayList  extends Fragment {
     @Override
     public void onAttach(Activity activity){
         super.onAttach(activity);
-        Log.d(LocalConst.PL, "FragmentPlayList.onAttach() "+listAdapter);
         try{
-        	Log.d(LocalConst.DTAG,"FragmentPlayList check if activity implement interface....");
         	fragmentPlayListInterface = (FragmentPlayListInterface)activity;
-            Log.d(LocalConst.DTAG,"activity implemented interface!");
         }catch(ClassCastException e){
-            Log.d(LocalConst.DTAG,"FragmentPlayList onAttach() throw new ClassCastException!");
             throw new ClassCastException(activity.toString()+ " must implement "
                     +fragmentPlayListInterface.toString());
         }
-        Log.d(LocalConst.DTAG,"FragmentPlayList onAttach() is ended!");
         
         fragmentPlayListInterface.sysAttachFragmentPlayListLowMem(this);
         

@@ -116,11 +116,7 @@
     <string name="right_window_path" >right_window_path
     </string>
     
-    <string name="bookmark_file" >bookmark.txt
-    </string>
-    
-    <string name="playlist_file" >playlist.txt
-    </string>
+
     <string name="pl_path" >当前播放曲目：
     </string>
 
