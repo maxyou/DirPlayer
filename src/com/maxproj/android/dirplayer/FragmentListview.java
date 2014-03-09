@@ -3,8 +3,10 @@ package com.maxproj.android.dirplayer;
 
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -64,7 +66,7 @@ public class FragmentListview extends Fragment {
         
 		//show path at upper of listview
 		//show_path = (TextView)fragmentView.findViewById(R.id.show_path);
-        if(show_path !=null){
+        if((show_path !=null)&&(isAdded())){        	
         	show_path.setText(getResources().getString(R.string.current_path_prompt) + currentPath);
             Log.d(LocalConst.FRAGMENT_LIFE,"setListviewAdapter(): show_path is set to "+currentPath);
         }else{
@@ -170,7 +172,7 @@ public class FragmentListview extends Fragment {
 //        	listAdapter = LocalConst.myArrayAdapter_fragmentList[tab];
         }
         
-        if(show_path !=null){
+        if((show_path !=null)&&(isAdded())){ 
         	show_path.setText(getResources().getString(R.string.current_path_prompt) + currentPath);
             Log.d(LocalConst.DTAG,"setListviewAdapter(): show_path is "+tab+":"+currentPath);
         }
@@ -267,7 +269,10 @@ public class FragmentListview extends Fragment {
 		Log.d(LocalConst.LIFECYCLE, "FragmentListview.onResume() "+tab+":"+currentPath+" "+this);
 
 		((DirPlayerActivity) getActivity()).updateFragmentLight();
-		
+		Intent intent = new Intent(
+				LocalConst.FRAG_FILE_LIST_UPDATE_ACTION);
+		LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(
+				intent);		
 	}
 	@Override
 	public void onSaveInstanceState(Bundle outState) {

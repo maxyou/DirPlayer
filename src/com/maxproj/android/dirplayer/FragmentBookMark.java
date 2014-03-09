@@ -3,8 +3,10 @@ package com.maxproj.android.dirplayer;
 
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -161,5 +163,18 @@ public class FragmentBookMark  extends Fragment {
         
         fragmentBookMarkInterface.sysAttachFragmentBookMarkLowMem(this);
     }
+
+	/* (non-Javadoc)
+	 * @see android.support.v4.app.Fragment#onResume()
+	 */
+	@Override
+	public void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		Intent intent = new Intent(
+				LocalConst.FRAG_BOOKMARK_LIST_UPDATE_ACTION);
+		LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(
+				intent);	
+	}
 
 }

@@ -7,8 +7,10 @@ import java.util.LinkedList;
 import org.apache.http.impl.io.ChunkedOutputStream;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -104,18 +106,18 @@ public class FragmentPlayList  extends Fragment {
     */
     public static FragmentPlayList newInstance() {
     	FragmentPlayList fragment = new FragmentPlayList();        
-    	Log.d(LocalConst.PL, "FragmentPlayList.newInstance()");
+    	Log.d(LocalConst.LIFECYCLE, "FragmentPlayList.newInstance()");
         return fragment;
     }
 
     public void setListviewAdapter(MyArrayAdapter a, int plTab){
-    	if(playListTabGroup[plTab] != null){
+    	if(playListTabGroup[plTab] != null){//这个要及早创建----------------------应该有个机制来保证次序
 	        playListTabGroup[plTab].listAdapter = a;
 	        if (playListTabGroup[plTab].listView != null){
 	            playListTabGroup[plTab].listView.setAdapter(playListTabGroup[plTab].listAdapter);
-	            Log.d(LocalConst.DTAG, "setListviewAdapter()");
+	            Log.d(LocalConst.LIFECYCLE, "pl setListviewAdapter()");
 	        }else{
-	        	Log.d(LocalConst.DTAG, "setListviewAdapter() when null");
+	        	Log.d(LocalConst.LIFECYCLE, "pl setListviewAdapter() when null");
 	        }
     	}
     }
@@ -129,6 +131,7 @@ public class FragmentPlayList  extends Fragment {
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    	Log.d(LocalConst.LIFECYCLE, "pl onCreateView()");
         //return super.onCreateView(inflater, container, savedInstanceState);
         fragmentView =  inflater.inflate(R.layout.fragment_playlist, container, false);
         
@@ -191,7 +194,7 @@ public class FragmentPlayList  extends Fragment {
 		}
 
 		//更新主activity的plTab到本fragment
-		localPlTab = ((DirPlayerActivity)getActivity()).plTab;
+		localPlTab = ((DirPlayerActivity)getActivity()).currentPlTab;
 		showPlayListView(localPlTab);
 
         RadioGroup rg = (RadioGroup)fragmentView.findViewById(R.id.pl_tab_radiogroup);
@@ -204,7 +207,7 @@ public class FragmentPlayList  extends Fragment {
 			public void onCheckedChanged(RadioGroup group, int checkedId) {
 				// TODO Auto-generated method stub
 				localPlTab = radioId2Tab(checkedId);
-				((DirPlayerActivity)getActivity()).plTab = localPlTab;
+				((DirPlayerActivity)getActivity()).currentPlTab = localPlTab;
 				showPlayListView(localPlTab);
 			}
 		});
@@ -213,6 +216,7 @@ public class FragmentPlayList  extends Fragment {
     }
     
     public void showPlayListView(int plTab){
+    	Log.d(LocalConst.LIFECYCLE, "pl showPlayListView("+plTab+")");
 		for(int i=0;i<LocalConst.plCount;i++){
 			if(i == plTab){
 				playListTabGroup[i].tabView.setVisibility(View.VISIBLE);
@@ -248,23 +252,34 @@ public class FragmentPlayList  extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
 
-        if(playListTabGroup[localPlTab] != null){
-	        if (playListTabGroup[localPlTab].listAdapter != null){
-	            playListTabGroup[localPlTab].listView.setAdapter(playListTabGroup[localPlTab].listAdapter);
-	        }else{
-	
+        for(int i=0;i<LocalConst.plCount;i++){
+        	if(playListTabGroup[localPlTab] != null){
+        		
+        		if (playListTabGroup[localPlTab].listAdapter != null){
+		            playListTabGroup[localPlTab].listView.setAdapter(playListTabGroup[localPlTab].listAdapter);
+		            Log.d(LocalConst.LIFECYCLE, "pl onActivityCreated() set adapter "+i);
+		        }else{
+		
+		        }
+        		
+        		playListTabGroup[localPlTab].pathView.setText(playListTabGroup[localPlTab].path);
 	        }
         }
+        
         mService = fragmentPlayListInterface.getServiceConnection();
-		
+        Log.d(LocalConst.LIFECYCLE, "pl onActivityCreated()");
     }
-    public void setPathView(String path){
+    public void setPathView(String path, int plTab){
     	/**
     	 * 这里有个问题。
     	 * 刚开机，还没有切换到播放tab，也即这个tab还没有初始化，此刻设置pathView导致空指针异常
     	 */
-    	if(playListTabGroup[localPlTab].pathView != null)
-    		playListTabGroup[localPlTab].pathView.setText(path);
+    	if(playListTabGroup[plTab] != null){
+    		playListTabGroup[plTab].path = path;
+    		if(playListTabGroup[plTab].pathView != null){
+    			playListTabGroup[plTab].pathView.setText(path);
+    		}
+    	}
     }
     private class ItemClicklistener implements AdapterView.OnItemClickListener {
         @Override
@@ -286,12 +301,18 @@ public class FragmentPlayList  extends Fragment {
         
         fragmentPlayListInterface.sysAttachFragmentPlayListLowMem(this);
         
-        
+        Log.d(LocalConst.LIFECYCLE, "pl onAttach()");
     }
 
     @Override
     public void onResume(){
 		super.onResume();
 		((DirPlayerActivity)getActivity()).updateFragmentLight();
+		
+		Intent intent = new Intent(
+				LocalConst.FRAG_PLAY_LIST_UPDATE_ACTION);
+		LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(
+				intent);
+		Log.d(LocalConst.LIFECYCLE, "pl onResume()");
     }
 }

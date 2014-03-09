@@ -104,6 +104,9 @@ public class LocalConst {
     
     
 	// 过滤器
+	public static final String FRAG_FILE_LIST_UPDATE_ACTION = "com.maxproj.android.dirplayer.FRAG_FILE_LIST_UPDATE_ACTION";
+	public static final String FRAG_BOOKMARK_LIST_UPDATE_ACTION = "com.maxproj.android.dirplayer.FRAG_BOOKMARK_LIST_UPDATE_ACTION";
+	public static final String FRAG_PLAY_LIST_UPDATE_ACTION = "com.maxproj.android.dirplayer.FRAG_PLAY_LIST_UPDATE_ACTION";
 	public static final String BROADCAST_ACTION = "com.maxproj.android.dirplayer.BROADCAST_ACTION";
 	public static final String NOTIFICATION_ACTION = "com.maxproj.android.dirplayer.NOTIFICATION_ACTION";
 	public static final String NOTIFICATION_OP = "OP";	
