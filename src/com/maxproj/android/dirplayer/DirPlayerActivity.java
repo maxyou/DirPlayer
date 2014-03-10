@@ -192,6 +192,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	public int currentPlTab = 0;
 	LinkedList<LvRow>[] playListItems = new LinkedList[LocalConst.plCount];
 	MyArrayAdapter[] playListArrayAdapter = new MyArrayAdapter[LocalConst.plCount];
+	int currentPlayingTab = 0;
 	
 	/**
 	 * PlayService音频播放
@@ -2325,7 +2326,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 			clearVideoViewPlaying();
 			mService.playList(i, plTab);
 			//mediaController.show();
-			
+			currentPlayingTab = plTab;
 			Toast.makeText(this, getResources().getString(R.string.mediacontroller_prompt), 
 					Toast.LENGTH_LONG).show();
 			

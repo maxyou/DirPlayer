@@ -14,6 +14,7 @@ import android.support.v4.content.LocalBroadcastManager;
 
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -31,10 +32,11 @@ public class FragmentPlayList  extends Fragment {
 
     View fragmentView = null;
     Button b1, b2, b3, b4, b5, b6;
-    Button[] pls = new Button[LocalConst.plCount];
+    Button[] plChooser = new Button[LocalConst.plCount];
 //    Button t1, t2, t3, t4, t5;
     
     int localPlTab = 0;
+    int currentPlayingTab = 0;
     
     /**
      * 由于要保存数据，所以atapter有多个，这个很自然
@@ -192,16 +194,17 @@ public class FragmentPlayList  extends Fragment {
 	    	    	null,//adapter
 	    	    	LocalConst.plViewId[i][3]//radio id
 					);
-			playListTabGroup[i].listView.setOnItemClickListener(new ItemClicklistener());
+			playListTabGroup[i].listView.setOnItemClickListener(new ItemClicklistener(i));
 		}
 
 		//更新主activity的plTab到本fragment
 		//或者更往前一点，放在attached的时候？
 		localPlTab = ((DirPlayerActivity)getActivity()).currentPlTab;
+		currentPlayingTab = ((DirPlayerActivity)getActivity()).currentPlayingTab;
 		
 		for(int i=0;i<LocalConst.plCount;i++){
-			pls[i] = (Button)fragmentView.findViewById(tab2RadioId(i));
-			pls[i].setOnClickListener(new PlChooser(i));			
+			plChooser[i] = (Button)fragmentView.findViewById(tab2RadioId(i));
+			plChooser[i].setOnClickListener(new PlChooser(i));
 		}
         return fragmentView;
     }
@@ -217,27 +220,29 @@ public class FragmentPlayList  extends Fragment {
 			// TODO Auto-generated method stub
 			((DirPlayerActivity)getActivity()).currentPlTab = choosed;
 			localPlTab = choosed;
-			showPlayListView(choosed);
-			showPlayListChooser(choosed);
+			showPlayListView();
+			showPlayListChooser();
 		}
     	
     }
     
-    public void showPlayListChooser(int choosed){
+    public void showPlayListChooser(){
     	for (int i=0;i<LocalConst.plCount;i++){
         	/**
         	 * 设置“当前操作”标志
         	 * 设置“当前播放”标志
-        	 */
-
+        	 */    		
+//    		plChooser[i].setPressed((i==localPlTab)?true:false);
+//    		plChooser[i].setBackgroundColor((i==currentPlayingTab)?0:1);
     		
-    		
+    		String bs = (String) (plChooser[i].getText().subSequence(0, 1));
+    		plChooser[i].setText(bs+((i==localPlTab)?"@":"")+((i==currentPlayingTab)?"#":""));
     	}
     }
-    public void showPlayListView(int plTab){
-    	Log.d(LocalConst.LIFECYCLE, "pl showPlayListView("+plTab+")");
+    public void showPlayListView(){
+    	Log.d(LocalConst.LIFECYCLE, "pl showPlayListView("+localPlTab+")");
 		for(int i=0;i<LocalConst.plCount;i++){
-			if(i == plTab){
+			if(i == localPlTab){
 				playListTabGroup[i].tabView.setVisibility(View.VISIBLE);
 			}else{
 				playListTabGroup[i].tabView.setVisibility(View.INVISIBLE);				
@@ -301,10 +306,18 @@ public class FragmentPlayList  extends Fragment {
     	}
     }
     private class ItemClicklistener implements AdapterView.OnItemClickListener {
+    	
+    	int inner_plTab;
+    	
+    	public ItemClicklistener(int plTab){
+    		inner_plTab = plTab;
+    	}
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        	fragmentPlayListInterface.onFragmentPlayListClicked(i, localPlTab);
-
+        	fragmentPlayListInterface.onFragmentPlayListClicked(i, inner_plTab);
+        	
+        	currentPlayingTab = inner_plTab;
+        	showPlayListChooser();
             Log.d(LocalConst.DTAG,"FragmentPlayList ItemClicklistener is called!");
         }
     }
@@ -327,8 +340,8 @@ public class FragmentPlayList  extends Fragment {
     public void onResume(){
 		super.onResume();
 		
-		showPlayListChooser(localPlTab);
-		showPlayListView(localPlTab);//显示当前播放列表
+		showPlayListChooser();
+		showPlayListView();//显示播放列表
 		
 		((DirPlayerActivity)getActivity()).updateFragmentLight();//考虑改成消息驱动模式
 		
