@@ -31,6 +31,8 @@ public class FragmentPlayList  extends Fragment {
 
     View fragmentView = null;
     Button b1, b2, b3, b4, b5, b6;
+    Button[] pls = new Button[LocalConst.plCount];
+//    Button t1, t2, t3, t4, t5;
     
     int localPlTab = 0;
     
@@ -194,27 +196,44 @@ public class FragmentPlayList  extends Fragment {
 		}
 
 		//更新主activity的plTab到本fragment
+		//或者更往前一点，放在attached的时候？
 		localPlTab = ((DirPlayerActivity)getActivity()).currentPlTab;
-		showPlayListView(localPlTab);
-
-        RadioGroup rg = (RadioGroup)fragmentView.findViewById(R.id.pl_tab_radiogroup);
-        rg.check(tab2RadioId(localPlTab));
-        
-        
-        rg.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-			
-			@Override
-			public void onCheckedChanged(RadioGroup group, int checkedId) {
-				// TODO Auto-generated method stub
-				localPlTab = radioId2Tab(checkedId);
-				((DirPlayerActivity)getActivity()).currentPlTab = localPlTab;
-				showPlayListView(localPlTab);
-			}
-		});
-
+		
+		for(int i=0;i<LocalConst.plCount;i++){
+			pls[i] = (Button)fragmentView.findViewById(tab2RadioId(i));
+			pls[i].setOnClickListener(new PlChooser(i));			
+		}
         return fragmentView;
     }
     
+    class PlChooser implements View.OnClickListener{
+
+    	int choosed;
+    	PlChooser(int i){
+    		choosed = i;
+    	}
+		@Override
+		public void onClick(View v) {
+			// TODO Auto-generated method stub
+			((DirPlayerActivity)getActivity()).currentPlTab = choosed;
+			localPlTab = choosed;
+			showPlayListView(choosed);
+			showPlayListChooser(choosed);
+		}
+    	
+    }
+    
+    public void showPlayListChooser(int choosed){
+    	for (int i=0;i<LocalConst.plCount;i++){
+        	/**
+        	 * 设置“当前操作”标志
+        	 * 设置“当前播放”标志
+        	 */
+
+    		
+    		
+    	}
+    }
     public void showPlayListView(int plTab){
     	Log.d(LocalConst.LIFECYCLE, "pl showPlayListView("+plTab+")");
 		for(int i=0;i<LocalConst.plCount;i++){
@@ -252,19 +271,19 @@ public class FragmentPlayList  extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
 
-        for(int i=0;i<LocalConst.plCount;i++){
-        	if(playListTabGroup[localPlTab] != null){
-        		
-        		if (playListTabGroup[localPlTab].listAdapter != null){
-		            playListTabGroup[localPlTab].listView.setAdapter(playListTabGroup[localPlTab].listAdapter);
-		            Log.d(LocalConst.LIFECYCLE, "pl onActivityCreated() set adapter "+i);
-		        }else{
-		
-		        }
-        		
-        		playListTabGroup[localPlTab].pathView.setText(playListTabGroup[localPlTab].path);
-	        }
-        }
+//        for(int i=0;i<LocalConst.plCount;i++){
+//        	if(playListTabGroup[localPlTab] != null){
+//        		
+//        		if (playListTabGroup[localPlTab].listAdapter != null){
+//		            playListTabGroup[localPlTab].listView.setAdapter(playListTabGroup[localPlTab].listAdapter);
+//		            Log.d(LocalConst.LIFECYCLE, "pl onActivityCreated() set adapter "+i);
+//		        }else{
+//		
+//		        }
+//        		
+//        		playListTabGroup[localPlTab].pathView.setText(playListTabGroup[localPlTab].path);
+//	        }
+//        }
         
         mService = fragmentPlayListInterface.getServiceConnection();
         Log.d(LocalConst.LIFECYCLE, "pl onActivityCreated()");
@@ -307,7 +326,11 @@ public class FragmentPlayList  extends Fragment {
     @Override
     public void onResume(){
 		super.onResume();
-		((DirPlayerActivity)getActivity()).updateFragmentLight();
+		
+		showPlayListChooser(localPlTab);
+		showPlayListView(localPlTab);//显示当前播放列表
+		
+		((DirPlayerActivity)getActivity()).updateFragmentLight();//考虑改成消息驱动模式
 		
 		Intent intent = new Intent(
 				LocalConst.FRAG_PLAY_LIST_UPDATE_ACTION);
@@ -315,4 +338,5 @@ public class FragmentPlayList  extends Fragment {
 				intent);
 		Log.d(LocalConst.LIFECYCLE, "pl onResume()");
     }
+
 }
