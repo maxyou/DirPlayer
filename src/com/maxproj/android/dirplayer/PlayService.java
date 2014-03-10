@@ -58,7 +58,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 	File playingFile;//当前播放的文件
 	int playingType;//播放fileList或playList？
 	int playListItemIndex = 0; // 第一首
-	
+	int currentPlayingTab = 0;
 
 	public void lightenPlayList(){
 		/**
@@ -129,10 +129,10 @@ public class PlayService extends Service implements MediaPlayerControl {
 			}
 
 			playListItemIndex++;
-			if (playListItemIndex >= playListItemsService[localPlTab].size()) {
+			if (playListItemIndex >= playListItemsService[currentPlayingTab].size()) {
 				playListItemIndex = 0;
 			}
-			play(playListItemsService[localPlTab].get(playListItemIndex).getFile(), LocalConst.ListPlay);
+			play(playListItemsService[currentPlayingTab].get(playListItemIndex).getFile(), LocalConst.ListPlay);
 		}
 	};
 	
@@ -278,6 +278,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 			return;
 
 		playListItemIndex = i; // 更新当前指针
+		currentPlayingTab = plTab;
 
 		play(lr.getFile(), LocalConst.ListPlay);
 	}
