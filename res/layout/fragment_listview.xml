@@ -69,10 +69,6 @@
         	
         />
     	
-    <TextView
-        android:id="@+id/show_path"
-        style="@style/lvRowText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+
 
 </LinearLayout>

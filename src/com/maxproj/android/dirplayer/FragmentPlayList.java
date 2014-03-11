@@ -236,7 +236,7 @@ public class FragmentPlayList  extends Fragment {
 //    		plChooser[i].setBackgroundColor((i==currentPlayingTab)?0:1);
     		
     		String bs = (String) (plChooser[i].getText().subSequence(0, 1));
-    		plChooser[i].setText(bs+((i==localPlTab)?"@":"")+((i==currentPlayingTab)?"#":""));
+    		plChooser[i].setText(bs+((i==currentPlayingTab)?"#":"")+((i==localPlTab)?"@":""));
     	}
     }
     public void showPlayListView(){

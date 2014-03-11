@@ -78,6 +78,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 //import android.widget.MediaController;
 import android.widget.MediaController.MediaPlayerControl;
 import android.widget.ShareActionProvider;
@@ -281,15 +282,18 @@ public class DirPlayerActivity extends FragmentActivity implements
 	 * The {@link ViewPager} that will host the section contents.
 	 */
 	ViewPager mViewPager;
-
+	int currentPagerTab = 0;
 	int lastWinTab = 0; //最近使用的窗口，可能是右窗口，也可能是左窗口
-
 	SharedPreferences sharedPref;
 	SharedPreferences.Editor prefEditor;
-
 	DialogFragmentProgress dfp = null; //进度条
-
 	boolean showCopyProcess;
+	ImageView bottomIcon;
+	TextView bottomText;
+//	String bottomTextTab0;
+//	String bottomTextTab1;
+//	String bottomTextTab3;
+	
 
 	public void setShowCopyProcess(boolean enable){
 		showCopyProcess = enable;
@@ -1497,6 +1501,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 				
 				//debug, should be deleted
 				//fragmentPlayList.setListviewAdapter(myArrayAdapter[tab]);
+				updateBottomText();
 				
 				Log.d(LocalConst.LIFECYCLE,
 						"DirPlayerActivity.updateFileInfor()!"+" "+fragmentListview[tab]+" "+myArrayAdapter);
@@ -1679,7 +1684,8 @@ public class DirPlayerActivity extends FragmentActivity implements
 		mDetector = new GestureDetectorCompat(this, new MyGestureListener());
 		mDetectorVideoView = new GestureDetectorCompat(this, new VideoViewGestureListener());
 
-		ImageView bottomIcon = (ImageView)findViewById(R.id.bottom_icon);
+		bottomIcon = (ImageView)findViewById(R.id.bottom_icon);
+		bottomText = (TextView)findViewById(R.id.bottom_about);
 		bottomIcon.setImageResource(R.drawable.bottom);
 		Log.d(LocalConst.FRAGMENT_LIFE, "activity onCreate() end!"); // 要检查这个，这样才知道是否初始化全部完成
 	}
@@ -2098,7 +2104,9 @@ public class DirPlayerActivity extends FragmentActivity implements
 			FragmentTransaction fragmentTransaction) {
 		// When the given tab is selected, switch to the corresponding page in
 		// the ViewPager.
-		mViewPager.setCurrentItem(tab.getPosition());
+		currentPagerTab = tab.getPosition();
+		mViewPager.setCurrentItem(currentPagerTab);
+		updateBottomText();
 	}
 
 	@Override
@@ -2585,6 +2593,8 @@ public class DirPlayerActivity extends FragmentActivity implements
 			if(playType == LocalConst.SinglePlay){
 				
 				/**
+				 * 左右文件夹窗口的单曲播放
+				 * 
 				 * 是否正在播放左右窗口的文件？
 				 * 这里做一个记录
 				 * 如果没有播放了，那么这里应该能记录到
@@ -2618,10 +2628,21 @@ public class DirPlayerActivity extends FragmentActivity implements
 				Log.d(LocalConst.DTAG, "audio/video single: " + playStatus_fl_record + " " + playType + " " + fileListPath);
 				return;
 			}else if(playType == LocalConst.ListPlay){
+				
+				/**
+				 * 播放窗口的列表播放
+				 */
 				playListPath = intent.getStringExtra(LocalConst.PLAYLIST_PATH);
 				playListIndex = intent.getIntExtra(LocalConst.PLAYLIST_INDEX, 0);
 				playListItemIndex = intent.getIntExtra(LocalConst.PLAYLIST_ITEM_INDEX, 0);
 
+				/**
+				 * 如果是播放命令，登记这条playingfile信息
+				 * 如果是停止命令，清空登记信息
+				 */
+				
+				updateBottomText2PlayList();
+				
 				Log.d(LocalConst.DTAG, "audio/video list: " + playStatus + " " + playType + " " + playListPath + " - " + playListIndex + " - " + playListItemIndex);
 				/**
 				 * 更新播放列表
@@ -2708,15 +2729,26 @@ public class DirPlayerActivity extends FragmentActivity implements
 	    // Called when the BroadcastReceiver gets an Intent it's registered to receive
 		@Override
 	    public void onReceive(Context context, Intent intent) {
+		    String action = intent.getAction();
 			/**
 			 * 接收如下信息
-			 * 		更新file list窗口
-			 * 		更新play list窗口
-			 * 		更新收藏窗口
+			 * 		请求更新file list窗口
+			 * 		请求更新play list窗口
+			 * 		请求更新收藏窗口
+			 *		在底部状态栏显示当前路径-----------需要
+			 *		在底部状态栏显示当前播放曲目-----可选
 			 */			
-		    String action = intent.getAction();
 
-		    if(LocalConst.FRAG_BOOKMARK_LIST_UPDATE_ACTION.equals(action)) {
+		    if(LocalConst.BOTTOM_STATUS_TEXT.equals(action)) {
+		        Log.d(LocalConst.LIFECYCLE,"BOTTOM_STATUS_TEXT");
+		        /**
+		         * 什么情况下显示？
+		         * 		当tab是0或1时
+		         * 显示谁的？
+		         * 		tab是0，则显示tab0发送过来的text
+		         */
+		        
+		    } else if(LocalConst.FRAG_BOOKMARK_LIST_UPDATE_ACTION.equals(action)) {
 		        Log.d(LocalConst.LIFECYCLE,"FRAG_BOOKMARK_LIST_UPDATE_ACTION");
 		        fragmentBookMark.setListviewAdapter(bookMarkArrayAdapter);
 		        
@@ -2732,5 +2764,26 @@ public class DirPlayerActivity extends FragmentActivity implements
 				updatePlayListAdapterAll();
 		    }
 	    }
+	}
+	
+	public void updateBottomText(){	
+		if(bottomText == null)
+			return;
+		
+		if(currentPagerTab < 2){
+			//更新当前路径
+			bottomText.setText(currentPath[currentPagerTab]);
+		}else if(currentPagerTab == 2){
+			bottomText.setText("");
+		}else if(currentPagerTab == 3){
+			//更新为正在播放曲目
+			if(playListPath != null){
+				bottomText.setText(new File(playListPath).getName());
+			}
+		}
+	}
+	
+	public void updateBottomText2PlayList(){
+		
 	}
 }

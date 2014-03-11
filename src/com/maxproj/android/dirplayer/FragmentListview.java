@@ -21,7 +21,7 @@ public class FragmentListview extends Fragment {
     String currentPath = "static_ini_code_null";
     MyArrayAdapter listAdapter = null;
     ListView listView = null;
-    TextView show_path = null;
+//    TextView show_path = null;
     View fragmentView;
 
     Button b1, b2, b3, b4, b5, b6;
@@ -66,12 +66,12 @@ public class FragmentListview extends Fragment {
         
 		//show path at upper of listview
 		//show_path = (TextView)fragmentView.findViewById(R.id.show_path);
-        if((show_path !=null)&&(isAdded())){        	
-        	show_path.setText(getResources().getString(R.string.current_path_prompt) + currentPath);
-            Log.d(LocalConst.FRAGMENT_LIFE,"setListviewAdapter(): show_path is set to "+currentPath);
-        }else{
-            Log.d(LocalConst.FRAGMENT_LIFE,"setListviewAdapter(): show_path is null pointer!");
-        }
+//        if((show_path !=null)&&(isAdded())){        	
+//        	show_path.setText(getResources().getString(R.string.current_path_prompt) + currentPath);
+//            Log.d(LocalConst.FRAGMENT_LIFE,"setListviewAdapter(): show_path is set to "+currentPath);
+//        }else{
+//            Log.d(LocalConst.FRAGMENT_LIFE,"setListviewAdapter(): show_path is null pointer!");
+//        }
 		
         if (listView != null){
             listView.setAdapter(listAdapter);
@@ -149,7 +149,7 @@ public class FragmentListview extends Fragment {
                 
         
 		//show path at upper of listview
-		show_path = (TextView)fragmentView.findViewById(R.id.show_path);
+//		show_path = (TextView)fragmentView.findViewById(R.id.show_path);
 //        if(show_path !=null){
 //        	show_path.setText(getResources().getString(R.string.current_path_prompt) + currentPath);
 //            Log.d(LocalConst.DTAG,"setListviewAdapter(): show_path is set to "+currentPath);
@@ -172,10 +172,10 @@ public class FragmentListview extends Fragment {
 //        	listAdapter = LocalConst.myArrayAdapter_fragmentList[tab];
         }
         
-        if((show_path !=null)&&(isAdded())){ 
-        	show_path.setText(getResources().getString(R.string.current_path_prompt) + currentPath);
-            Log.d(LocalConst.DTAG,"setListviewAdapter(): show_path is "+tab+":"+currentPath);
-        }
+//        if((show_path !=null)&&(isAdded())){ 
+//        	show_path.setText(getResources().getString(R.string.current_path_prompt) + currentPath);
+//            Log.d(LocalConst.DTAG,"setListviewAdapter(): show_path is "+tab+":"+currentPath);
+//        }
         
         if (listAdapter != null){
             listView.setAdapter(listAdapter);

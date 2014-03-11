@@ -114,6 +114,7 @@ public class LocalConst {
 	public static final String NOTIFICATION_GOTO_PLAY = "com.maxproj.android.dirplayer.NOTIFICATION_PLAY";
 	public static final String NOTIFICATION_GOTO_PAUSE = "com.maxproj.android.dirplayer.NOTIFICATION_PAUSE";
 	public static final String NOTIFICATION_GOTO_NEXT = "com.maxproj.android.dirplayer.NOTIFICATION_NEXT";
+	public static final String BOTTOM_STATUS_TEXT = "com.maxproj.android.dirplayer.BOTTOM_STATUS_TEXT";
 	// 消息类别
 	public static final String 	PLAY_TYPE = "com.maxproj.android.dirplayer.PLAY_TYPE";
 	// 消息动作
