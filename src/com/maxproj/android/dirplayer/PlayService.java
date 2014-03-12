@@ -48,98 +48,42 @@ public class PlayService extends Service implements MediaPlayerControl {
 	/**
 	 * 播放列表
 	 */
-	public int localPlTab = 0;
+//	public int localPlTab = 0;
 	LinkedList<LvRow>[] playListItemsService = new LinkedList[LocalConst.plCount];
 	{
 		for (int i = 0; i < LocalConst.plCount; i++) {
 			playListItemsService[i] = new LinkedList<LvRow>();
 		}
 	}
-	File playingFile;//当前播放的文件
 	int playingType;//播放fileList或playList？
+	int playingPlTab = 0;
+	File playingFile;//当前播放的文件
 	int playListItemIndex = 0; // 第一首
-	int currentPlayingTab = 0;
 
-	public void lightenPlayList(){
-		/**
-		 * 需要发送item位置，如果有多个列表的话，需要发送列表编号
-		 */
-		Log.d(LocalConst.DTAG, "audio/video: path in playlist " + playingFile.getPath());
-				Intent localIntent = new Intent(
-						LocalConst.BROADCAST_ACTION)
-				// Puts the status into the Intent
-						.putExtra(LocalConst.PLAY_STATUS, LocalConst.playing)
-						.putExtra(LocalConst.PLAY_TYPE, LocalConst.ListPlay)
-						.putExtra(LocalConst.PLAYLIST_PATH, playingFile.getPath())
-						.putExtra(LocalConst.PLAYLIST_INDEX, 0)//以后可能多列表
-						.putExtra(LocalConst.PLAYLIST_ITEM_INDEX, playListItemIndex);
-				// Broadcasts the Intent to receivers in this app.
-				LocalBroadcastManager.getInstance(this).sendBroadcast(
-						localIntent);
-	}
-	public void unLightenPlayList(){
-				Intent localIntent = new Intent(
-						LocalConst.BROADCAST_ACTION)
-				// Puts the status into the Intent
-						.putExtra(LocalConst.PLAY_STATUS, LocalConst.clear)
-						.putExtra(LocalConst.PLAY_TYPE, LocalConst.ListPlay)
-						.putExtra(LocalConst.PLAYLIST_PATH, playingFile.getPath())
-						.putExtra(LocalConst.PLAYLIST_INDEX, 0)//以后可能多列表
-						.putExtra(LocalConst.PLAYLIST_ITEM_INDEX, playListItemIndex);
-				// Broadcasts the Intent to receivers in this app.
-				LocalBroadcastManager.getInstance(this).sendBroadcast(
-						localIntent);
-	}
-	public void lightenFileList(){
-		/**
-		 * 需要发送文件path
-		 */
-		Intent localIntent = new Intent(
-				LocalConst.BROADCAST_ACTION)
-		// Puts the status into the Intent
-				.putExtra(LocalConst.PLAY_STATUS, LocalConst.playing)
-				.putExtra(LocalConst.PLAY_TYPE, LocalConst.SinglePlay)
-				.putExtra(LocalConst.FILELIST_PATH, playingFile.getPath());
-		// Broadcasts the Intent to receivers in this app.
-		LocalBroadcastManager.getInstance(this).sendBroadcast(
-				localIntent);
-	}
-	public void unLightenFileList(){
-		Intent localIntent = new Intent(
-				LocalConst.BROADCAST_ACTION)
-		// Puts the status into the Intent
-				.putExtra(LocalConst.PLAY_STATUS, LocalConst.clear)
-				.putExtra(LocalConst.PLAY_TYPE, LocalConst.SinglePlay)
-				.putExtra(LocalConst.FILELIST_PATH, playingFile.getPath());
-		// Broadcasts the Intent to receivers in this app.
-		LocalBroadcastManager.getInstance(this).sendBroadcast(
-				localIntent);
-	}
-	
 	OnCompletionListener listPlayListener = new OnCompletionListener() {
 		@Override
 		public void onCompletion(MediaPlayer mp) {
-			unLightenPlayList();
+			updatePlayingFlag(playingType, LocalConst.clear, playingFile.getPath(), playingPlTab);
 			/**
 			 * 找到下一首歌曲，并调用play()
 			 */
-			if (playListItemsService[localPlTab].size() == 0) {
+			if (playListItemsService[playingPlTab].size() == 0) {
 				// 没有曲目，停止播放
 				return;
 			}
 
 			playListItemIndex++;
-			if (playListItemIndex >= playListItemsService[currentPlayingTab].size()) {
+			if (playListItemIndex >= playListItemsService[playingPlTab].size()) {
 				playListItemIndex = 0;
 			}
-			play(playListItemsService[currentPlayingTab].get(playListItemIndex).getFile(), LocalConst.ListPlay);
+			play(playListItemsService[playingPlTab].get(playListItemIndex).getFile(), LocalConst.ListPlay);
 		}
 	};
 	
 	OnCompletionListener singlePlayListener = new OnCompletionListener() {
 		@Override
 		public void onCompletion(MediaPlayer mp) {
-			unLightenFileList();
+			updatePlayingFlag(playingType, LocalConst.clear, playingFile.getPath(), playingPlTab);
 		}
 	};
 	/**
@@ -240,7 +184,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 	 * 应该直接new一个list，读取数据后返回这个list
 	 */
 	public void getListFromFile(LinkedList<LvRow> list, String fileName) {
-		SimpleDateFormat sdf = new SimpleDateFormat(getString(R.string.time_format));
+		SimpleDateFormat sdf = new SimpleDateFormat(LocalConst.time_format);
 		String line;
 		File listFile = new File(getFilesDir(),fileName);
 
@@ -278,7 +222,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 			return;
 
 		playListItemIndex = i; // 更新当前指针
-		currentPlayingTab = plTab;
+		playingPlTab = plTab;
 
 		play(lr.getFile(), LocalConst.ListPlay);
 	}
@@ -324,7 +268,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 			}else if(playingType == LocalConst.SinglePlay){
 				mediaPlayer.setOnCompletionListener(singlePlayListener);
 			}
-			updateLight();
+			updatePlayingFlag(playingType, LocalConst.playing, playingFile.getPath(), playingPlTab);
 			sendNotification(LocalConst.playing);
 			
 			Log.d(LocalConst.DTAG, "audio/video: after sendNotification()");
@@ -337,27 +281,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 		}
 
 	}
-	public void sendNotification_old() {
-		String songName;
-		if (playingFile != null) {
-			NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
-					.setSmallIcon(R.drawable.bottom)
-					.setContentTitle(playingFile.getName())
-					.setContentText(getResources().getString(R.string.notification_back_msg));
-			
-			Intent resultIntent = new Intent(this, DirPlayerActivity.class);
-			PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0,
-					resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-			mBuilder.setContentIntent(resultPendingIntent);
-			// Sets an ID for the notification
-			int mNotificationId = 001;
-			// Gets an instance of the NotificationManager service
-			NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-			// Builds the notification and issues it.
-			mNotifyMgr.notify(mNotificationId, mBuilder.build());
-		}
-	}
 	public void sendNotification(int status) {
 		
 		if (playingFile != null) {
@@ -501,28 +425,41 @@ public class PlayService extends Service implements MediaPlayerControl {
 			mediaPlayer.stop();
 	}
 
-	public void updateLight(){
-		if (mediaPlayer != null){
-			if(isPlaying()){
-				if(playingType == LocalConst.ListPlay){
-					lightenPlayList();
-					unLightenFileList();
-				}else if(playingType == LocalConst.SinglePlay){
-					lightenFileList();
-					unLightenPlayList();
-				}
-			}else{
-				unLightenPlayList();
-				unLightenFileList();
-			}
-		}
+	
+	/**
+	 * 这里不太好
+	 * 只需要发送：
+	 * 		路径是什么
+	 * 		点亮什么
+	 * 		熄灭什么
+	 */
+	public void updatePlayingFlag(
+			int playType,
+			int playing,
+			String playPath,
+			int playPlTab
+			){
+		/**
+		 * 需要发送item位置，如果有多个列表的话，需要发送列表编号
+		 */
+		Log.d(LocalConst.DTAG, "audio/video: path in playlist " + playingFile.getPath());
+				Intent localIntent = new Intent(
+						LocalConst.BROADCAST_SERVICE_STATUS)
+				// Puts the status into the Intent
+						.putExtra(LocalConst.PLAY_TYPE, playType)
+						.putExtra(LocalConst.PLAY_STATUS, playing)
+						.putExtra(LocalConst.PLAY_PATH, playPath)
+						.putExtra(LocalConst.PLAY_PL_TAB, playPlTab);
+				// Broadcasts the Intent to receivers in this app.
+				LocalBroadcastManager.getInstance(this).sendBroadcast(
+						localIntent);
 	}
 	
 	public void clearMusicPlaying() {
 		// TODO Auto-generated method stub
 		Log.d(LocalConst.DTAG, "audio/video: begin clear music playing");
 		if (mediaPlayer != null){
-			updateLight();
+			updatePlayingFlag(playingType, LocalConst.clear, playingFile.getPath(), playingPlTab);
 			cancelNotification();
 
 			mediaPlayer.stop();

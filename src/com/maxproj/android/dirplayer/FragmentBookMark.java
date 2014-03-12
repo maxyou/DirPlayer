@@ -172,7 +172,7 @@ public class FragmentBookMark  extends Fragment {
 		// TODO Auto-generated method stub
 		super.onResume();
 		Intent intent = new Intent(
-				LocalConst.FRAG_BOOKMARK_LIST_UPDATE_ACTION);
+				LocalConst.REQUEST_FRAG_BOOKMARK_LIST_UPDATE);
 		LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(
 				intent);	
 	}

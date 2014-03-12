@@ -268,9 +268,9 @@ public class FragmentListview extends Fragment {
 		super.onResume();
 		Log.d(LocalConst.LIFECYCLE, "FragmentListview.onResume() "+tab+":"+currentPath+" "+this);
 
-		((DirPlayerActivity) getActivity()).updateFragmentLight();
+//		((DirPlayerActivity) getActivity()).updateFragmentLight();
 		Intent intent = new Intent(
-				LocalConst.FRAG_FILE_LIST_UPDATE_ACTION);
+				LocalConst.REQUEST_FRAG_FILE_LIST_UPDATE);
 		LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(
 				intent);		
 	}

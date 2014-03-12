@@ -25,7 +25,7 @@ public class LocalConst {
 	
 	public static final String pathRoot = Environment
 			.getExternalStorageDirectory().getPath();
-
+	public static final String time_format = "yyyy-MM-dd";
 	
 	/**
 	 * 保存list的文件
@@ -103,28 +103,41 @@ public class LocalConst {
     public static final int op_next      = 5;
     
     
-	// 过滤器
-	public static final String FRAG_FILE_LIST_UPDATE_ACTION = "com.maxproj.android.dirplayer.FRAG_FILE_LIST_UPDATE_ACTION";
-	public static final String FRAG_BOOKMARK_LIST_UPDATE_ACTION = "com.maxproj.android.dirplayer.FRAG_BOOKMARK_LIST_UPDATE_ACTION";
-	public static final String FRAG_PLAY_LIST_UPDATE_ACTION = "com.maxproj.android.dirplayer.FRAG_PLAY_LIST_UPDATE_ACTION";
-	public static final String BROADCAST_ACTION = "com.maxproj.android.dirplayer.BROADCAST_ACTION";
+    /**
+     * intent部分
+     * 
+     */
+    
+	
+	public static final String REQUEST_FRAG_FILE_LIST_UPDATE = "com.maxproj.android.dirplayer.REQUEST_FRAG_FILE_LIST_UPDATE";
+	public static final String REQUEST_FRAG_BOOKMARK_LIST_UPDATE = "com.maxproj.android.dirplayer.REQUEST_FRAG_BOOKMARK_LIST_UPDATE";
+	public static final String REQUEST_FRAG_PLAY_LIST_UPDATE = "com.maxproj.android.dirplayer.REQUEST_FRAG_PLAY_LIST_UPDATE";
+	
+	
+	/**
+	 * notification发送给service的intent
+	 */
 	public static final String NOTIFICATION_ACTION = "com.maxproj.android.dirplayer.NOTIFICATION_ACTION";
 	public static final String NOTIFICATION_OP = "OP";	
 	public static final String NOTIFICATION_GOTO_LAST = "com.maxproj.android.dirplayer.NOTIFICATION_LAST";
 	public static final String NOTIFICATION_GOTO_PLAY = "com.maxproj.android.dirplayer.NOTIFICATION_PLAY";
 	public static final String NOTIFICATION_GOTO_PAUSE = "com.maxproj.android.dirplayer.NOTIFICATION_PAUSE";
 	public static final String NOTIFICATION_GOTO_NEXT = "com.maxproj.android.dirplayer.NOTIFICATION_NEXT";
+	
 	public static final String BOTTOM_STATUS_TEXT = "com.maxproj.android.dirplayer.BOTTOM_STATUS_TEXT";
-	// 消息类别
-	public static final String 	PLAY_TYPE = "com.maxproj.android.dirplayer.PLAY_TYPE";
-	// 消息动作
-	public static final String 	PLAY_STATUS = "com.maxproj.android.dirplayer.PLAY_STATUS";
-	// 列表播放信息
-	public static final String PLAYLIST_INDEX = "com.maxproj.android.dirplayer.PLAYLIST_INDEX";
-	public static final String PLAYLIST_ITEM_INDEX = "com.maxproj.android.dirplayer.PLAYLIST_ITEM_INDEX";
-	public static final String PLAYLIST_PATH = "com.maxproj.android.dirplayer.PLAYLIST_PATH";
-	// 文件播放信息
-	public static final String FILELIST_PATH = "com.maxproj.android.dirplayer.FILELIST_PATH";
+		//extra
+		public static final String 	STATUS_TEXT = "STATUS_TEXT";
+	
+	/**
+	 * Service发送的intent
+	 */
+	//Action
+	public static final String BROADCAST_SERVICE_STATUS = "com.maxproj.android.dirplayer.BROADCAST_SERVICE_STATUS";
+		//extra
+		public static final String PLAY_TYPE = "PLAY_TYPE";
+		public static final String PLAY_STATUS = "PLAY_STATUS";
+		public static final String PLAY_PATH = "PLAY_PATH";
+		public static final String PLAY_PL_TAB = "PLAY_PL_TAB";
 	
 	/**
 	 * 文件命令

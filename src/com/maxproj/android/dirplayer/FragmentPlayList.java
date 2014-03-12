@@ -343,10 +343,10 @@ public class FragmentPlayList  extends Fragment {
 		showPlayListChooser();
 		showPlayListView();//显示播放列表
 		
-		((DirPlayerActivity)getActivity()).updateFragmentLight();//考虑改成消息驱动模式
+//		((DirPlayerActivity)getActivity()).updateFragmentLight();//考虑改成消息驱动模式
 		
 		Intent intent = new Intent(
-				LocalConst.FRAG_PLAY_LIST_UPDATE_ACTION);
+				LocalConst.REQUEST_FRAG_PLAY_LIST_UPDATE);
 		LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(
 				intent);
 		Log.d(LocalConst.LIFECYCLE, "pl onResume()");

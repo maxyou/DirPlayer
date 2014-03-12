@@ -1,3 +1,24 @@
+/**
+ * app name
+ * 		DirPlayer
+ * author
+ * 		Max You 游红宇
+ * 		hyyou@foxmail.com
+ * 		dev@dirplayer.com
+ * 功能简介
+ * 		文件管理
+ * 			文件/文件夹的拷贝、移动、改名、创建、删除、收藏
+ * 		音频播放
+ * 			在文件夹浏览窗口单曲播放
+ * 			在播放列表连续播放
+ * 			从底往上滑出控制器，从顶往下滑出控制面板
+ * 		视频播放
+ * 			在文件浏览窗口点击视频即可播放
+ * 			单击视频调出控制面板
+ * 			双击放大和缩小，下滑关闭视频播放
+ * 主要部分完成时间
+ * 		2013年10月~2014年3月
+ */
 package com.maxproj.android.dirplayer;
 
 //import io.vov.vitamio.MediaPlayer;
@@ -201,13 +222,14 @@ public class DirPlayerActivity extends FragmentActivity implements
     PlayService mService;
     boolean mBound = false;    
 
-    int playStatus = 0; //播放状态
-    int playStatus_fl_record = 0; //播放状态
-    int playType = 0; //播放类型
-    int playListIndex = 0; //列表下标
-    int playListItemIndex = 0; //播放下标
-    String playListPath; //列表播放的路径
-    String fileListPath; //文件播放的路径
+    int servicePlayType = 0; //播放类型
+    int servicePlaying = 0; //播放状态
+    String servicePlayPath; //列表播放的路径
+    int servicePlayPlTab = 0;
+//    int playStatus_fl_record = 0; //播放状态
+//    int playListIndex = 0; //列表下标
+//    int playListItemIndex = 0; //播放下标
+//    String fileListPath; //文件播放的路径
     
     
     /**
@@ -704,7 +726,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 			
 			LvRow lr = new LvRow("/" + f.getName(), 
 					"", // 文件夹不显示大小 
-					"" + new SimpleDateFormat(getString(R.string.time_format)).format(f.lastModified()), 
+					"" + new SimpleDateFormat(LocalConst.time_format).format(f.lastModified()), 
 					f, 
 					false, 
 					1, 
@@ -1267,7 +1289,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	 * @param file
 	 */
 	private void addToPlayList(File f) {
-		SimpleDateFormat sdf = new SimpleDateFormat(getString(R.string.time_format));
+		SimpleDateFormat sdf = new SimpleDateFormat(LocalConst.time_format);
 		
 		if (f.isFile()){//file
 			//直接添加;
@@ -1486,11 +1508,8 @@ public class DirPlayerActivity extends FragmentActivity implements
 
 			fillList(files, tab);
 
-			// Log.d(TAG_DEBUG, "3.2 should not come here if Exception");
 			constructViewList(tab);
 
-//			Log.d(LocalConst.FRAGMENT_LIFE, "check viewListItems[" + tab + "]:"
-//					+ viewListItems[tab].toString());
 			myArrayAdapter[tab] = new MyArrayAdapter(this, R.layout.file_row,
 					viewListItems[tab]);
 			Log.d(LocalConst.FRAGMENT_LIFE, "after new MyArrayAdapter");
@@ -1499,16 +1518,14 @@ public class DirPlayerActivity extends FragmentActivity implements
 				fragmentListview[tab].setListviewAdapter(myArrayAdapter[tab],
 						currentPath[tab]);
 				
-				//debug, should be deleted
-				//fragmentPlayList.setListviewAdapter(myArrayAdapter[tab]);
-				updateBottomText();
-				
+				if(tab == currentPagerTab){
+					updateBottomStatus(currentPath[tab]);
+				}
 				Log.d(LocalConst.LIFECYCLE,
 						"DirPlayerActivity.updateFileInfor()!"+" "+fragmentListview[tab]+" "+myArrayAdapter);
 			} else {
 				Log.d(LocalConst.FRAGMENT_LIFE, "fragmentListview is null!");
 			}
-			// Log.d(TAG_DEBUG, "show path: " + parentPath + f.getName());
 		} catch (Exception e) {
 			Log.d(LocalConst.FRAGMENT_LIFE, "xtab path: " + f.getPath() + "Exception e: " + e.toString());
 			e.printStackTrace();
@@ -1553,7 +1570,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	 * 初始化左右窗口的view list items
 	 */
 	private void constructViewList(int tab) {
-		SimpleDateFormat sdf = new SimpleDateFormat(getString(R.string.time_format));
+		SimpleDateFormat sdf = new SimpleDateFormat(LocalConst.time_format);
 		String date;
 
 		// viewListFiles.clear();
@@ -1574,22 +1591,23 @@ public class DirPlayerActivity extends FragmentActivity implements
 			viewListItems[tab].add(lr);
 		}
 		for (File f : fileList[tab]) {
-			
-			
+			int playFlag = LocalConst.clear;
+			if(
+					(servicePlayType == LocalConst.SinglePlay)
+					&&(f.getPath().equals(servicePlayPath))
+					)
+			{
+				playFlag = servicePlaying;
+			}
 			// viewListFiles.add(f);
 			LvRow lr = new LvRow("" + f.getName(), "" + LocalConst.byteConvert(f.length()), ""
 					+ sdf.format(f.lastModified()), f, false, 2, 
 					URLConnection.getFileNameMap().getContentTypeFor(f.getName()),
-//					((playType == LocalConst.SinglePlay)&&(f.getPath().equals(fileListPath)))?
-//							LocalConst.playing:LocalConst.clear
-					((f.getPath().equals(fileListPath)))?
-							playStatus_fl_record:LocalConst.clear
+					playFlag
 					);
 //			Log.d(LocalConst.DTAG, "add file: " + lr.getName());
 			viewListItems[tab].add(lr);
 		}
-		// System.out.println(viewListItems);
-		Log.d(LocalConst.DTAG, "playType " + playType + " playStatus_fl_record " + playStatus_fl_record);
 	}
 
 	@Override
@@ -1783,29 +1801,17 @@ public class DirPlayerActivity extends FragmentActivity implements
 		startService(new Intent(this, PlayService.class));
 		
 		/**
-		 * 通过广播接收service的播放信息，比如当前曲目
+		 * 接收广播信息
+		 * 		来自service的播放信息
+		 * 		fragment的更新请求
+		 * 		目录更新？
 		 */
-        // The filter's action is BROADCAST_ACTION
-        IntentFilter mStatusIntentFilter = new IntentFilter(
-        		LocalConst.BROADCAST_ACTION);
-    
-        // Adds a data filter for the HTTP scheme
-        //mStatusIntentFilter.addDataScheme("http");
-        ServiceInforReceiver mServiceInforReceiver =
-                new ServiceInforReceiver();
-        // Registers the DownloadStateReceiver and its intent filters
-        LocalBroadcastManager.getInstance(this).registerReceiver(
-        		mServiceInforReceiver,
-                mStatusIntentFilter);
-
-		/**
-		 * 通过广播接收fragment的信息，比如申请更新数据等等
-		 */
-        // The filter's action is BROADCAST_ACTION
-        IntentFilter mFragmentIntentFilter = new IntentFilter();
-        mFragmentIntentFilter.addAction(LocalConst.FRAG_BOOKMARK_LIST_UPDATE_ACTION);
-        mFragmentIntentFilter.addAction(LocalConst.FRAG_FILE_LIST_UPDATE_ACTION);
-        mFragmentIntentFilter.addAction(LocalConst.FRAG_PLAY_LIST_UPDATE_ACTION);
+        IntentFilter mainActivityIntentFilter = new IntentFilter();
+        mainActivityIntentFilter.addAction(LocalConst.REQUEST_FRAG_BOOKMARK_LIST_UPDATE);
+        mainActivityIntentFilter.addAction(LocalConst.REQUEST_FRAG_FILE_LIST_UPDATE);
+        mainActivityIntentFilter.addAction(LocalConst.REQUEST_FRAG_PLAY_LIST_UPDATE);
+        mainActivityIntentFilter.addAction(LocalConst.BROADCAST_SERVICE_STATUS);
+        mainActivityIntentFilter.addAction(LocalConst.BOTTOM_STATUS_TEXT);
    
         /**
          * 注意，使用LocalBroadcastManager注册的receiver只能接收本app内部的intent
@@ -1813,8 +1819,8 @@ public class DirPlayerActivity extends FragmentActivity implements
          * 所以这里需要直接使用registerReceiver来注册
          */
         LocalBroadcastManager.getInstance(this).registerReceiver(
-        		new FragmentInforReceiver(),
-        		mFragmentIntentFilter);
+        		new MainActivityReceiver(),
+        		mainActivityIntentFilter);
         
         Log.d(LocalConst.FRAGMENT_LIFE, "activity onStart() end!"); // 要检查这个，这样才知道是否初始化全部完成
     }
@@ -2106,7 +2112,19 @@ public class DirPlayerActivity extends FragmentActivity implements
 		// the ViewPager.
 		currentPagerTab = tab.getPosition();
 		mViewPager.setCurrentItem(currentPagerTab);
-		updateBottomText();
+		Log.d(LocalConst.DTAG, "MainActivityReceiver " + currentPagerTab); 
+		if(currentPagerTab < 2){
+			//更新当前路径
+			updateBottomStatus(currentPath[currentPagerTab]);
+		}else if(currentPagerTab == 2){
+			updateBottomStatus("");
+		}else if(currentPagerTab == 3){
+			//更新为正在播放曲目
+			if(servicePlayPath != null){
+				updateBottomStatus(new File(servicePlayPath).getName());
+			}
+		}
+		
 	}
 
 	@Override
@@ -2495,7 +2513,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	}
 	
 	public void getListFromFile(LinkedList<LvRow> list, String fileName) {
-		SimpleDateFormat sdf = new SimpleDateFormat(getString(R.string.time_format));
+		SimpleDateFormat sdf = new SimpleDateFormat(LocalConst.time_format);
 		String line;
 		File listFile = new File(getFilesDir(),fileName);
 
@@ -2572,108 +2590,12 @@ public class DirPlayerActivity extends FragmentActivity implements
 		
 	}
 
-	private class ServiceInforReceiver extends BroadcastReceiver
-	{
-		private ServiceInforReceiver(){ // Prevents instantiation
-		}
-		
-	    // Called when the BroadcastReceiver gets an Intent it's registered to receive
-		@Override
-	    public void onReceive(Context context, Intent intent) {
-			/**
-			 * 接收如下信息
-			 * 		播放状态：正在播放、暂停、停止、清除
-			 * 		播放类型：文件播放、列表播放
-			 * 		播放路径：被播放的路径
-			 * 		播放列表：以后可能多个列表
-			 * 		播放下标：播放列表中的下标
-			 */
-			playStatus =  intent.getIntExtra(LocalConst.PLAY_STATUS, -1);
-			playType = intent.getIntExtra(LocalConst.PLAY_TYPE, -1);
-			if(playType == LocalConst.SinglePlay){
-				
-				/**
-				 * 左右文件夹窗口的单曲播放
-				 * 
-				 * 是否正在播放左右窗口的文件？
-				 * 这里做一个记录
-				 * 如果没有播放了，那么这里应该能记录到
-				 */
-				playStatus_fl_record = playStatus;
-				
-				fileListPath = intent.getStringExtra(LocalConst.FILELIST_PATH);
-				
-				/**
-				 * 更新左右窗口的文件列表
-				 * 也即更新listview的adapter
-				 * 这里应该主动更新
-				 */
-				for (int i = 0; i < LocalConst.tabCount; i++) {
-					for(LvRow lr:viewListItems[i]){
-						if(lr.getFile().getPath().equals(fileListPath)){
-							lr.setPlayingStatus(playStatus);
-						}else{
-							lr.setPlayingStatus(LocalConst.clear);
-						}
-					}
-					/**
-					 * 有两种更新方法，这里需要测试一下
-					 * 其一是notifyDataSetChanged()-----发现这个可以
-					 * 其二是重新设置adapter
-					 */
-					if(myArrayAdapter[i] != null){
-						myArrayAdapter[i].notifyDataSetChanged();
-					}
-				}
-				Log.d(LocalConst.DTAG, "audio/video single: " + playStatus_fl_record + " " + playType + " " + fileListPath);
-				return;
-			}else if(playType == LocalConst.ListPlay){
-				
-				/**
-				 * 播放窗口的列表播放
-				 */
-				playListPath = intent.getStringExtra(LocalConst.PLAYLIST_PATH);
-				playListIndex = intent.getIntExtra(LocalConst.PLAYLIST_INDEX, 0);
-				playListItemIndex = intent.getIntExtra(LocalConst.PLAYLIST_ITEM_INDEX, 0);
 
-				/**
-				 * 如果是播放命令，登记这条playingfile信息
-				 * 如果是停止命令，清空登记信息
-				 */
-				
-				updateBottomText2PlayList();
-				
-				Log.d(LocalConst.DTAG, "audio/video list: " + playStatus + " " + playType + " " + playListPath + " - " + playListIndex + " - " + playListItemIndex);
-				/**
-				 * 更新播放列表
-				 * 更新播放路径
-				 * 主动更新
-				 */
-				if(fragmentPlayList != null){
-					fragmentPlayList.setPathView(
-						"(" + playListItems[currentPlTab].size() + ")" +
-						getResources().getString(R.string.pl_path) + playListPath, currentPlTab);
-				}
-				for (LvRow lr : playListItems[currentPlTab]) {
-					if(lr.getFile().getPath().equals(playListPath)){
-						lr.setPlayingStatus(playStatus);
-					}else{
-						lr.setPlayingStatus(LocalConst.clear);
-					}
-				}
-				if(playListArrayAdapter[currentPlTab] != null){
-					playListArrayAdapter[currentPlTab].notifyDataSetChanged();
-				}
-				return;
-			}
-	    }
-	}
-
-	public void updateFragmentLight(){
-		if(mService != null){
-			mService.updateLight();
-		}
-	}
+//	public void updateFragmentLight(){
+//		if(mService != null){
+//			mService.updateLight();
+//		}
+//	}
 	
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
@@ -2722,14 +2644,72 @@ public class DirPlayerActivity extends FragmentActivity implements
 	}
 
 
-	private class FragmentInforReceiver extends BroadcastReceiver
-	{
-		private FragmentInforReceiver(){ // Prevents instantiation
+	private void updatePlayingFlag(Intent intent){
+		/**
+		 * 1、service需要发送当前播放状态
+		 * 2、activity需要记录当前播放状态
+		 * 3、activity需要更新fragment的显示
+		 * 4、fragment切换时需要查询记录的当前播放状态
+		 * 
+		 * 播放状态
+		 * 		文件播放
+		 * 			播放路径
+		 * 		列表播放
+		 * 			播放路径
+		 * 			列表编号
+		 * 
+		 */
+		servicePlaying =  intent.getIntExtra(LocalConst.PLAY_STATUS, -1);
+		servicePlayType = intent.getIntExtra(LocalConst.PLAY_TYPE, -1);
+		servicePlayPath = intent.getStringExtra(LocalConst.PLAY_PATH);
+		servicePlayPlTab = intent.getIntExtra(LocalConst.PLAY_PL_TAB, -1);
+		
+		if(servicePlayType == LocalConst.SinglePlay){
+			/**
+			 * 点击，并且播放后，在这里动态改变播放标记
+			 */
+			for (int i = 0; i < LocalConst.tabCount; i++) {
+				for(LvRow lr:viewListItems[i]){
+					if(lr.getFile().getPath().equals(servicePlayPath)){
+						lr.setPlayingStatus(servicePlaying);
+					}
+				}
+				if(myArrayAdapter[i] != null){
+					myArrayAdapter[i].notifyDataSetChanged();
+				}
+			}
+			return;
+		}else if(servicePlayType == LocalConst.ListPlay){
+			/**
+			 * 点击，并且播放后，在这里动态改变播放标记
+			 */
+
+			for(LvRow lr:playListItems[servicePlayPlTab]){
+				if(lr.getFile().getPath().equals(servicePlayPath)){
+					lr.setPlayingStatus(servicePlaying);
+				}
+			}
+			if(playListArrayAdapter[servicePlayPlTab] != null){
+				playListArrayAdapter[servicePlayPlTab].notifyDataSetChanged();
+			}
+			
+			if(servicePlaying == LocalConst.playing){
+				updateBottomStatus(new File(servicePlayPath).getName());
+			}else{
+				updateBottomStatus("");
+			}
+			return;
 		}
+	}
+	private class MainActivityReceiver extends BroadcastReceiver
+	{
+		private MainActivityReceiver(){ // Prevents instantiation
+		}
+		
 	    // Called when the BroadcastReceiver gets an Intent it's registered to receive
 		@Override
 	    public void onReceive(Context context, Intent intent) {
-		    String action = intent.getAction();
+			
 			/**
 			 * 接收如下信息
 			 * 		请求更新file list窗口
@@ -2739,51 +2719,53 @@ public class DirPlayerActivity extends FragmentActivity implements
 			 *		在底部状态栏显示当前播放曲目-----可选
 			 */			
 
-		    if(LocalConst.BOTTOM_STATUS_TEXT.equals(action)) {
-		        Log.d(LocalConst.LIFECYCLE,"BOTTOM_STATUS_TEXT");
+			String action = intent.getAction();
+			Log.d(LocalConst.LIFECYCLE, "MainActivityReceiver get: "+action);			
+			
+		    if(LocalConst.BROADCAST_SERVICE_STATUS.equals(action)) {
+		    	/**
+		    	 * 更新播放状态
+		    	 */
+		    	updatePlayingFlag(intent);
+		    }else if(LocalConst.BOTTOM_STATUS_TEXT.equals(action)) {
 		        /**
-		         * 什么情况下显示？
-		         * 		当tab是0或1时
-		         * 显示谁的？
-		         * 		tab是0，则显示tab0发送过来的text
+		         * 请求更新底部状态栏
 		         */
-		        
-		    } else if(LocalConst.FRAG_BOOKMARK_LIST_UPDATE_ACTION.equals(action)) {
-		        Log.d(LocalConst.LIFECYCLE,"FRAG_BOOKMARK_LIST_UPDATE_ACTION");
-		        fragmentBookMark.setListviewAdapter(bookMarkArrayAdapter);
-		        
-		    } else if(LocalConst.FRAG_FILE_LIST_UPDATE_ACTION.equals(action)) {
-		        Log.d(LocalConst.LIFECYCLE,"FRAG_FILE_LIST_UPDATE_ACTION");
+		    	String statusText = intent.getStringExtra(LocalConst.STATUS_TEXT);
+		    	if(bottomText != null){
+		    		bottomText.setText(statusText);
+		    	}
+		    }else if(LocalConst.REQUEST_FRAG_BOOKMARK_LIST_UPDATE.equals(action)) {
+		    	/**
+		    	 * 请求更新收藏窗口adapter
+		    	 */
+		        fragmentBookMark.setListviewAdapter(bookMarkArrayAdapter);		        
+		    }else if(LocalConst.REQUEST_FRAG_FILE_LIST_UPDATE.equals(action)) {
+		        /**
+		         * 请求更新左右窗口adapter
+		         */
 		        for(int i=0;i<LocalConst.tabCount;i++){
 		        	fragmentListview[i].setListviewAdapter(myArrayAdapter[i],
 		        			currentPath[i]);
 		        }
-		        
-		    } else if(LocalConst.FRAG_PLAY_LIST_UPDATE_ACTION.equals(action)) {
+		    }else if(LocalConst.REQUEST_FRAG_PLAY_LIST_UPDATE.equals(action)) {
+		    	/**
+		    	 * 请求更新播放窗口adapter
+		    	 */
 		        Log.d(LocalConst.LIFECYCLE,"FRAG_PLAY_LIST_UPDATE_ACTION");				
 				updatePlayListAdapterAll();
-		    }
+		    }	
+
+		    
 	    }
 	}
+
+
 	
-	public void updateBottomText(){	
-		if(bottomText == null)
-			return;
-		
-		if(currentPagerTab < 2){
-			//更新当前路径
-			bottomText.setText(currentPath[currentPagerTab]);
-		}else if(currentPagerTab == 2){
-			bottomText.setText("");
-		}else if(currentPagerTab == 3){
-			//更新为正在播放曲目
-			if(playListPath != null){
-				bottomText.setText(new File(playListPath).getName());
-			}
-		}
-	}
-	
-	public void updateBottomText2PlayList(){
-		
+	public void updateBottomStatus(String text){
+		Log.d(LocalConst.DTAG,"MainActivityReceiver "+text);
+		LocalBroadcastManager.getInstance(this).sendBroadcast(
+				new Intent(LocalConst.BOTTOM_STATUS_TEXT)
+				.putExtra(LocalConst.STATUS_TEXT, text));
 	}
 }
