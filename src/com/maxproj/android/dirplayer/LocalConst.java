@@ -89,6 +89,10 @@ public class LocalConst {
     public static final int SinglePlay       = 1;
     public static final int ListPlay      = 2;
     
+    public static final int play_seq_normal = 0;
+    public static final int play_seq_random = 1;
+    public static final int play_seq_single = 2;
+
     // status
     public static final int clear       = 0;
     public static final int playing       = 1;
@@ -123,6 +127,8 @@ public class LocalConst {
 	public static final String NOTIFICATION_GOTO_PLAY = "com.maxproj.android.dirplayer.NOTIFICATION_PLAY";
 	public static final String NOTIFICATION_GOTO_PAUSE = "com.maxproj.android.dirplayer.NOTIFICATION_PAUSE";
 	public static final String NOTIFICATION_GOTO_NEXT = "com.maxproj.android.dirplayer.NOTIFICATION_NEXT";
+	
+	public static final String NOTIFICATION_SEQ_SWITCH = "com.maxproj.android.dirplayer.NOTIFICATION_SEQ_SWITCH";
 	
 	public static final String BOTTOM_STATUS_TEXT = "com.maxproj.android.dirplayer.BOTTOM_STATUS_TEXT";
 		//extra

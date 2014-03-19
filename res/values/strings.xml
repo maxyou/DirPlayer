@@ -17,7 +17,13 @@
     </string>
     
     
-    
+    <string name="play_seq_normal" >顺序
+    </string>
+    <string name="play_seq_random" >随机
+    </string>
+    <string name="play_seq_single" >单曲
+    </string>
+        
     <string name="notification_goto_last" >上一首
     </string>
     <string name="notification_goto_next" >下一首

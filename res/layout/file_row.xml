@@ -29,7 +29,7 @@
 
     <TextView
         android:id="@+id/text3"
-        android:layout_width="60dp"
+        android:layout_width="80dp"
         android:layout_height="16dp" />
 
     <CheckBox

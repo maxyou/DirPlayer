@@ -6,8 +6,8 @@
 
     <ImageView
         android:id="@+id/notification_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_gravity="center" />
 
     <LinearLayout
@@ -29,33 +29,35 @@
 
             <Button
                 android:id="@+id/notification_goto_last"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:text="@string/notification_goto_last" />
 
             <Button
                 android:id="@+id/notification_goto_pause"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:padding="2dp"
                 android:text="@string/notification_goto_pause" />
             
             <Button
                 android:id="@+id/notification_goto_play"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:padding="2dp"
                 android:text="@string/notification_goto_play" />
             
             <Button
                 android:id="@+id/notification_goto_next"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:text="@string/notification_goto_next" />
+            
+            <Button
+                android:id="@+id/notification_seq"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:text="@string/play_seq_normal" />
+            
         </LinearLayout>
     </LinearLayout>
 

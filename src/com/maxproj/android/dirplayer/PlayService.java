@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.LinkedList;
+import java.util.Random;
+
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -56,9 +58,11 @@ public class PlayService extends Service implements MediaPlayerControl {
 		}
 	}
 	int playingType;//播放fileList或playList？
+	int playStatus = LocalConst.clear;
 	int playingPlTab = 0;
 	File playingFile;//当前播放的文件
-	int playListItemIndex = 0; // 第一首
+	static int playListItemIndex = 0; // 第一首
+	int playSequence = LocalConst.play_seq_normal;
 
 	OnCompletionListener listPlayListener = new OnCompletionListener() {
 		@Override
@@ -72,13 +76,32 @@ public class PlayService extends Service implements MediaPlayerControl {
 				return;
 			}
 
+			calcNextItem();
+			
+			play(playListItemsService[playingPlTab].get(playListItemIndex).getFile(), LocalConst.ListPlay);
+		}
+	};
+	
+	public void calcNextItem(){
+		switch(playSequence){
+		case LocalConst.play_seq_normal:
 			playListItemIndex++;
 			if (playListItemIndex >= playListItemsService[playingPlTab].size()) {
 				playListItemIndex = 0;
 			}
-			play(playListItemsService[playingPlTab].get(playListItemIndex).getFile(), LocalConst.ListPlay);
+			break;
+		case LocalConst.play_seq_random:
+			playListItemIndex = new Random().nextInt(playListItemsService[playingPlTab].size());
+			break;
+		case LocalConst.play_seq_single:
+			break;
+			
+			default:
+				
 		}
-	};
+		
+		return;
+	}
 	
 	OnCompletionListener singlePlayListener = new OnCompletionListener() {
 		@Override
@@ -130,7 +153,8 @@ public class PlayService extends Service implements MediaPlayerControl {
         mNotificationIntentFilter.addAction(LocalConst.NOTIFICATION_GOTO_NEXT);
         mNotificationIntentFilter.addAction(LocalConst.NOTIFICATION_GOTO_PLAY);
         mNotificationIntentFilter.addAction(LocalConst.NOTIFICATION_GOTO_PAUSE);
-   
+        mNotificationIntentFilter.addAction(LocalConst.NOTIFICATION_SEQ_SWITCH);
+        
         mNotificationInforReceiver =
                 new NotificationInforReceiver();
         /**
@@ -149,6 +173,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 		Log.d(LocalConst.DTAG, "service: onDestroy()");
 		if (mediaPlayer != null){
 			mediaPlayer.release();
+			playStatus = LocalConst.clear;
 		}
 		
         unregisterReceiver(
@@ -251,6 +276,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 			
 			mediaPlayer.prepare();
 			mediaPlayer.start();
+			playStatus = LocalConst.playing;
 			
 			/*
 			mediaPlayer.setOnPreparedListener(new OnPreparedListener() { 
@@ -269,7 +295,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 				mediaPlayer.setOnCompletionListener(singlePlayListener);
 			}
 			updatePlayingFlag(playingType, LocalConst.playing, playingFile.getPath(), playingPlTab);
-			sendNotification(LocalConst.playing);
+			sendNotification();
 			
 			Log.d(LocalConst.DTAG, "audio/video: after sendNotification()");
 		} catch (IllegalStateException e) {
@@ -282,7 +308,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 
 	}
 
-	public void sendNotification(int status) {
+	public void sendNotification() {
 		
 		if (playingFile != null) {
 			
@@ -290,11 +316,26 @@ public class PlayService extends Service implements MediaPlayerControl {
 			 * 给notification构建remoteView
 			 */
 			RemoteViews notifyView = new RemoteViews(this.getPackageName(), R.layout.notification);
+
+			switch(playSequence){
+			case LocalConst.play_seq_normal:
+				notifyView.setInt(R.id.notification_seq, "setText", R.string.play_seq_normal);
+				break;
+			case LocalConst.play_seq_random:
+				notifyView.setInt(R.id.notification_seq, "setText", R.string.play_seq_random);
+				break;
+			case LocalConst.play_seq_single:
+				notifyView.setInt(R.id.notification_seq, "setText", R.string.play_seq_single);
+				break;
+			default:
+				notifyView.setInt(R.id.notification_seq, "setText", R.string.play_seq_normal);
+			}
+			
 			
 			notifyView.setTextViewText(R.id.notification_name, playingFile.getName());
 			notifyView.setImageViewResource(R.id.notification_icon, R.drawable.icon);
 			
-			if(status == LocalConst.playing){
+			if(playStatus == LocalConst.playing){
 				notifyView.setViewVisibility(R.id.notification_goto_pause, View.VISIBLE);
 				notifyView.setViewVisibility(R.id.notification_goto_play, View.GONE);
 			}else{
@@ -303,11 +344,13 @@ public class PlayService extends Service implements MediaPlayerControl {
 			}
 			
 			if(playingType == LocalConst.ListPlay){
-				notifyView.setViewVisibility(R.id.notification_goto_last, View.VISIBLE);
+				notifyView.setViewVisibility(R.id.notification_goto_last, View.GONE);
 				notifyView.setViewVisibility(R.id.notification_goto_next, View.VISIBLE);
+				notifyView.setViewVisibility(R.id.notification_seq, View.VISIBLE);
 			}else if(playingType == LocalConst.SinglePlay){
 				notifyView.setViewVisibility(R.id.notification_goto_last, View.GONE);
 				notifyView.setViewVisibility(R.id.notification_goto_next, View.GONE);
+				notifyView.setViewVisibility(R.id.notification_seq, View.GONE);
 			}
 			
 			notifyView.setOnClickPendingIntent(R.id.notification_goto_pause, 
@@ -326,7 +369,10 @@ public class PlayService extends Service implements MediaPlayerControl {
 					PendingIntent.getBroadcast(this, 0,
 							new Intent(LocalConst.NOTIFICATION_GOTO_PLAY),
 							PendingIntent.FLAG_UPDATE_CURRENT));
-			
+			notifyView.setOnClickPendingIntent(R.id.notification_seq, 
+					PendingIntent.getBroadcast(this, 0,
+							new Intent(LocalConst.NOTIFICATION_SEQ_SWITCH),
+							PendingIntent.FLAG_UPDATE_CURRENT));
 			
 			NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
 						
@@ -395,21 +441,35 @@ public class PlayService extends Service implements MediaPlayerControl {
 		    } else if(LocalConst.NOTIFICATION_GOTO_PLAY.equals(action)) {
 		        Log.d(LocalConst.TMP,"Pressed play");
 				mediaPlayer.start();
-				sendNotification(LocalConst.playing);
+				playStatus = LocalConst.playing;
+				sendNotification();
 				
 				
 		    } else if(LocalConst.NOTIFICATION_GOTO_PAUSE.equals(action)) {
 		        Log.d(LocalConst.TMP,"Pressed pause");
 				mediaPlayer.pause();
-				sendNotification(LocalConst.paused);
+				playStatus = LocalConst.paused;
+				sendNotification();
+		    } else if(LocalConst.NOTIFICATION_SEQ_SWITCH.equals(action)) {
+		        Log.d(LocalConst.TMP,"play sequence switch");
+		        playSeqSwitch();
+				sendNotification();
 		    }
+		    
 	    }
+	}
+	public void playSeqSwitch(){
+		playSequence++;
+		if(playSequence > LocalConst.play_seq_single){
+			playSequence = LocalConst.play_seq_normal;
+		}
 	}
 	@Override
 	public void start() {
 		// TODO Auto-generated method stub
 		if (mediaPlayer != null)
 			mediaPlayer.start();
+			playStatus = LocalConst.playing;
 	}
 
 	@Override
@@ -417,12 +477,14 @@ public class PlayService extends Service implements MediaPlayerControl {
 		// TODO Auto-generated method stub
 		if (mediaPlayer != null)
 			mediaPlayer.pause();
+			playStatus = LocalConst.paused;
 	}
 
 	public void stop() {
 		// TODO Auto-generated method stub
 		if (mediaPlayer != null)
 			mediaPlayer.stop();
+			playStatus = LocalConst.stopped;
 	}
 
 	
@@ -471,6 +533,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 				e.printStackTrace();
 			}
 			mediaPlayer = null;
+			playStatus = LocalConst.clear;
 		}
 		Log.d(LocalConst.DTAG, "audio/video: after clear music playing");
 	}
