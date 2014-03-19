@@ -2047,8 +2047,8 @@ public class DirPlayerActivity extends FragmentActivity implements
 	     Log.d(LocalConst.DTAG, "widthHeightInPixels[0]: " + widthHeightInPixels[0]
 	    		 + "widthHeightInPixels[1]: " + widthHeightInPixels[1]);
 	 }
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
+//	@Override
+	public boolean _onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		MenuInflater inflater = getMenuInflater();
 //		inflater.inflate(R.menu.dir_player, menu);

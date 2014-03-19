@@ -42,8 +42,8 @@
         />
 	   	<ImageView
         android:id="@+id/bottom_icon"
-        android:layout_width="60dp"
-        android:layout_height="20dp"
+        android:layout_width="100dp"
+        android:layout_height="22dp"
         
          />
 	</LinearLayout>
