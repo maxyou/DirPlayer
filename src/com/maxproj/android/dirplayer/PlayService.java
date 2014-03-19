@@ -151,7 +151,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 			mediaPlayer.release();
 		}
 		
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(
+        unregisterReceiver(
         		mNotificationInforReceiver);
 	}
 
@@ -459,11 +459,17 @@ public class PlayService extends Service implements MediaPlayerControl {
 		// TODO Auto-generated method stub
 		Log.d(LocalConst.DTAG, "audio/video: begin clear music playing");
 		if (mediaPlayer != null){
-			updatePlayingFlag(playingType, LocalConst.clear, playingFile.getPath(), playingPlTab);
+			if(playingFile != null){
+				updatePlayingFlag(playingType, LocalConst.clear, playingFile.getPath(), playingPlTab);
+			}
 			cancelNotification();
 
-			mediaPlayer.stop();
-			mediaPlayer.release();
+			try{
+				mediaPlayer.stop();			
+				mediaPlayer.release();
+			}catch(Exception e){
+				e.printStackTrace();
+			}
 			mediaPlayer = null;
 		}
 		Log.d(LocalConst.DTAG, "audio/video: after clear music playing");

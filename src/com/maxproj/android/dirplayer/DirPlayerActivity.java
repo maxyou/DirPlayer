@@ -1845,10 +1845,12 @@ public class DirPlayerActivity extends FragmentActivity implements
 		Log.d(LocalConst.LIFECYCLE, "DirPlayerActivity.onDestroy()");
 		
 		/**
-		 * 如果不是正在播放状态，退出app时关掉notification
+		 * 退出app时关掉notification
 		 */
-		if(!mService.isPlaying()){
+		if(mService != null){
+			mService.stop();
 			mService.cancelNotification();
+			mService.stopSelf();
 		}
 		
 	}
