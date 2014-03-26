@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- 
+    	系统相关
+	 -->
     <string name="app_name">DirPlayer
     </string>
     <string name="bottom_about" > 简单播放，简单生活
@@ -16,8 +19,25 @@
     <string name="hello_world" >Hello world!
     </string>
     
+    <!-- 
+    	左右文件浏览窗口操作命令
+	 -->
+	<string name="flc_ibn_add" >加入播放列表</string>    
+	<string name="flc_ibn_l2r_copy" >从左拷贝到右</string>  
+	<string name="flc_ibn_l2r_move" >从左移动到右</string>  
+	<string name="flc_ibn_r2l_copy" >从右拷贝到左</string>  
+	<string name="flc_ibn_r2l_move" >从右移动到左</string>  
+	<string name="flc_ibn_del" >删除所选</string>
+	<string name="flc_ibn_mkdir" >创建文件夹</string>
+	<string name="flc_ibn_rename" >改名</string>
+	    
     
-    <string name="play_seq_normal" >顺序
+    
+    
+    <!-- 
+    	播放相关
+	 -->
+	<string name="play_seq_normal" >顺序
     </string>
     <string name="play_seq_random" >随机
     </string>
@@ -37,6 +57,10 @@
     <string name="mediacontroller_prompt">从底往上或从顶往下可以滑出播放控制按钮
     </string>
     
+    
+    <!-- 
+    	窗口操作相关
+	-->
     <string name="title_section1">左窗口
     </string>
     <string name="title_section2">右窗口
@@ -92,16 +116,16 @@
 	<string name="pl_act6" >删除
     </string>
 		
-	<string name="bar_b1" >A->B
+    <string name="current_path_prompt">当前位置是
     </string>
-    <string name="bar_b2" >A=>B
-    </string>
-    <string name="bar_b3" >B->A
-    </string>
-    <string name="bar_b4" >B=>A
+	
+    <string name="pl_path" >播放曲目：
     </string>
 
-    <string name="prompt" >怎样操作被选择的文件？
+    <!-- 
+    	对话框操作相关
+	-->
+	<string name="prompt" >怎样操作被选择的文件？
     </string>
     <string name="cancel_copy" >取消后续拷贝
     </string>
@@ -121,21 +145,7 @@
     </string>
     <string name="right_window_path" >right_window_path
     </string>
-    
 
-    <string name="pl_path" >播放曲目：
-    </string>
-
-    <string name="setting1_key">setting1_key
-    </string>
-    <string name="setting1_title">是否显示顶部标题条
-    </string>
-    <string name="seting1_summ">目前选择显示顶部标题条
-    </string>
-    <string name="seting1_summ2">目前选择隐藏顶部标题条
-    </string>
-
-    
     <string name="rename_prompt">改名
     </string>
     <string name="rename_origin_prompt">原名：
@@ -151,9 +161,20 @@
     </string>
     <string name="rename_fail_notice">由于某种原因，本次改名失败
     </string>
-
     
-    <string name="current_path_prompt">当前位置是
+
+    <!-- 
+    	设置相关
+	-->
+    
+    <string name="setting1_key">setting1_key
     </string>
+    <string name="setting1_title">是否显示顶部标题条
+    </string>
+    <string name="seting1_summ">目前选择显示顶部标题条
+    </string>
+    <string name="seting1_summ2">目前选择隐藏顶部标题条
+    </string>
+
     
 </resources>

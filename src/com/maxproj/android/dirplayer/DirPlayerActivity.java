@@ -111,7 +111,8 @@ import com.maxproj.android.dirplayer.PlayService.LocalBinder;
 public class DirPlayerActivity extends FragmentActivity implements
 		ActionBar.TabListener, FragmentListview.FragmentListviewInterface,
 		FragmentBookMark.FragmentBookMarkInterface,
-		FragmentPlayList.FragmentPlayListInterface
+		FragmentPlayList.FragmentPlayListInterface,
+		DialogFileList.DialogFileListInterface
 		{
 	
 	/**
@@ -768,24 +769,26 @@ public class DirPlayerActivity extends FragmentActivity implements
 		final int currentTab = tab;
 		//mCmdOptions.clear();
 
-		new DialogFragment() {
-
-			@Override
-			public Dialog onCreateDialog(Bundle savedInstanceState) {
-				AlertDialog.Builder builder = new AlertDialog.Builder(
-						getActivity());
-				builder.setTitle(R.string.prompt)
-						.setItems(R.array.cmdList,
-								new DialogInterface.OnClickListener() {
-									public void onClick(DialogInterface dialog,
-											int cmdIndex) {
-										addCmds(cmdIndex, currentTab);
-									}
-								})
-							.setNegativeButton(R.string.negative, null);
-				return builder.create();
-			}
-		}.show(getSupportFragmentManager(), "");
+		DialogFileList.newInstance(tab).show(getSupportFragmentManager(), "");
+		
+//		new DialogFragment() {
+//
+//			@Override
+//			public Dialog onCreateDialog(Bundle savedInstanceState) {
+//				AlertDialog.Builder builder = new AlertDialog.Builder(
+//						getActivity());
+//				builder.setTitle(R.string.prompt)
+//						.setItems(R.array.cmdList,
+//								new DialogInterface.OnClickListener() {
+//									public void onClick(DialogInterface dialog,
+//											int cmdIndex) {
+//										addCmds(cmdIndex, currentTab);
+//									}
+//								})
+//							.setNegativeButton(R.string.negative, null);
+//				return builder.create();
+//			}
+//		}.show(getSupportFragmentManager(), "");
 
 		Log.d(LocalConst.DTAG, "after show Operation Dialogcon");
 
@@ -2770,4 +2773,64 @@ public class DirPlayerActivity extends FragmentActivity implements
 				new Intent(LocalConst.BOTTOM_STATUS_TEXT)
 				.putExtra(LocalConst.STATUS_TEXT, text));
 	}
+
+
+	@Override
+	public void onDialogFileListAdd(int tab) {
+		// TODO Auto-generated method stub
+		addCmds(0, tab);
+	}
+
+
+	@Override
+	public void onDialogFileListL2rCopy(int tab) {
+		// TODO Auto-generated method stub
+		addCmds(1, tab);
+	}
+
+
+	@Override
+	public void onDialogFileListL2rMove(int tab) {
+		// TODO Auto-generated method stub
+		addCmds(2, tab);
+	}
+
+
+	@Override
+	public void onDialogFileListR2lCopy(int tab) {
+		// TODO Auto-generated method stub
+		addCmds(3, tab);
+	}
+
+
+	@Override
+	public void onDialogFileListR2lMove(int tab) {
+		// TODO Auto-generated method stub
+		addCmds(4, tab);
+	}
+
+
+	@Override
+	public void onDialogFileListMkdir(int tab) {
+		// TODO Auto-generated method stub
+		addCmds(6, tab);
+	}
+
+
+	@Override
+	public void onDialogFileListDel(int tab) {
+		// TODO Auto-generated method stub
+		addCmds(5, tab);
+	}
+
+
+	@Override
+	public void onDialogFileListRename(int tab) {
+		// TODO Auto-generated method stub
+		addCmds(7, tab);
+	}
+	
+	
+	
+	
 }
