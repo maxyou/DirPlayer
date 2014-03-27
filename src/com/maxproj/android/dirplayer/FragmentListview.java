@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TextView;
 
 public class FragmentListview extends Fragment {
     int tab = -1; // attach时如果为-1，说明是系统帮忙恢复的。正常初始化后会被设置为0和1

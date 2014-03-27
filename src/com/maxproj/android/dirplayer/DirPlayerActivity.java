@@ -21,11 +21,6 @@
  */
 package com.maxproj.android.dirplayer;
 
-//import io.vov.vitamio.MediaPlayer;
-//import io.vov.vitamio.widget.VideoView;
-//import io.vov.vitamio.widget.MediaController;
-//import io.vov.vitamio.widget.MediaController.MediaPlayerControl;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -38,14 +33,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Locale;
 
-import android.R.color;
+
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -58,7 +52,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -66,12 +59,11 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.preference.Preference;
 import android.preference.PreferenceManager;
+
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -81,9 +73,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.ViewPager;
 import android.util.DisplayMetrics;
-
 import android.view.GestureDetector;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -92,21 +82,18 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
-import android.view.ViewGroup.LayoutParams;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.MediaController;
 import android.widget.LinearLayout;
-import android.widget.TextView;
-//import android.widget.MediaController;
+import android.widget.MediaController;
 import android.widget.MediaController.MediaPlayerControl;
 import android.widget.ShareActionProvider;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
-
 import com.maxproj.android.dirplayer.PlayService.LocalBinder;
+//import android.widget.MediaController;
 
 public class DirPlayerActivity extends FragmentActivity implements
 		ActionBar.TabListener, FragmentListview.FragmentListviewInterface,
@@ -440,7 +427,8 @@ public class DirPlayerActivity extends FragmentActivity implements
 		} else {
 			
 			// 发送这个文件
-			String mime = URLConnection.getFileNameMap().getContentTypeFor(f.getName());
+			// todo: mime信息应该一开始在列表里面就有，不用重复获取
+			String mime = LocalConst.getMimeByFileName(f.getName());
 			Log.d(LocalConst.DTAG, "a file is long clicked in tab " + tab + "which mime is "+ mime);
 			Toast.makeText(this, "file type: " + mime,
 					Toast.LENGTH_LONG).show();		
@@ -1291,12 +1279,12 @@ public class DirPlayerActivity extends FragmentActivity implements
 	 * 添加一个File到播放列表
 	 * @param file
 	 */
-	private void addToPlayList(File f) {
+	private void addToPlayList(File f) { // todo: 改为添加LvRow
 		SimpleDateFormat sdf = new SimpleDateFormat(LocalConst.time_format);
 		
 		if (f.isFile()){//file
 			//直接添加;
-			String mime = URLConnection.getFileNameMap().getContentTypeFor(f.getName());
+			String mime = LocalConst.getMimeByFileName(f.getName());
 			/**
 			 * 只加音乐文件
 			 */
@@ -1387,7 +1375,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 		 */
 		case 0: // 添加到播放列表
 			for (LvRow lr : selectedItems[tab]) {
-				addToPlayList(lr.getFile());
+				addToPlayList(lr.getFile()); // todo: 应该直接添加LvRow，而不是File
 			}
 			savePlayList2File(currentPlTab);
 			updatePlayListAdapter(currentPlTab);
@@ -1594,6 +1582,11 @@ public class DirPlayerActivity extends FragmentActivity implements
 			viewListItems[tab].add(lr);
 		}
 		for (File f : fileList[tab]) {
+			
+			/**
+			 * 添加正在播放标记
+			 * 这个信息放在这里是否合适？
+			 */
 			int playFlag = LocalConst.clear;
 			if(
 					(servicePlayType == LocalConst.SinglePlay)
@@ -1602,13 +1595,28 @@ public class DirPlayerActivity extends FragmentActivity implements
 			{
 				playFlag = servicePlaying;
 			}
+			
 			// viewListFiles.add(f);
 			LvRow lr = new LvRow("" + f.getName(), "" + LocalConst.byteConvert(f.length()), ""
 					+ sdf.format(f.lastModified()), f, false, 2, 
-					URLConnection.getFileNameMap().getContentTypeFor(f.getName()),
+					LocalConst.getMimeByFileName(f.getName()),
 					playFlag
 					);
-//			Log.d(LocalConst.DTAG, "add file: " + lr.getName());
+			
+//			Log.d(LocalConst.DTAG, "mime test: " + lr.getName()+" --- "+ LocalConst.getMimeByFileName(f.getName()));
+			
+//			Log.d(LocalConst.DTAG, "mime test: " + lr.getName()+" --- " +
+//			MimeTypeMap.getSingleton().getMimeTypeFromExtension(
+//					FilenameUtils.getExtension(f.getName()))
+//			);
+			
+//			try {
+//				Log.d(LocalConst.DTAG, "mime test: " + lr.getName()+" --- "+ Files. probeContentType(f.toPath()));
+//			} catch (IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+			
 			viewListItems[tab].add(lr);
 		}
 	}
@@ -2534,7 +2542,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 						f, 
 						false, 
 						f.isDirectory()?1:2, 
-						URLConnection.getFileNameMap().getContentTypeFor(f.getName()), LocalConst.clear);
+								LocalConst.getMimeByFileName(f.getName()), LocalConst.clear);
 				list.add(lr);
 			}
 			br.close();

@@ -1,12 +1,7 @@
 package com.maxproj.android.dirplayer;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.LinkedList;
-
-import android.app.Application;
+import java.net.URLConnection;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Environment;
@@ -172,5 +167,47 @@ public class LocalConst {
         String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp-1) + (si ? "" : "i");
         return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
     }
+
+    public static String getMimeByFileName(String name){
+    	String mime = URLConnection.getFileNameMap().getContentTypeFor(name);
+    	
+    	if(mime == null){
+    		/**
+    		 * 补充mime和后缀名的对应表
+    		 */
+//    		String ext = getFileExt(name);
+//    		if(ext != null){
+//    			ext = ext.toLowerCase();
+//	    		if(ext.equals("dat")){
+//	    			mime = "video/";
+//	    		}else if(ext.equals("f4v")){
+//	    			mime = "video/";
+//	    		}else if(ext.equals("flv")){
+//	    			mime = "video/";
+//	    		}else if(ext.equals("ape")){
+//	    			mime = "audio/";
+//	    		}else if(ext.equals("rmvb")){
+//	    			mime = "video/";
+//	    		}
+//    		}
+    	}
+    	
+    	return mime;
+    }
+
+    public static String getFileExt(String name) {
+
+//        String separator = System.getProperty("file.separator");        
+//        int indexOfLastSeparator = name.lastIndexOf(separator);
+//        String filename = name.substring(indexOfLastSeparator + 1);
+        
+        int extensionIndex = name.lastIndexOf(".");
+        if (extensionIndex == -1){
+        	return null;
+        }else{
+        	return name.substring(extensionIndex + 1);        
+        }
+    }
+    
     
 }

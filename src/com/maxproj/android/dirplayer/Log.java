@@ -4,7 +4,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 
 //import android.widget.Toast;
 
@@ -28,7 +27,7 @@ public class Log {
 	 * 		outputSwitch = 2
 	 * 			output all
 	 */
-	public static int outputSwitch = 0;	
+	public static int outputSwitch = 2;	
 	public static String tagFilter = LocalConst.TMP;
 //	public static ArrayList<String> tagFilter = new ArrayList<String>();
 

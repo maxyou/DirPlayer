@@ -2,7 +2,6 @@ package com.maxproj.android.dirplayer;
 
 
 import java.io.File;
-import java.net.URLConnection;
 
 
 public class LvRow{
