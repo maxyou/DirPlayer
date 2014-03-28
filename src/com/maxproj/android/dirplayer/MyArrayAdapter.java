@@ -101,7 +101,7 @@ public class MyArrayAdapter extends ArrayAdapter<LvRow>{
 
 
         //if (lr.getName().charAt(0) == '/') // can't choose a directory
-        if (fileName.equals("/..")) // can't choose parent directory
+        if (lr.getType() == LocalConst.TYPE_PARAENT) // can't choose parent directory
         {
             cb.setVisibility(cb.INVISIBLE);
 //            Log.d(LocalConst.DTAG,"getView: " + lr.getName());

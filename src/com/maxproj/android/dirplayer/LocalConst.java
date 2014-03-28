@@ -5,6 +5,7 @@ import java.net.URLConnection;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.BaseColumns;
 
 public class LocalConst {
 
@@ -21,6 +22,52 @@ public class LocalConst {
 	public static final String pathRoot = Environment
 			.getExternalStorageDirectory().getPath();
 	public static final String time_format = "yyyy-MM-dd";
+	
+	/**
+	 * 文件及文件夹类型
+	 */
+	public static final int TYPE_PARAENT = 0;
+	public static final int TYPE_DIR = 1;
+	public static final int TYPE_FILE = 2;
+
+	/**
+	 * 数据库相关
+	 */
+	public class DbContract {
+	    // To prevent someone from accidentally instantiating the contract class,
+	    // give it an empty constructor.
+	    public DbContract() {}
+	    
+	    private String name;
+	    private String length;
+	    private String date;
+	    private File file;
+	    private boolean selected;
+	    private int type; // 0: paraent, 1: dir, 2: file
+	    private String mime;
+	    private int playingStatus;
+	    
+	    /* Inner class that defines the table contents */
+	    public class BookMark implements BaseColumns {
+	        public static final String TABLE_NAME = "bookmark";
+	        public static final String COLUMN_NAME = "entryid";
+	        public static final String COLUMN_NAME_TITLE = "title";
+	        public static final String COLUMN_NAME_SUBTITLE = "subtitle";
+	        
+	    }
+	    
+	    private static final String TEXT_TYPE = " TEXT";
+	    private static final String COMMA_SEP = ",";
+	    private static final String SQL_CREATE_ENTRIES =
+	        "CREATE TABLE " + BookMark.TABLE_NAME + " (" +
+	        		BookMark._ID + " INTEGER PRIMARY KEY," +
+	        		BookMark.COLUMN_NAME + TEXT_TYPE + COMMA_SEP +
+	        BookMark.COLUMN_NAME_TITLE + TEXT_TYPE + COMMA_SEP +	        
+	        " )";
+
+	    private static final String SQL_DELETE_ENTRIES =
+	        "DROP TABLE IF EXISTS " + BookMark.TABLE_NAME;
+	}
 	
 	/**
 	 * 保存list的文件

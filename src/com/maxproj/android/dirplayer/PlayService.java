@@ -214,13 +214,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 
 			while ((line = br.readLine()) != null) {
 				File f = new File(line);
-				LvRow lr = new LvRow("" + f.getName(), 
-						f.isDirectory()?"":"" + LocalConst.byteConvert(f.length()), 
-						"" + sdf.format(f.lastModified()), 
-						f, 
-						false, 
-						f.isDirectory()?1:2, 
-						URLConnection.getFileNameMap().getContentTypeFor(f.getName()), LocalConst.clear);
+				LvRow lr = new LvRow(line, false, LocalConst.clear);
 				list.add(lr);
 			}
 			br.close();

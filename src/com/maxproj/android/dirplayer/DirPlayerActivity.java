@@ -682,9 +682,9 @@ public class DirPlayerActivity extends FragmentActivity implements
 			updateDirInfor(parentPath[tab], tab);
 		}
 	}
-	public boolean checkFileInLvRowList(File f, LinkedList<LvRow> list){
+	public boolean checkFileInLvRowList(String path, LinkedList<LvRow> list){
 		for (LvRow lr : list) {
-			if (lr.getFile().getPath().equals(f.getPath())){
+			if (lr.getPath().equals(path)){
 				return true;
 			}
 		}
@@ -703,6 +703,9 @@ public class DirPlayerActivity extends FragmentActivity implements
 		
 		calcSelectItems(tab);
 		if(selectedItems[tab].size() == 0){
+			/**
+			 * 没有条目被选择，添加当前目录到收藏
+			 */
 			Log.d(LocalConst.DTAG, "Button5 add current directory");
 			
 			Toast.makeText(this, "您添加了收藏： " + currentPath[tab], Toast.LENGTH_LONG).show();
@@ -710,24 +713,22 @@ public class DirPlayerActivity extends FragmentActivity implements
 			File f = new File(currentPath[tab]);
 			
 			// 判断当前目录是否已经收藏
-			if(checkFileInLvRowList(f, bookMarkItems))
+			if(checkFileInLvRowList(currentPath[tab], bookMarkItems))
 				return;
 			
-			LvRow lr = new LvRow("/" + f.getName(), 
-					"", // 文件夹不显示大小 
-					"" + new SimpleDateFormat(LocalConst.time_format).format(f.lastModified()), 
-					f, 
-					false, 
-					1, 
-					null, 
-					LocalConst.clear);
+			LvRow lr = new LvRow(currentPath[tab], 
+					false, //未被选择
+					LocalConst.clear);// 没有播放状态
 			bookMarkItems.add(lr);
 		}else{
+			/**
+			 * 有条目被选择，添加被选择的条目到书签
+			 */
 			Log.d(LocalConst.DTAG, "Button5 add a dir or a file");
 			for (LvRow lr : selectedItems[tab]) {
 				
 				// 判断是否已经收藏
-				if(checkFileInLvRowList(lr.getFile(), bookMarkItems)){
+				if(checkFileInLvRowList(lr.getPath(), bookMarkItems)){
 					continue;
 				}else{
 					bookMarkItems.add(lr);
@@ -1290,8 +1291,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 			 */
 			if (mime !=null){
 				if(mime.startsWith("audio/")){	
-					LvRow lr = new LvRow("" + f.getName(), "" + LocalConst.byteConvert(f.length()), ""
-						+ sdf.format(f.lastModified()), f, false, 2, mime, LocalConst.clear);
+					LvRow lr = new LvRow(f,  false,  LocalConst.clear);
 					playListItems[currentPlTab].add(lr);
 				}
 			}
@@ -1569,15 +1569,14 @@ public class DirPlayerActivity extends FragmentActivity implements
 		if (!currentPath[tab].equals(LocalConst.pathRoot)) {
 			Log.d(LocalConst.DTAG, "add parentPath: " + parentPath[tab]);
 			// viewListFiles.add(new File(parentPath));
-			LvRow lr = new LvRow("/..", "", "", new File(parentPath[tab]), false, 0, null, LocalConst.clear);
+			LvRow lr = LvRow.lvRowParaent(parentPath[tab], false, LocalConst.clear);
 			viewListItems[tab].add(lr);
 		}
 		Log.d(LocalConst.DTAG, "fillList loop end 2");
 
 		for (File f : dirList[tab]) {
 			// viewListFiles.add(f);
-			LvRow lr = new LvRow("/" + f.getName(), "", ""
-					+ sdf.format(f.lastModified()), f, false, 1, null, LocalConst.clear);
+			LvRow lr = new LvRow(f, false, LocalConst.clear);
 //			Log.d(LocalConst.DTAG, "add directory: " + lr.getName());
 			viewListItems[tab].add(lr);
 		}
@@ -1597,11 +1596,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 			}
 			
 			// viewListFiles.add(f);
-			LvRow lr = new LvRow("" + f.getName(), "" + LocalConst.byteConvert(f.length()), ""
-					+ sdf.format(f.lastModified()), f, false, 2, 
-					LocalConst.getMimeByFileName(f.getName()),
-					playFlag
-					);
+			LvRow lr = new LvRow(f, false,playFlag);
 			
 //			Log.d(LocalConst.DTAG, "mime test: " + lr.getName()+" --- "+ LocalConst.getMimeByFileName(f.getName()));
 			
@@ -2536,13 +2531,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 
 			while ((line = br.readLine()) != null) {
 				File f = new File(line);
-				LvRow lr = new LvRow("" + f.getName(), 
-						f.isDirectory()?"":"" + LocalConst.byteConvert(f.length()), 
-						"" + sdf.format(f.lastModified()), 
-						f, 
-						false, 
-						f.isDirectory()?1:2, 
-								LocalConst.getMimeByFileName(f.getName()), LocalConst.clear);
+				LvRow lr = new LvRow(line, false, LocalConst.clear);
 				list.add(lr);
 			}
 			br.close();
