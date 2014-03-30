@@ -33,41 +33,15 @@ public class LocalConst {
 	/**
 	 * 数据库相关
 	 */
-	public class DbContract {
-	    // To prevent someone from accidentally instantiating the contract class,
-	    // give it an empty constructor.
-	    public DbContract() {}
-	    
-	    private String name;
-	    private String length;
-	    private String date;
-	    private File file;
-	    private boolean selected;
-	    private int type; // 0: paraent, 1: dir, 2: file
-	    private String mime;
-	    private int playingStatus;
-	    
-	    /* Inner class that defines the table contents */
-	    public class BookMark implements BaseColumns {
-	        public static final String TABLE_NAME = "bookmark";
-	        public static final String COLUMN_NAME = "entryid";
-	        public static final String COLUMN_NAME_TITLE = "title";
-	        public static final String COLUMN_NAME_SUBTITLE = "subtitle";
-	        
-	    }
-	    
-	    private static final String TEXT_TYPE = " TEXT";
-	    private static final String COMMA_SEP = ",";
-	    private static final String SQL_CREATE_ENTRIES =
-	        "CREATE TABLE " + BookMark.TABLE_NAME + " (" +
-	        		BookMark._ID + " INTEGER PRIMARY KEY," +
-	        		BookMark.COLUMN_NAME + TEXT_TYPE + COMMA_SEP +
-	        BookMark.COLUMN_NAME_TITLE + TEXT_TYPE + COMMA_SEP +	        
-	        " )";
-
-	    private static final String SQL_DELETE_ENTRIES =
-	        "DROP TABLE IF EXISTS " + BookMark.TABLE_NAME;
-	}
+	public static final String DB_NAME_BOOKMARK = "bookmark";
+	public static final String DB_NAME_PLAYLIST_1 = "playlist_1";
+	public static final String DB_NAME_PLAYLIST_2 = "playlist_2";
+	public static final String DB_NAME_PLAYLIST_3 = "playlist_3";
+	public static final String DB_NAME_PLAYLIST_4 = "playlist_4";
+	public static final String DB_NAME_PLAYLIST_5 = "playlist_5";
+	public static final String DB_NAME_PLAYLIST_TMP = "playlist_tmp";
+	
+	public static int dbSwitch = 1;//0:file, 1:database
 	
 	/**
 	 * 保存list的文件

@@ -315,12 +315,13 @@ public class DirPlayerActivity extends FragmentActivity implements
 	 * 每个书签占一行
 	 */
 	private void getBookMarkList() {
-		getListFromFile(bookMarkItems, LocalConst.bookmark_file);
+		bookMarkItems = getListFromFile(LocalConst.bookmark_file);
+		for(LvRow lr: bookMarkItems){
+			Log.d(LocalConst.DTAG, "database read getBookMarkList " + lr.getPath());
+		}
 	}
 
-	private void appendBookMark2File(LvRow bmr) {
-		appendList2File(bmr, LocalConst.bookmark_file);
-	}
+
 
 	private void saveBookMark2File() {
 		saveList2File(bookMarkItems, LocalConst.bookmark_file);
@@ -2448,7 +2449,8 @@ public class DirPlayerActivity extends FragmentActivity implements
 		moveUpSelected(playListItems[currentPlTab]);
 		playListArrayAdapter[currentPlTab].notifyDataSetChanged();
 
-		savePlayList2File(currentPlTab);
+		savePlayList2File(currentPlTab);		
+		
 	}
 	
 	public void moveDownSelected(LinkedList<LvRow> list){
@@ -2517,59 +2519,48 @@ public class DirPlayerActivity extends FragmentActivity implements
 	 * 播放目录用什么格式保存呢？
 	 */
 	private void getPlayList(int plTab) {
-		getListFromFile(playListItems[plTab], LocalConst.playlist_file_prefix + plTab + ".txt");
+		playListItems[plTab] = getListFromFile(LocalConst.playlist_file_prefix + plTab + "_txt");
 	}
 	
-	public void getListFromFile(LinkedList<LvRow> list, String fileName) {
-		SimpleDateFormat sdf = new SimpleDateFormat(LocalConst.time_format);
-		String line;
-		File listFile = new File(getFilesDir(),fileName);
-
-		list.clear();
-		try {
-			BufferedReader br = new BufferedReader(new FileReader(listFile));
-
-			while ((line = br.readLine()) != null) {
-				File f = new File(line);
-				LvRow lr = new LvRow(line, false, LocalConst.clear);
-				list.add(lr);
+	public LinkedList<LvRow> getListFromFile(String fileName) {
+		LinkedList<LvRow> list = new LinkedList<LvRow>();
+		
+		if(LocalConst.dbSwitch == 0){//0:存为文件，1：存为database
+			SimpleDateFormat sdf = new SimpleDateFormat(LocalConst.time_format);
+			String line;
+			File listFile = new File(getFilesDir(),fileName);
+	
+			try {
+				BufferedReader br = new BufferedReader(new FileReader(listFile));
+	
+				while ((line = br.readLine()) != null) {
+					File f = new File(line);
+					LvRow lr = new LvRow(line, false, LocalConst.clear);
+					list.add(lr);
+				}
+				br.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}catch (Exception e){
+				Log.d(LocalConst.FRAGMENT_LIFE, "listItems:" + e.toString());
 			}
-			br.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}catch (Exception e){
-			Log.d(LocalConst.FRAGMENT_LIFE, "listItems:" + e.toString());
+			return list;
+		}else{
+			list = MyDatabase.readListFromDB(fileName);
+			Log.d(LocalConst.DTAG, "database read size "+list.size()+" in "+fileName);
+			return list;
 		}
 	}
 
-	/**
-	 * 加在链表的末尾
-	 * 
-	 */
-	private void _appendPlayList2File(LvRow lr) {
-		appendList2File(lr, LocalConst.playlist_file_prefix + currentPlTab + ".txt");
-	}
-	private void appendList2File(LvRow lr, String fileName) {
-		File listFile = new File(getFilesDir(),fileName);
 
-		try {
-			BufferedWriter bw = new BufferedWriter(new FileWriter(listFile,
-					true));
-			bw.write(lr.getFile().getPath() + "\n");
-			bw.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 
 	/**
 	 * 暂时每次都存
-	 * 以后改成onStop的时候存
+	 * 能否改成onStop的时候存？
 	 */
 	private void savePlayList2File(int plTab) {
-		saveList2File(playListItems[plTab], LocalConst.playlist_file_prefix + plTab + ".txt");
+		saveList2File(playListItems[plTab], LocalConst.playlist_file_prefix + plTab + "_txt");
 		
 		if(mService != null)
 			mService.updatePlayList(plTab);
@@ -2577,17 +2568,21 @@ public class DirPlayerActivity extends FragmentActivity implements
 
 	public void saveList2File(LinkedList<LvRow> list, String fileName) {
 		
-		File listFile = new File(getFilesDir(),fileName);
-
-		try {
-			BufferedWriter bw = new BufferedWriter(new FileWriter(listFile));
-			for (LvRow lr : list) {
-				bw.write(lr.getFile().getPath() + "\n");
+		if(LocalConst.dbSwitch == 0){//0:存为文件，1：存为database
+			File listFile = new File(getFilesDir(),fileName);
+	
+			try {
+				BufferedWriter bw = new BufferedWriter(new FileWriter(listFile));
+				for (LvRow lr : list) {
+					bw.write(lr.getFile().getPath() + "\n");
+				}
+				bw.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			bw.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		}else{
+			MyDatabase.writeList2DB(list, fileName);
 		}
 		
 	}

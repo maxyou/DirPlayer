@@ -204,25 +204,29 @@ public class PlayService extends Service implements MediaPlayerControl {
 	 * 应该直接new一个list，读取数据后返回这个list
 	 */
 	public void getListFromFile(LinkedList<LvRow> list, String fileName) {
-		SimpleDateFormat sdf = new SimpleDateFormat(LocalConst.time_format);
-		String line;
-		File listFile = new File(getFilesDir(),fileName);
-
-		list.clear();
-		try {
-			BufferedReader br = new BufferedReader(new FileReader(listFile));
-
-			while ((line = br.readLine()) != null) {
-				File f = new File(line);
-				LvRow lr = new LvRow(line, false, LocalConst.clear);
-				list.add(lr);
+		if(LocalConst.dbSwitch == 0){//0:存为文件，1：存为database
+			SimpleDateFormat sdf = new SimpleDateFormat(LocalConst.time_format);
+			String line;
+			File listFile = new File(getFilesDir(),fileName);
+	
+			list.clear();
+			try {
+				BufferedReader br = new BufferedReader(new FileReader(listFile));
+	
+				while ((line = br.readLine()) != null) {
+					File f = new File(line);
+					LvRow lr = new LvRow(line, false, LocalConst.clear);
+					list.add(lr);
+				}
+				br.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}catch (Exception e){
+				Log.d(LocalConst.FRAGMENT_LIFE, "listItems:" + e.toString());
 			}
-			br.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}catch (Exception e){
-			Log.d(LocalConst.FRAGMENT_LIFE, "listItems:" + e.toString());
+		}else{
+//			list = MyDatabase.readListFromDB(fileName);
 		}
 	}
 	/**

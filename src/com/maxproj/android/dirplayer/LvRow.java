@@ -99,21 +99,7 @@ public class LvRow{
         this.selected = false;
     }
     */
-    /**
-     *	比较早定义的函数，比较累赘 
-     */
-    public LvRow(String name, String lengthStr, String dateStr, File file, 
-    		boolean selected, int type, String mime, int playingStatus, int i){
-    	this.path = file.getPath();
-        this.name = name;
-        this.lengthStr = lengthStr;
-        this.dateStr = dateStr;
-        this.file = file;
-        this.selected = selected;
-        this.type = type;
-        this.mime = mime;
-        this.playingStatus = playingStatus;
-    }
+
     /**
      *	尽量用下面两个这个函数 
      */
