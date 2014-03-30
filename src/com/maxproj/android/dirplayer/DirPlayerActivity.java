@@ -119,6 +119,8 @@ public class DirPlayerActivity extends FragmentActivity implements
 	
 	ActionBar actionBar = null;
 	
+	int controllerPromptCount = 0;
+	
 	/**
 	 * 设置
 	 */
@@ -492,8 +494,12 @@ public class DirPlayerActivity extends FragmentActivity implements
 					Log.d(LocalConst.DTAG, "audio/video: after mService.play(f, null)");
 					// mediaController.show(); // 开始播放时是否要显示一下控制面板？
 					Log.d(LocalConst.DTAG, "audio/video: after mediaController.show()");
-					Toast.makeText(this, getResources().getString(R.string.mediacontroller_prompt), 
+					
+					if(controllerPromptCount != 0){
+						controllerPromptCount--;
+						Toast.makeText(this, getResources().getString(R.string.mediacontroller_prompt), 
 							Toast.LENGTH_LONG).show();
+					}
 				}
 			}
 			else if (mime.startsWith("video/")){
@@ -1875,6 +1881,8 @@ public class DirPlayerActivity extends FragmentActivity implements
 		// TODO Auto-generated method stub
 		super.onResume();
 		Log.d(LocalConst.LIFECYCLE, "DirPlayerActivity.onResume()");
+		
+		controllerPromptCount = 2;
 	}
 	@Override
 	protected void onResumeFragments() {
@@ -2371,8 +2379,11 @@ public class DirPlayerActivity extends FragmentActivity implements
 			mService.playList(i, plTab);
 			//mediaController.show();
 			currentPlayingTab = plTab;
-			Toast.makeText(this, getResources().getString(R.string.mediacontroller_prompt), 
+			if(controllerPromptCount != 0){
+				controllerPromptCount--;
+				Toast.makeText(this, getResources().getString(R.string.mediacontroller_prompt), 
 					Toast.LENGTH_LONG).show();
+			}
 			
 		}
 	}
