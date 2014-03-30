@@ -2519,7 +2519,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	 * 播放目录用什么格式保存呢？
 	 */
 	private void getPlayList(int plTab) {
-		playListItems[plTab] = getListFromFile(LocalConst.playlist_file_prefix + plTab + "_txt");
+		playListItems[plTab] = getListFromFile(LocalConst.playlist_file_prefix + plTab);
 	}
 	
 	public LinkedList<LvRow> getListFromFile(String fileName) {
@@ -2560,7 +2560,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	 * 能否改成onStop的时候存？
 	 */
 	private void savePlayList2File(int plTab) {
-		saveList2File(playListItems[plTab], LocalConst.playlist_file_prefix + plTab + "_txt");
+		saveList2File(playListItems[plTab], LocalConst.playlist_file_prefix + plTab);
 		
 		if(mService != null)
 			mService.updatePlayList(plTab);

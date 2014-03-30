@@ -195,7 +195,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 	 */
 	private void getPlayList(int plTab) {
 		playListItemsService[plTab].clear();
-		getListFromFile(playListItemsService[plTab], LocalConst.playlist_file_prefix + plTab + ".txt");
+		getListFromFile(playListItemsService[plTab], LocalConst.playlist_file_prefix + plTab);
 		Log.d(LocalConst.DTAG, "play service getPlayList() "+plTab+" size " + playListItemsService[plTab].size());
 	}
 	
@@ -226,7 +226,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 				Log.d(LocalConst.FRAGMENT_LIFE, "listItems:" + e.toString());
 			}
 		}else{
-//			list = MyDatabase.readListFromDB(fileName);
+			list = MyDatabase.readListFromDB(fileName);
 		}
 	}
 	/**
