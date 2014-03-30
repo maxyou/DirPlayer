@@ -21,6 +21,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
+import android.media.MediaPlayer.OnErrorListener;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
@@ -59,21 +60,24 @@ public class PlayService extends Service implements MediaPlayerControl {
 	static int playListItemIndex = 0; // 第一首
 	int playSequence = LocalConst.play_seq_normal;
 
+	public void gotoNextMusic(){
+		updatePlayingFlag(playingType, LocalConst.clear, playingFile.getPath(), playingPlTab);
+		/**
+		 * 找到下一首歌曲，并调用play()
+		 */
+		if (playListItemsService[playingPlTab].size() == 0) {
+			// 没有曲目，停止播放
+			return;
+		}
+
+		calcNextItem();
+		
+		play(playListItemsService[playingPlTab].get(playListItemIndex).getFile(), LocalConst.ListPlay);
+	}
 	OnCompletionListener listPlayListener = new OnCompletionListener() {
 		@Override
 		public void onCompletion(MediaPlayer mp) {
-			updatePlayingFlag(playingType, LocalConst.clear, playingFile.getPath(), playingPlTab);
-			/**
-			 * 找到下一首歌曲，并调用play()
-			 */
-			if (playListItemsService[playingPlTab].size() == 0) {
-				// 没有曲目，停止播放
-				return;
-			}
-
-			calcNextItem();
-			
-			play(playListItemsService[playingPlTab].get(playListItemIndex).getFile(), LocalConst.ListPlay);
+			gotoNextMusic();
 		}
 	};
 	
@@ -248,7 +252,25 @@ public class PlayService extends Service implements MediaPlayerControl {
 
 		play(lr.getFile(), LocalConst.ListPlay);
 	}
-
+	public void mediaPlayerErrorProcess(){
+		clearMusicPlaying();
+		
+		if(playingType == LocalConst.ListPlay){
+			gotoNextMusic();
+		}else if(playingType == LocalConst.SinglePlay){
+			
+		}
+	}
+	public OnErrorListener mediaPlayerErrorListener = new OnErrorListener() {
+		@Override
+		public boolean onError(MediaPlayer mp, int what, int extra) {
+			Log.d(LocalConst.DTAG, "mediaPlayerErrorListener()");
+			
+			mediaPlayerErrorProcess();
+			return true;
+		}
+	};
+	
 	public void play(File f, int type) {
 		Log.d(LocalConst.DTAG, "audio/video: play in service: " + f.getPath());
 		
@@ -265,12 +287,19 @@ public class PlayService extends Service implements MediaPlayerControl {
 			mediaPlayer.setDataSource(getApplicationContext(), Uri.fromFile(f));
 			Log.d(LocalConst.DTAG, "audio/video: after mediaPlayer.setDataSource()");
 			
+			if(playingType == LocalConst.ListPlay){
+				mediaPlayer.setOnCompletionListener(listPlayListener);
+			}else if(playingType == LocalConst.SinglePlay){
+				mediaPlayer.setOnCompletionListener(singlePlayListener);
+			}
+			
+			mediaPlayer.setOnErrorListener(mediaPlayerErrorListener);
+			
 			/**
 			 * 小心。
 			 * 如果是同步的prepare，那么其后start
 			 * 如果是异步的prepare，那么可能需要在prepare之前设置监听？！
 			 */
-			
 			mediaPlayer.prepare();
 			mediaPlayer.start();
 			playStatus = LocalConst.playing;
@@ -286,11 +315,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 			mediaPlayer.prepareAsync();
 			Log.d(LocalConst.DTAG, "audio/video: after mediaPlayer.prepare()");
 			*/
-			if(playingType == LocalConst.ListPlay){
-				mediaPlayer.setOnCompletionListener(listPlayListener);
-			}else if(playingType == LocalConst.SinglePlay){
-				mediaPlayer.setOnCompletionListener(singlePlayListener);
-			}
+			
 			updatePlayingFlag(playingType, LocalConst.playing, playingFile.getPath(), playingPlTab);
 			sendNotification();
 			
@@ -301,6 +326,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			mediaPlayerErrorProcess();
 		}
 
 	}

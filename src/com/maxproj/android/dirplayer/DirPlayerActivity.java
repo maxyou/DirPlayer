@@ -56,6 +56,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnErrorListener;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -539,7 +540,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 					
 				});
 				Log.d(LocalConst.DTAG, "audio/video: after vv.setOnCompletionListener()");
-				
+				vv.setOnErrorListener(videoViewErrorListener);
 				vv.start();
 				Log.d(LocalConst.DTAG, "audio/video: after vv.start()");
 			}
@@ -548,7 +549,13 @@ public class DirPlayerActivity extends FragmentActivity implements
 			// 网页文件用浏览器打开
 		}
 	}
-
+	public OnErrorListener videoViewErrorListener = new OnErrorListener() {
+		@Override
+		public boolean onError(MediaPlayer mp, int what, int extra) {
+			clearVideoViewPlaying();
+			return true;
+		}
+	};
 	public void setVideoScreen(){
 	    if (fullScreen == true) {
 	    	setVideoViewFullScreen();
