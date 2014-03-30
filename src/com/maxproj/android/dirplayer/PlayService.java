@@ -195,7 +195,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 	 */
 	private void getPlayList(int plTab) {
 		playListItemsService[plTab].clear();
-		getListFromFile(playListItemsService[plTab], LocalConst.playlist_file_prefix + plTab);
+		playListItemsService[plTab] = getListFromFile(LocalConst.playlist_file_prefix + plTab);
 		Log.d(LocalConst.DTAG, "play service getPlayList() "+plTab+" size " + playListItemsService[plTab].size());
 	}
 	
@@ -203,13 +203,14 @@ public class PlayService extends Service implements MediaPlayerControl {
 	 * 拷贝自DirPlayerActivity.java，以后重构合并
 	 * 应该直接new一个list，读取数据后返回这个list
 	 */
-	public void getListFromFile(LinkedList<LvRow> list, String fileName) {
+	public LinkedList<LvRow> getListFromFile(String fileName) {
+		LinkedList<LvRow> list = new LinkedList<LvRow>();
+		
 		if(LocalConst.dbSwitch == 0){//0:存为文件，1：存为database
 			SimpleDateFormat sdf = new SimpleDateFormat(LocalConst.time_format);
 			String line;
 			File listFile = new File(getFilesDir(),fileName);
 	
-			list.clear();
 			try {
 				BufferedReader br = new BufferedReader(new FileReader(listFile));
 	
@@ -225,8 +226,11 @@ public class PlayService extends Service implements MediaPlayerControl {
 			}catch (Exception e){
 				Log.d(LocalConst.FRAGMENT_LIFE, "listItems:" + e.toString());
 			}
+			return list;
 		}else{
 			list = MyDatabase.readListFromDB(fileName);
+			Log.d(LocalConst.DTAG, "database read size "+list.size()+" in "+fileName);
+			return list;
 		}
 	}
 	/**
