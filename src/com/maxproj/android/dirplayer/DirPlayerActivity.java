@@ -635,7 +635,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 
 		// 全选
 		for (LvRow lr : viewListItems[tab]) {
-			if (!lr.getName().equals("/.."))
+			if (lr.getType() != LocalConst.TYPE_PARAENT)
 				lr.setSelected(true);
 		}
 		myArrayAdapter[tab].notifyDataSetChanged();

@@ -30,6 +30,8 @@ public class LocalConst {
 	public static final int TYPE_DIR = 1;
 	public static final int TYPE_FILE = 2;
 
+	public static final String PARAENT_NAME = "..";
+	
 	/**
 	 * 数据库相关
 	 */

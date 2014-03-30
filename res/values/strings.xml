@@ -23,10 +23,10 @@
     	左右文件浏览窗口操作命令
 	 -->
 	<string name="flc_ibn_add" >加入播放列表</string>    
-	<string name="flc_ibn_l2r_copy" >从左拷贝到右</string>  
-	<string name="flc_ibn_l2r_move" >从左移动到右</string>  
-	<string name="flc_ibn_r2l_copy" >从右拷贝到左</string>  
-	<string name="flc_ibn_r2l_move" >从右移动到左</string>  
+	<string name="flc_ibn_l2r_copy" >从左拷到右-&gt;</string>  
+	<string name="flc_ibn_l2r_move" >从左移到右=&gt;</string>  
+	<string name="flc_ibn_r2l_copy" >&lt;-从右拷到左</string>  
+	<string name="flc_ibn_r2l_move" >&lt;=从右移到左</string>  
 	<string name="flc_ibn_del" >删除所选</string>
 	<string name="flc_ibn_mkdir" >创建文件夹</string>
 	<string name="flc_ibn_rename" >改名</string>

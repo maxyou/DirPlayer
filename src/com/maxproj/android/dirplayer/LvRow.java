@@ -141,7 +141,7 @@ public class LvRow{
     	
     	LvRow lr = new LvRow(path, false, LocalConst.clear);
     	lr.type = LocalConst.TYPE_PARAENT;
-    	lr.name = "..";
+    	lr.name = LocalConst.PARAENT_NAME;
     	lr.dateStr = "";
     	
     	return lr;
