@@ -114,7 +114,7 @@ public class LvRow{
         this.lengthStr = f.isDirectory()?"":"" + LocalConst.byteConvert(f.length());
         this.dateStr = "" + new SimpleDateFormat(LocalConst.time_format).format(f.lastModified());
         this.selected = selected;
-        this.type = f.isDirectory()?1:2;
+        this.type = f.isDirectory()?LocalConst.TYPE_DIR:LocalConst.TYPE_FILE;
         this.mime = LocalConst.getMimeByFileName(f.getName());
         this.playingStatus = playingStatus;
     }

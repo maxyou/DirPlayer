@@ -24,6 +24,15 @@ public class LocalConst {
 	public static final String time_format = "yyyy-MM-dd";
 	
 	/**
+	 * tab相关
+	 */
+	public static final int TAB_LEFT = 0;
+	public static final int TAB_RIGHT = 1;
+	public static final int TAB_BOOKMARK = 2;
+	public static final int TAB_PLAYLIST = 3;
+	
+	
+	/**
 	 * 文件及文件夹类型
 	 */
 	public static final int TYPE_PARAENT = 0;
