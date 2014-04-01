@@ -175,7 +175,7 @@ public class LocalConst {
 	/**
 	 * 文件命令
 	 */
-    public static final int CMD_PLAY = 1;
+    public static final int CMD_ADD_PLAY = 1;
     public static final int CMD_COPY = 2;
     public static final int CMD_MOVE = 3;
     public static final int CMD_DELETE = 4;

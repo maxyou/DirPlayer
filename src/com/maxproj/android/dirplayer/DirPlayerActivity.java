@@ -145,7 +145,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 		File src;
 		String desPath;
 		Boolean force; // 如果目标存在，要不要强制替换
-		int fresh;// 0:不刷新，1：刷新右边，2：刷新左边，3：两边都刷新
+		int fresh;// 0:左窗口，1：右窗口，2：收藏，3：播放列表
 
 		public FileCmd(File src, String desPath, Boolean force, int cmd,
 				int fresh) {
@@ -160,15 +160,6 @@ public class DirPlayerActivity extends FragmentActivity implements
 	static LinkedList<FileCmd> cmdList = new LinkedList<FileCmd>();
 
 	static Handler cmdHandler;
-
-//	final int CMD_COPY = 1;
-//	final int CMD_MOVE = 2;
-//	final int CMD_DELETE = 3;
-//	final int CMD_FRESH = 4;
-//	final int CMD_MKDIR = 5;
-//	final int CMD_PLAY = 6;
-	
-//	int tabCount = 2; // 左右两个窗口
 
 	/**
 	 * 系统状态
@@ -821,19 +812,39 @@ public class DirPlayerActivity extends FragmentActivity implements
 						deleteFiles(fc.src);
 						break;
 					case LocalConst.CMD_FRESH:
-						Log.d(LocalConst.DTAG, "fresh window: " + fc.fresh);
-						updateDirInfor(currentPath[fc.fresh], fc.fresh);
-						cmdHandler.sendEmptyMessage(1);//其他命令的结束都有这个激活next指令
+						/**
+						 * 由于Cmd结构设计得比较早，没有想到后面很大的变动
+						 * 所以比较丑陋，暂时将就，以后重构
+						 */
+						switch(fc.fresh){
+							case 0:
+							case 1:
+								updateDirInfor(currentPath[fc.fresh], fc.fresh);
+								cmdHandler.sendEmptyMessage(1);//其他命令的结束都有这个激活next指令
+								break;
+							case 2:
+								break;
+							case 3:
+							case 4:
+							case 5:
+							case 6:
+							case 7:
+								savePlayList2File(fc.fresh - 3);
+								updatePlayListAdapter(fc.fresh - 3);								
+								break;
+						}
+						
+						
 						break;
 					case LocalConst.CMD_MKDIR:
-						Log.d(LocalConst.DTAG, "mkdir at tab: " + fc.fresh);
 						mkDir(fc.desPath, fc.force);
 						break;
-					case LocalConst.CMD_PLAY:
-						Log.d(LocalConst.DTAG, "mkdir at tab: " + fc.fresh);
-						//servicePlay();
+					case LocalConst.CMD_ADD_PLAY:
+						Log.d(LocalConst.DTAG, "add to playlit");
+						new addToPlayListAsyncTask(new LvRow(fc.src, false, LocalConst.clear), fc.fresh - 3)// 01是左右窗口，2是收藏，3开始是5个播放列表
+							.execute();
+						break;
 					case LocalConst.CMD_RENAME:
-						Log.d(LocalConst.DTAG, "mkdir at tab: " + fc.fresh);
 						rename(fc.src, fc.force);
 						break;
 					default:
@@ -1006,7 +1017,57 @@ public class DirPlayerActivity extends FragmentActivity implements
 			cmdHandler.sendEmptyMessage(1);
 		}
 	}
-	
+
+	/**
+	 * 添加音乐文件到播放列表
+	 */
+	private class addToPlayListAsyncTask extends
+			AsyncTask<Void, Integer, Long> {
+		LvRow lr;
+		int plTab;
+//		Context context;
+
+		public addToPlayListAsyncTask(LvRow lr, int plTab) {
+			this.lr = lr;
+			this.plTab = plTab;
+//			this.context = context;
+			Log.d(LocalConst.DTAG, "addToPlayListAsyncTask() constructed");
+		}
+
+		protected Long doInBackground(Void... vs) {
+			long count = 0;
+			addToPlayList(lr, plTab);
+
+			return count;
+		}
+
+		protected void onProgressUpdate(Integer... progress) {
+//			if (dfp != null) {
+//				dfp.setProgress(progress[0].intValue());
+//			}
+		}
+
+		protected void onPreExecute() {
+			// 启动进度条
+//			if (showCopyProcess == true) {
+//				dfp = DialogFragmentProgress.newInstance();
+//				dfp.show(getSupportFragmentManager(), "");
+//				dfp.setProgress(0);
+//				dfp.setMsg(msg);
+//			}else{
+//				dfp = null;
+//			}
+		}
+
+		protected void onPostExecute(Long result) {
+//			if (dfp != null) {
+//				dfp.dismiss();
+//			}
+			// 重新启动Handler
+			cmdHandler.sendEmptyMessage(1);
+			Log.d(LocalConst.DTAG, "addToPlayListAsyncTask().onPostExecute()");
+		}
+	}
 	/*
 	 * 移动的合法性检查
 	 * 
@@ -1295,7 +1356,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	/**
 	 * 添加一个LvRow到播放列表
 	 */
-	private void addToPlayList(LvRow lr) {
+	private void addToPlayList(LvRow lr, int plTab) {
 		
 		if (lr.getType() == LocalConst.TYPE_FILE){//file
 			//直接添加;
@@ -1305,16 +1366,18 @@ public class DirPlayerActivity extends FragmentActivity implements
 			 */
 			if (mime != null){
 				if(mime.startsWith("audio/")){	
-					playListItems[currentPlTab].add(lr);
+					playListItems[plTab].add(lr);
 				}
 			}
 		}else if(lr.getType() == LocalConst.TYPE_DIR){//dir
 			File files[] = lr.getFile().listFiles();
-			for (File subFile : files) {
-				addToPlayList(new LvRow(subFile, false, LocalConst.clear));
+			if(files != null){
+				for (File subFile : files) {
+					addToPlayList(new LvRow(subFile, false, LocalConst.clear), plTab);
+				}
 			}
 		}
-		Log.d(LocalConst.DTAG, "current playlist "+currentPlTab+" size is "+playListItems[currentPlTab].size());
+		
 	}
 	private void updatePlayListAdapter(int plTab)
 	{
@@ -1386,12 +1449,27 @@ public class DirPlayerActivity extends FragmentActivity implements
 		 * 注意移动时需要刷新两边
 		 */
 		case 0: // 添加到播放列表
+			
+			/**
+			 * 必须走message+handler流程，因为selectedItems[tab]很快会被改变
+			 * 需要将selectedItems[tab]先保存到message队列中
+			 */
 			for (LvRow lr : selectedItems[tab]) {
-				addToPlayList(lr);
+				//addToPlayList(lr);
+				cmdList.add(new FileCmd(lr.getFile(), null, true,
+						LocalConst.CMD_ADD_PLAY, 3 + currentPlTab)); //第一个播放列表在总表的索引是3.收藏表是2，左右窗口和0和1
 			}
-			savePlayList2File(currentPlTab);
-			updatePlayListAdapter(currentPlTab);
-			Log.d(LocalConst.DTAG, "cmdList.size(): "+cmdList.size());
+			// savePlayList2File(currentPlTab);
+			// updatePlayListAdapter(currentPlTab);
+			
+			/**
+			 * 2014年4月1日
+			 * 由于之前的FileCmd结构设计不合理，这里是凑合的补丁
+			 * 在下面的刷新操作里面判断是左右窗口刷新，或者是收藏和播放列表的刷新
+			 * 在播放列表刷新时插入savePlayList2File(currentPlTab)操作
+			 */
+			
+			cmdList.add(new FileCmd(null, null, true, LocalConst.CMD_FRESH, 3 + currentPlTab));
 			break;
 		case 1: // 从A拷贝到B
 			for (LvRow lr : selectedItems[0]) {
