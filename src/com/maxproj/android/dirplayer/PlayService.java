@@ -199,44 +199,10 @@ public class PlayService extends Service implements MediaPlayerControl {
 	 */
 	private void getPlayList(int plTab) {
 		playListItemsService[plTab].clear();
-		playListItemsService[plTab] = getListFromFile(LocalConst.playlist_file_prefix + plTab);
+		playListItemsService[plTab] = LocalConst.getListFromFile(LocalConst.playlist_file_prefix + plTab);
 		Log.d(LocalConst.DTAG, "play service getPlayList() "+plTab+" size " + playListItemsService[plTab].size());
 	}
 	
-	/**
-	 * 拷贝自DirPlayerActivity.java，以后重构合并
-	 * 应该直接new一个list，读取数据后返回这个list
-	 */
-	public LinkedList<LvRow> getListFromFile(String fileName) {
-		LinkedList<LvRow> list = new LinkedList<LvRow>();
-		
-		if(LocalConst.dbSwitch == 0){//0:存为文件，1：存为database
-			SimpleDateFormat sdf = new SimpleDateFormat(LocalConst.time_format);
-			String line;
-			File listFile = new File(getFilesDir(),fileName);
-	
-			try {
-				BufferedReader br = new BufferedReader(new FileReader(listFile));
-	
-				while ((line = br.readLine()) != null) {
-					File f = new File(line);
-					LvRow lr = new LvRow(line, false, LocalConst.clear);
-					list.add(lr);
-				}
-				br.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}catch (Exception e){
-				Log.d(LocalConst.FRAGMENT_LIFE, "listItems:" + e.toString());
-			}
-			return list;
-		}else{
-			list = MyDatabase.readListFromDB(fileName);
-			Log.d(LocalConst.DTAG, "database read size "+list.size()+" in "+fileName);
-			return list;
-		}
-	}
 	/**
 	 * 从playlist中获取一首歌曲，并开始播放
 	 */

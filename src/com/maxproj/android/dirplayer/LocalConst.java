@@ -1,7 +1,14 @@
 package com.maxproj.android.dirplayer;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.URLConnection;
+import java.util.LinkedList;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Environment;
@@ -241,5 +248,75 @@ public class LocalConst {
         }
     }
     
-    
+
+	public static LinkedList<LvRow> getListFromFile(String fileName) {
+		LinkedList<LvRow> list = new LinkedList<LvRow>();
+		
+		if(LocalConst.dbSwitch == 0){//0:存为文件，1：存为database
+			String line;
+			File listFile = new File(dirPlayerActivity.getFilesDir(),fileName);
+	
+			try {
+				BufferedReader br = new BufferedReader(new FileReader(listFile));
+	
+				while ((line = br.readLine()) != null) {
+					/*
+					 * 写入的时候：
+					flag = (lr.getPlayingStatus() == LocalConst.playing)?"y":"n";
+					flag += (lr.getSelected() == true)?"y":"n";
+					bw.write(flag + lr.getPath() + "\n");
+					*/
+					
+					int playing = (line.charAt(0) == 'y')?LocalConst.playing:LocalConst.clear;
+					boolean selected = (line.charAt(1) == 'y')?true:false;
+					LvRow lr = new LvRow(line.substring(2), selected, playing);
+					list.add(lr);
+					
+					Log.d(LocalConst.DTAG, "List&File r: " + line.substring(2)
+							+ ((playing == LocalConst.playing)?" playing":" stop")
+							+ ((selected == true)?" selected":" noselect")
+							);
+				}
+				br.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}catch (Exception e){
+				Log.d(LocalConst.FRAGMENT_LIFE, "listItems:" + e.toString());
+			}
+			return list;
+		}else{
+			list = MyDatabase.readListFromDB(fileName);
+			Log.d(LocalConst.DTAG, "database read size "+list.size()+" in "+fileName);
+			return list;
+		}
+	}
+
+	public static void saveList2File(LinkedList<LvRow> list, String fileName) {
+
+		if(LocalConst.dbSwitch == 0){//0:存为文件，1：存为database
+			File listFile = new File(dirPlayerActivity.getFilesDir(),fileName);
+			
+	
+			try {
+				BufferedWriter bw = new BufferedWriter(new FileWriter(listFile));
+				for (LvRow lr : list) {
+					String flag = null;
+					
+					flag = (lr.getPlayingStatus() == LocalConst.playing)?"y":"n";
+					flag += (lr.getSelected() == true)?"y":"n";
+					Log.d(LocalConst.DTAG, "List&File w: flag " + flag);
+					bw.write(flag + lr.getPath() + "\n");
+					Log.d(LocalConst.DTAG, "List&File w: " + flag + lr.getPath());
+				}
+				bw.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}else{
+			MyDatabase.writeList2DB(list, fileName);
+		}
+		
+	}
 }

@@ -309,7 +309,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	 * 每个书签占一行
 	 */
 	private void getBookMarkList() {
-		bookMarkItems = getListFromFile(LocalConst.bookmark_file);
+		bookMarkItems = LocalConst.getListFromFile(LocalConst.bookmark_file);
 		for(LvRow lr: bookMarkItems){
 			Log.d(LocalConst.DTAG, "database read getBookMarkList " + lr.getPath());
 		}
@@ -318,7 +318,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 
 
 	private void saveBookMark2File() {
-		saveList2File(bookMarkItems, LocalConst.bookmark_file);
+		LocalConst.saveList2File(bookMarkItems, LocalConst.bookmark_file);
 	}
 
 	public void onFragmentBookMarkClicked(int i) {
@@ -747,7 +747,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 		}
 		Log.d(LocalConst.DTAG, "total bookMarkItems: " + bookMarkItems.size());
 		bookMarkArrayAdapter.notifyDataSetChanged();
-		saveList2File(bookMarkItems, LocalConst.bookmark_file);
+		LocalConst.saveList2File(bookMarkItems, LocalConst.bookmark_file);
 	}
 
 	public void onFragmentButton6(int tab) {
@@ -2619,40 +2619,9 @@ public class DirPlayerActivity extends FragmentActivity implements
 	 * 播放目录用什么格式保存呢？
 	 */
 	private void getPlayList(int plTab) {
-		playListItems[plTab] = getListFromFile(LocalConst.playlist_file_prefix + plTab);
+		playListItems[plTab] = LocalConst.getListFromFile(LocalConst.playlist_file_prefix + plTab);
 	}
 	
-	public LinkedList<LvRow> getListFromFile(String fileName) {
-		LinkedList<LvRow> list = new LinkedList<LvRow>();
-		
-		if(LocalConst.dbSwitch == 0){//0:存为文件，1：存为database
-			SimpleDateFormat sdf = new SimpleDateFormat(LocalConst.time_format);
-			String line;
-			File listFile = new File(getFilesDir(),fileName);
-	
-			try {
-				BufferedReader br = new BufferedReader(new FileReader(listFile));
-	
-				while ((line = br.readLine()) != null) {
-					File f = new File(line);
-					LvRow lr = new LvRow(line, false, LocalConst.clear);
-					list.add(lr);
-				}
-				br.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}catch (Exception e){
-				Log.d(LocalConst.FRAGMENT_LIFE, "listItems:" + e.toString());
-			}
-			return list;
-		}else{
-			list = MyDatabase.readListFromDB(fileName);
-			Log.d(LocalConst.DTAG, "database read size "+list.size()+" in "+fileName);
-			return list;
-		}
-	}
-
 
 
 	/**
@@ -2660,32 +2629,13 @@ public class DirPlayerActivity extends FragmentActivity implements
 	 * 能否改成onStop的时候存？
 	 */
 	private void savePlayList2File(int plTab) {
-		saveList2File(playListItems[plTab], LocalConst.playlist_file_prefix + plTab);
+		LocalConst.saveList2File(playListItems[plTab], LocalConst.playlist_file_prefix + plTab);
 		
 		if(mService != null)
 			mService.updatePlayList(plTab);
 	}
 
-	public void saveList2File(LinkedList<LvRow> list, String fileName) {
 
-		if(LocalConst.dbSwitch == 0){//0:存为文件，1：存为database
-			File listFile = new File(getFilesDir(),fileName);
-	
-			try {
-				BufferedWriter bw = new BufferedWriter(new FileWriter(listFile));
-				for (LvRow lr : list) {
-					bw.write(lr.getFile().getPath() + "\n");
-				}
-				bw.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}else{
-			MyDatabase.writeList2DB(list, fileName);
-		}
-		
-	}
 
 
 //	public void updateFragmentLight(){
