@@ -830,7 +830,8 @@ public class DirPlayerActivity extends FragmentActivity implements
 							case 6:
 							case 7:
 								savePlayList2File(fc.fresh - 3);
-								updatePlayListAdapter(fc.fresh - 3);								
+								//更新adapter。注意这个操作不能少，否则系统提示adapter被异常修改而退出
+								updatePlayListAdapter(fc.fresh - 3);
 								break;
 						}
 						
@@ -1382,12 +1383,17 @@ public class DirPlayerActivity extends FragmentActivity implements
 	private void updatePlayListAdapter(int plTab)
 	{
 		Log.d(LocalConst.LIFECYCLE, "pl updatePlayListAdapter("+playListItems[plTab].size()+") in plTab " + plTab);
+
+		
 		playListArrayAdapter[plTab] = new MyArrayAdapter(this, R.layout.file_row,
 				playListItems[plTab]);
 
 		if (fragmentPlayList != null) {
 			fragmentPlayList.setListviewAdapter(playListArrayAdapter[plTab], plTab);
 		}
+		
+		// 先修改，再通知？
+		playListArrayAdapter[plTab].notifyDataSetChanged();
 	}
 	private void updatePlayListAdapterAll(){
 		for(int i=0;i<LocalConst.plCount;i++){
@@ -2661,7 +2667,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	}
 
 	public void saveList2File(LinkedList<LvRow> list, String fileName) {
-		
+
 		if(LocalConst.dbSwitch == 0){//0:存为文件，1：存为database
 			File listFile = new File(getFilesDir(),fileName);
 	

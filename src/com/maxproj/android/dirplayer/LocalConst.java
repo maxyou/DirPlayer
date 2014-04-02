@@ -52,7 +52,7 @@ public class LocalConst {
 	public static final String DB_NAME_PLAYLIST_5 = "playlist_5";
 	public static final String DB_NAME_PLAYLIST_TMP = "playlist_tmp";
 	
-	public static int dbSwitch = 1;//0:file, 1:database
+	public static int dbSwitch = 0;//0:file, 1:database
 	
 	/**
 	 * 保存list的文件
