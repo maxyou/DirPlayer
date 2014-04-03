@@ -54,7 +54,7 @@
     </string>
     <string name="notification_back_msg" >点击这里返回到播放器!
     </string>
-    <string name="mediacontroller_prompt">从底往上或从顶往下可以滑出播放控制按钮
+    <string name="mediacontroller_prompt">屏幕顶部消息栏有播放按钮，或从状态栏往上滑出播放按钮
     </string>
     
     
