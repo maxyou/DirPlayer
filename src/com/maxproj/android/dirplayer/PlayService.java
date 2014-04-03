@@ -3,12 +3,8 @@
  */
 package com.maxproj.android.dirplayer;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.net.URLConnection;
-import java.text.SimpleDateFormat;
 import java.util.LinkedList;
 import java.util.Random;
 

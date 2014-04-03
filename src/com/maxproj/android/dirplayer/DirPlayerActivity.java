@@ -378,7 +378,9 @@ public class DirPlayerActivity extends FragmentActivity implements
 		// 上移
 		moveUpSelected(bookMarkItems);
 		bookMarkArrayAdapter.notifyDataSetChanged();
-		saveBookMark2File();
+		
+		//改为在onStop时备份
+//		saveBookMark2File();
 		
 	}
 
@@ -387,7 +389,9 @@ public class DirPlayerActivity extends FragmentActivity implements
 		// 下移
 		moveDownSelected(bookMarkItems);
 		bookMarkArrayAdapter.notifyDataSetChanged();
-		saveBookMark2File();
+		
+		//改为在onStop时备份
+//		saveBookMark2File();
 
 	}
 	
@@ -400,7 +404,9 @@ public class DirPlayerActivity extends FragmentActivity implements
 				iter.remove();
 		}
 		bookMarkArrayAdapter.notifyDataSetChanged();
-		saveBookMark2File();
+		
+		//改为在onStop时备份
+//		saveBookMark2File();
 	}
 	private void updateBookMarkInfor() {
 		// 本函数和bookMarkArrayAdapter.notifyDataSetChanged()有什么区别？回头想下能否去掉
@@ -753,7 +759,9 @@ public class DirPlayerActivity extends FragmentActivity implements
 		}
 		Log.d(LocalConst.DTAG, "total bookMarkItems: " + bookMarkItems.size());
 		bookMarkArrayAdapter.notifyDataSetChanged();
-		LocalConst.saveList2File(bookMarkItems, LocalConst.bookmark_file);
+		
+		// 改在onStop时备份收藏列表
+//		LocalConst.saveList2File(bookMarkItems, LocalConst.bookmark_file);
 	}
 
 	public void onFragmentButton6(int tab) {
@@ -1938,6 +1946,11 @@ public class DirPlayerActivity extends FragmentActivity implements
         super.onStop();
         
         Log.d(LocalConst.LIFECYCLE, "DirPlayerActivity.onStop()");
+        
+        /**
+         * 在退出时备份各种列表
+         */
+        LocalConst.saveList2File(bookMarkItems, LocalConst.bookmark_file);
         
         // Unbind from the service
         if (mBound) {
