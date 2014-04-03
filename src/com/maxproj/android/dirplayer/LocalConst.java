@@ -178,6 +178,7 @@ public class LocalConst {
 		public static final String PLAY_STATUS = "PLAY_STATUS";
 		public static final String PLAY_PATH = "PLAY_PATH";
 		public static final String PLAY_PL_TAB = "PLAY_PL_TAB";
+		public static final String PLAY_LIST_INDEX = "PLAY_LIST_INDEX";
 	
 	/**
 	 * 文件命令
@@ -303,7 +304,12 @@ public class LocalConst {
 				for (LvRow lr : list) {
 					String flag = null;
 					
-					flag = (lr.getPlayingStatus() == LocalConst.playing)?"y":"n";
+//					flag = (lr.getPlayingStatus() == LocalConst.playing)?"y":"n";
+					
+					//实际上没有必要存储“正在播放”标记
+					//而且存储之后没有机会将其清掉
+					flag = (lr.getPlayingStatus() == LocalConst.playing)?"n":"n";
+					
 					flag += (lr.getSelected() == true)?"y":"n";
 					Log.d(LocalConst.DTAG, "List&File w: flag " + flag);
 					bw.write(flag + lr.getPath() + "\n");

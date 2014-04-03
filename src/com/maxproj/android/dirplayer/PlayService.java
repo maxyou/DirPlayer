@@ -34,51 +34,61 @@ import android.widget.RemoteViews;
  */
 public class PlayService extends Service implements MediaPlayerControl {
 
-
 	private final IBinder mBinder = new LocalBinder();
-	
+
 	NotificationInforReceiver mNotificationInforReceiver;
-	
+
 	/**
 	 * 播放列表
 	 */
-//	public int localPlTab = 0;
+	// public int localPlTab = 0;
 	LinkedList<LvRow>[] playListItemsService = new LinkedList[LocalConst.plCount];
 	{
 		for (int i = 0; i < LocalConst.plCount; i++) {
 			playListItemsService[i] = new LinkedList<LvRow>();
 		}
 	}
-	int playingType;//播放fileList或playList？
+	int playingType;// 播放fileList或playList？
 	int playStatus = LocalConst.clear;
 	int playingPlTab = 0;
-	File playingFile;//当前播放的文件
+	File playingFile;// 当前播放的文件
 	static int playListItemIndex = 0; // 第一首
 	int playSequence = LocalConst.play_seq_normal;
 
-	public void gotoNextMusic(){
-		updatePlayingFlag(playingType, LocalConst.clear, playingFile.getPath(), playingPlTab);
+	public void gotoNextMusic() {
+		// updatePlayingFlag(playingType, LocalConst.clear,
+		// playingFile.getPath(), playingPlTab);
 		/**
 		 * 找到下一首歌曲，并调用play()
 		 */
 		if (playListItemsService[playingPlTab].size() == 0) {
 			// 没有曲目，停止播放
 			return;
+			
+			/**
+			 * 这里有个小bug
+			 * 假设列表里面所有的曲目文件都是坏掉的，不能播放
+			 * 那么会不断的调用gotoNextMusic()
+			 */
 		}
 
-		calcNextItem();
+		clearMusicPlaying();
 		
-		play(playListItemsService[playingPlTab].get(playListItemIndex).getFile(), LocalConst.ListPlay);
+		calcNextItem();
+
+		play(playListItemsService[playingPlTab].get(playListItemIndex)
+				.getFile(), LocalConst.ListPlay);
 	}
+
 	OnCompletionListener listPlayListener = new OnCompletionListener() {
 		@Override
 		public void onCompletion(MediaPlayer mp) {
 			gotoNextMusic();
 		}
 	};
-	
-	public void calcNextItem(){
-		switch(playSequence){
+
+	public void calcNextItem() {
+		switch (playSequence) {
 		case LocalConst.play_seq_normal:
 			playListItemIndex++;
 			if (playListItemIndex >= playListItemsService[playingPlTab].size()) {
@@ -86,22 +96,24 @@ public class PlayService extends Service implements MediaPlayerControl {
 			}
 			break;
 		case LocalConst.play_seq_random:
-			playListItemIndex = new Random().nextInt(playListItemsService[playingPlTab].size());
+			playListItemIndex = new Random()
+					.nextInt(playListItemsService[playingPlTab].size());
 			break;
 		case LocalConst.play_seq_single:
 			break;
-			
-			default:
-				
+
+		default:
+
 		}
-		
+
 		return;
 	}
-	
+
 	OnCompletionListener singlePlayListener = new OnCompletionListener() {
 		@Override
 		public void onCompletion(MediaPlayer mp) {
-			updatePlayingFlag(playingType, LocalConst.clear, playingFile.getPath(), playingPlTab);
+			updatePlayingFlag(playingType, LocalConst.clear,
+					playingFile.getPath(), playingPlTab);
 		}
 	};
 	/**
@@ -135,54 +147,49 @@ public class PlayService extends Service implements MediaPlayerControl {
 		super.onCreate();
 
 		Log.d(LocalConst.DTAG, "service: onCreate()");
-		for(int i=0;i<LocalConst.plCount;i++){
-//			updatePlayList(i);
+		for (int i = 0; i < LocalConst.plCount; i++) {
+			// updatePlayList(i);
 		}
-		
+
 		/**
 		 * notification上面的按键将发送intent给service
 		 * notification上面其他部分被点击后发送pendingIntent给activity
 		 */
-        IntentFilter mNotificationIntentFilter = new IntentFilter();
-        mNotificationIntentFilter.addAction(LocalConst.NOTIFICATION_GOTO_LAST);
-        mNotificationIntentFilter.addAction(LocalConst.NOTIFICATION_GOTO_NEXT);
-        mNotificationIntentFilter.addAction(LocalConst.NOTIFICATION_GOTO_PLAY);
-        mNotificationIntentFilter.addAction(LocalConst.NOTIFICATION_GOTO_PAUSE);
-        mNotificationIntentFilter.addAction(LocalConst.NOTIFICATION_SEQ_SWITCH);
-        
-        mNotificationInforReceiver =
-                new NotificationInforReceiver();
-        /**
-         * 注意，使用LocalBroadcastManager注册的receiver只能接收本app内部的intent
-         * 但notification在本app之外
-         * 所以这里需要直接使用registerReceiver来注册
-         */
-        registerReceiver(
-        		mNotificationInforReceiver,
-        		mNotificationIntentFilter);
+		IntentFilter mNotificationIntentFilter = new IntentFilter();
+		mNotificationIntentFilter.addAction(LocalConst.NOTIFICATION_GOTO_LAST);
+		mNotificationIntentFilter.addAction(LocalConst.NOTIFICATION_GOTO_NEXT);
+		mNotificationIntentFilter.addAction(LocalConst.NOTIFICATION_GOTO_PLAY);
+		mNotificationIntentFilter.addAction(LocalConst.NOTIFICATION_GOTO_PAUSE);
+		mNotificationIntentFilter.addAction(LocalConst.NOTIFICATION_SEQ_SWITCH);
+
+		mNotificationInforReceiver = new NotificationInforReceiver();
+		/**
+		 * 注意，使用LocalBroadcastManager注册的receiver只能接收本app内部的intent
+		 * 但notification在本app之外 所以这里需要直接使用registerReceiver来注册
+		 */
+		registerReceiver(mNotificationInforReceiver, mNotificationIntentFilter);
 		// Vitamio.initialize(this);
 	}
 
 	@Override
 	public void onDestroy() {
 		Log.d(LocalConst.DTAG, "service: onDestroy()");
-		if (mediaPlayer != null){
+		if (mediaPlayer != null) {
 			mediaPlayer.release();
 			playStatus = LocalConst.clear;
 		}
-		
-        unregisterReceiver(
-        		mNotificationInforReceiver);
+
+		unregisterReceiver(mNotificationInforReceiver);
 	}
 
 	/**
 	 * service通过文件获取播放列表
 	 */
 	public void updatePlayList(int plTab, LinkedList<LvRow> ll) {
-//		getPlayListFromFile(plTab);
-		
+		// getPlayListFromFile(plTab);
+
 		playListItemsService[plTab] = ll;
-		
+
 	}
 
 	@Override
@@ -193,100 +200,106 @@ public class PlayService extends Service implements MediaPlayerControl {
 	}
 
 	/**
-	 * 拷贝自DirPlayerActivity.java，以后重构合并
-	 * 应该直接new一个list，读取数据后返回这个list
+	 * 拷贝自DirPlayerActivity.java，以后重构合并 应该直接new一个list，读取数据后返回这个list
 	 */
-	private void getPlayListFromFile(int plTab) {
-		playListItemsService[plTab].clear();
-		playListItemsService[plTab] = LocalConst.getListFromFile(LocalConst.playlist_file_prefix + plTab);
-		Log.d(LocalConst.DTAG, "play service getPlayListFromFile() "+plTab+" size " + playListItemsService[plTab].size());
-	}
-	
+//	private void getPlayListFromFile(int plTab) {
+//		playListItemsService[plTab].clear();
+//		playListItemsService[plTab] = LocalConst
+//				.getListFromFile(LocalConst.playlist_file_prefix + plTab);
+//		Log.d(LocalConst.DTAG, "play service getPlayListFromFile() " + plTab
+//				+ " size " + playListItemsService[plTab].size());
+//	}
+
 	/**
 	 * 从playlist中获取一首歌曲，并开始播放
 	 */
 	public void playList(int i, int plTab) {
 		Log.d(LocalConst.DTAG, "playList: " + i);
 
-		if(i < playListItemsService[plTab].size()){
-			
+		if (i < playListItemsService[plTab].size()) {
+
 			LvRow lr = playListItemsService[plTab].get(i);
 			if (lr == null)
 				return;
-	
+
+			clearMusicPlaying();
+			
 			playListItemIndex = i; // 更新当前指针
 			playingPlTab = plTab;
-	
+
 			play(lr.getFile(), LocalConst.ListPlay);
 		}
 	}
-	public void mediaPlayerErrorProcess(){
+
+	public void mediaPlayerErrorProcess() {
 		clearMusicPlaying();
-		
-		if(playingType == LocalConst.ListPlay){
+
+		if (playingType == LocalConst.ListPlay) {
 			gotoNextMusic();
-		}else if(playingType == LocalConst.SinglePlay){
-			
+		} else if (playingType == LocalConst.SinglePlay) {
+
 		}
 	}
+
 	public OnErrorListener mediaPlayerErrorListener = new OnErrorListener() {
 		@Override
 		public boolean onError(MediaPlayer mp, int what, int extra) {
 			Log.d(LocalConst.DTAG, "mediaPlayerErrorListener()");
-			
+
 			mediaPlayerErrorProcess();
 			return true;
 		}
 	};
-	
-	public void play(File f, int type) {
-		Log.d(LocalConst.DTAG, "audio/video: play in service: " + f.getPath());
-		
+	public void playFile(File f, int type) {
 		clearMusicPlaying();
-		
+		play(f, type);
+	}
+	private void play(File f, int type) {
+		Log.d(LocalConst.DTAG, "audio/video: play in service: " + f.getPath());
+
+//		clearMusicPlaying();
+
 		playingType = type;
 		playingFile = f;
-		
+
 		mediaPlayer = new MediaPlayer();
-		//mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+		// mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 		Log.d(LocalConst.DTAG, "audio/video: after new MediaPlayer(this)");
 
 		try {
 			mediaPlayer.setDataSource(getApplicationContext(), Uri.fromFile(f));
-			Log.d(LocalConst.DTAG, "audio/video: after mediaPlayer.setDataSource()");
-			
-			if(playingType == LocalConst.ListPlay){
+			Log.d(LocalConst.DTAG,
+					"audio/video: after mediaPlayer.setDataSource()");
+
+			if (playingType == LocalConst.ListPlay) {
 				mediaPlayer.setOnCompletionListener(listPlayListener);
-			}else if(playingType == LocalConst.SinglePlay){
+			} else if (playingType == LocalConst.SinglePlay) {
 				mediaPlayer.setOnCompletionListener(singlePlayListener);
 			}
-			
+
 			mediaPlayer.setOnErrorListener(mediaPlayerErrorListener);
-			
+
 			/**
-			 * 小心。
-			 * 如果是同步的prepare，那么其后start
-			 * 如果是异步的prepare，那么可能需要在prepare之前设置监听？！
+			 * 小心。 如果是同步的prepare，那么其后start 如果是异步的prepare，那么可能需要在prepare之前设置监听？！
 			 */
 			mediaPlayer.prepare();
 			mediaPlayer.start();
 			playStatus = LocalConst.playing;
-			
+
 			/*
-			mediaPlayer.setOnPreparedListener(new OnPreparedListener() { 
-		        @Override
-		        public void onPrepared(MediaPlayer mp) {
-		            mp.start();
-		        }
-		    });
-			Log.d(LocalConst.DTAG, "audio/video: after mediaPlayer.setOnPreparedListener()");
-			mediaPlayer.prepareAsync();
-			Log.d(LocalConst.DTAG, "audio/video: after mediaPlayer.prepare()");
-			*/
-			
-			updatePlayingFlag(playingType, LocalConst.playing, playingFile.getPath(), playingPlTab);
+			 * mediaPlayer.setOnPreparedListener(new OnPreparedListener() {
+			 * 
+			 * @Override public void onPrepared(MediaPlayer mp) { mp.start(); }
+			 * }); Log.d(LocalConst.DTAG,
+			 * "audio/video: after mediaPlayer.setOnPreparedListener()");
+			 * mediaPlayer.prepareAsync(); Log.d(LocalConst.DTAG,
+			 * "audio/video: after mediaPlayer.prepare()");
+			 */
+
+			updatePlayingFlag(playingType, LocalConst.playing,
+					playingFile.getPath(), playingPlTab);
 			sendNotification();
-			
+
 			Log.d(LocalConst.DTAG, "audio/video: after sendNotification()");
 		} catch (IllegalStateException e) {
 			// TODO Auto-generated catch block
@@ -300,88 +313,105 @@ public class PlayService extends Service implements MediaPlayerControl {
 	}
 
 	public void sendNotification() {
-		
+
 		if (playingFile != null) {
-			
+
 			/**
 			 * 给notification构建remoteView
 			 */
-			RemoteViews notifyView = new RemoteViews(this.getPackageName(), R.layout.notification);
+			RemoteViews notifyView = new RemoteViews(this.getPackageName(),
+					R.layout.notification);
 
-			switch(playSequence){
+			switch (playSequence) {
 			case LocalConst.play_seq_normal:
-				notifyView.setInt(R.id.notification_seq, "setText", R.string.play_seq_normal);
+				notifyView.setInt(R.id.notification_seq, "setText",
+						R.string.play_seq_normal);
 				break;
 			case LocalConst.play_seq_random:
-				notifyView.setInt(R.id.notification_seq, "setText", R.string.play_seq_random);
+				notifyView.setInt(R.id.notification_seq, "setText",
+						R.string.play_seq_random);
 				break;
 			case LocalConst.play_seq_single:
-				notifyView.setInt(R.id.notification_seq, "setText", R.string.play_seq_single);
+				notifyView.setInt(R.id.notification_seq, "setText",
+						R.string.play_seq_single);
 				break;
 			default:
-				notifyView.setInt(R.id.notification_seq, "setText", R.string.play_seq_normal);
+				notifyView.setInt(R.id.notification_seq, "setText",
+						R.string.play_seq_normal);
 			}
-			
-			
-			notifyView.setTextViewText(R.id.notification_name, playingFile.getName());
-			notifyView.setImageViewResource(R.id.notification_icon, R.drawable.icon);
-			
-			if(playStatus == LocalConst.playing){
-				notifyView.setViewVisibility(R.id.notification_goto_pause, View.VISIBLE);
-				notifyView.setViewVisibility(R.id.notification_goto_play, View.GONE);
-			}else{
-				notifyView.setViewVisibility(R.id.notification_goto_pause, View.GONE);
-				notifyView.setViewVisibility(R.id.notification_goto_play, View.VISIBLE);
+
+			notifyView.setTextViewText(R.id.notification_name,
+					playingFile.getName());
+			notifyView.setImageViewResource(R.id.notification_icon,
+					R.drawable.icon);
+
+			if (playStatus == LocalConst.playing) {
+				notifyView.setViewVisibility(R.id.notification_goto_pause,
+						View.VISIBLE);
+				notifyView.setViewVisibility(R.id.notification_goto_play,
+						View.GONE);
+			} else {
+				notifyView.setViewVisibility(R.id.notification_goto_pause,
+						View.GONE);
+				notifyView.setViewVisibility(R.id.notification_goto_play,
+						View.VISIBLE);
 			}
-			
-			if(playingType == LocalConst.ListPlay){
-				notifyView.setViewVisibility(R.id.notification_goto_last, View.GONE);
-				notifyView.setViewVisibility(R.id.notification_goto_next, View.VISIBLE);
-				notifyView.setViewVisibility(R.id.notification_seq, View.VISIBLE);
-			}else if(playingType == LocalConst.SinglePlay){
-				notifyView.setViewVisibility(R.id.notification_goto_last, View.GONE);
-				notifyView.setViewVisibility(R.id.notification_goto_next, View.GONE);
+
+			if (playingType == LocalConst.ListPlay) {
+				notifyView.setViewVisibility(R.id.notification_goto_last,
+						View.GONE);
+				notifyView.setViewVisibility(R.id.notification_goto_next,
+						View.VISIBLE);
+				notifyView.setViewVisibility(R.id.notification_seq,
+						View.VISIBLE);
+			} else if (playingType == LocalConst.SinglePlay) {
+				notifyView.setViewVisibility(R.id.notification_goto_last,
+						View.GONE);
+				notifyView.setViewVisibility(R.id.notification_goto_next,
+						View.GONE);
 				notifyView.setViewVisibility(R.id.notification_seq, View.GONE);
 			}
-			
-			notifyView.setOnClickPendingIntent(R.id.notification_goto_pause, 
-					PendingIntent.getBroadcast(this, 0,
-							new Intent(LocalConst.NOTIFICATION_GOTO_PAUSE),
-							PendingIntent.FLAG_UPDATE_CURRENT));			
-			notifyView.setOnClickPendingIntent(R.id.notification_goto_last, 
-					PendingIntent.getBroadcast(this, 0,
-							new Intent(LocalConst.NOTIFICATION_GOTO_LAST),
+
+			notifyView.setOnClickPendingIntent(R.id.notification_goto_pause,
+					PendingIntent.getBroadcast(this, 0, new Intent(
+							LocalConst.NOTIFICATION_GOTO_PAUSE),
 							PendingIntent.FLAG_UPDATE_CURRENT));
-			notifyView.setOnClickPendingIntent(R.id.notification_goto_next, 
-					PendingIntent.getBroadcast(this, 0,
-							new Intent(LocalConst.NOTIFICATION_GOTO_NEXT),
+			notifyView.setOnClickPendingIntent(R.id.notification_goto_last,
+					PendingIntent.getBroadcast(this, 0, new Intent(
+							LocalConst.NOTIFICATION_GOTO_LAST),
 							PendingIntent.FLAG_UPDATE_CURRENT));
-			notifyView.setOnClickPendingIntent(R.id.notification_goto_play, 
-					PendingIntent.getBroadcast(this, 0,
-							new Intent(LocalConst.NOTIFICATION_GOTO_PLAY),
+			notifyView.setOnClickPendingIntent(R.id.notification_goto_next,
+					PendingIntent.getBroadcast(this, 0, new Intent(
+							LocalConst.NOTIFICATION_GOTO_NEXT),
 							PendingIntent.FLAG_UPDATE_CURRENT));
-			notifyView.setOnClickPendingIntent(R.id.notification_seq, 
-					PendingIntent.getBroadcast(this, 0,
-							new Intent(LocalConst.NOTIFICATION_SEQ_SWITCH),
+			notifyView.setOnClickPendingIntent(R.id.notification_goto_play,
+					PendingIntent.getBroadcast(this, 0, new Intent(
+							LocalConst.NOTIFICATION_GOTO_PLAY),
 							PendingIntent.FLAG_UPDATE_CURRENT));
-			
-			NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
-						
+			notifyView.setOnClickPendingIntent(R.id.notification_seq,
+					PendingIntent.getBroadcast(this, 0, new Intent(
+							LocalConst.NOTIFICATION_SEQ_SWITCH),
+							PendingIntent.FLAG_UPDATE_CURRENT));
+
+			NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
+					this)
+
 					.setSmallIcon(R.drawable.bottom)
 					.setContentTitle(playingFile.getName())
-					.setContentText(getResources().getString(R.string.notification_back_msg))					
-			
+					.setContentText(
+							getResources().getString(
+									R.string.notification_back_msg))
+
 					/**
 					 * 非常奇怪，上面三个set不能省略，否则notification就不显示
 					 * 但上面三项并不显示，因为使用了remoteView及其布局
 					 */
-					
+
 					.setContent(notifyView);
-			
-			
+
 			Intent resultIntent = new Intent(this, DirPlayerActivity.class);
-			PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0,
-					resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+			PendingIntent resultPendingIntent = PendingIntent.getActivity(this,
+					0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
 			mBuilder.setContentIntent(resultPendingIntent);
 			// Sets an ID for the notification
@@ -390,137 +420,130 @@ public class PlayService extends Service implements MediaPlayerControl {
 			NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 			// Builds the notification and issues it.
 			mNotifyMgr.notify(mNotificationId, mBuilder.build());
-			
-//			Log.d(LocalConst.TMP, "end of sendNotification()");
+
+			// Log.d(LocalConst.TMP, "end of sendNotification()");
 		}
 	}
 
-	public void cancelNotification(){
+	public void cancelNotification() {
 		// Gets an instance of the NotificationManager service
 		NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		// Builds the notification and issues it.
 		mNotifyMgr.cancelAll();
 	}
-	
 
-	private class NotificationInforReceiver extends BroadcastReceiver
-	{
-		private NotificationInforReceiver(){ // Prevents instantiation
+	private class NotificationInforReceiver extends BroadcastReceiver {
+		private NotificationInforReceiver() { // Prevents instantiation
 		}
-	    // Called when the BroadcastReceiver gets an Intent it's registered to receive
-		@Override
-	    public void onReceive(Context context, Intent intent) {
-			
-			Log.d(LocalConst.TMP, "service: onReceive()");
-			
-			/**
-			 * 接收如下信息
-			 * 		播放、暂停、上一首、下一首
-			 */
-			if(mediaPlayer == null)
-				return;
-			
-		    String action = intent.getAction();
 
-		    if(LocalConst.NOTIFICATION_GOTO_LAST.equals(action)) {
-		        Log.d(LocalConst.TMP,"Pressed last");
-		        
-		        
-		    } else if(LocalConst.NOTIFICATION_GOTO_NEXT.equals(action)) {
-		        Log.d(LocalConst.TMP,"Pressed next");
-		        mediaPlayer.seekTo(mediaPlayer.getDuration());
-		    } else if(LocalConst.NOTIFICATION_GOTO_PLAY.equals(action)) {
-		        Log.d(LocalConst.TMP,"Pressed play");
+		// Called when the BroadcastReceiver gets an Intent it's registered to
+		// receive
+		@Override
+		public void onReceive(Context context, Intent intent) {
+
+			Log.d(LocalConst.TMP, "service: onReceive()");
+
+			/**
+			 * 接收如下信息 播放、暂停、上一首、下一首
+			 */
+			if (mediaPlayer == null)
+				return;
+
+			String action = intent.getAction();
+
+			if (LocalConst.NOTIFICATION_GOTO_LAST.equals(action)) {
+				Log.d(LocalConst.TMP, "Pressed last");
+
+			} else if (LocalConst.NOTIFICATION_GOTO_NEXT.equals(action)) {
+				Log.d(LocalConst.TMP, "Pressed next");
+				mediaPlayer.seekTo(mediaPlayer.getDuration());
+			} else if (LocalConst.NOTIFICATION_GOTO_PLAY.equals(action)) {
+				Log.d(LocalConst.TMP, "Pressed play");
 				mediaPlayer.start();
 				playStatus = LocalConst.playing;
 				sendNotification();
-				
-				
-		    } else if(LocalConst.NOTIFICATION_GOTO_PAUSE.equals(action)) {
-		        Log.d(LocalConst.TMP,"Pressed pause");
+
+			} else if (LocalConst.NOTIFICATION_GOTO_PAUSE.equals(action)) {
+				Log.d(LocalConst.TMP, "Pressed pause");
 				mediaPlayer.pause();
 				playStatus = LocalConst.paused;
 				sendNotification();
-		    } else if(LocalConst.NOTIFICATION_SEQ_SWITCH.equals(action)) {
-		        Log.d(LocalConst.TMP,"play sequence switch");
-		        playSeqSwitch();
+			} else if (LocalConst.NOTIFICATION_SEQ_SWITCH.equals(action)) {
+				Log.d(LocalConst.TMP, "play sequence switch");
+				playSeqSwitch();
 				sendNotification();
-		    }
-		    
-	    }
+			}
+
+		}
 	}
-	public void playSeqSwitch(){
+
+	public void playSeqSwitch() {
 		playSequence++;
-		if(playSequence > LocalConst.play_seq_single){
+		if (playSequence > LocalConst.play_seq_single) {
 			playSequence = LocalConst.play_seq_normal;
 		}
 	}
+
 	@Override
 	public void start() {
 		// TODO Auto-generated method stub
-		if (mediaPlayer != null)
+		if (mediaPlayer != null){
 			mediaPlayer.start();
-			playStatus = LocalConst.playing;
+		}
+		playStatus = LocalConst.playing;
 	}
 
 	@Override
 	public void pause() {
 		// TODO Auto-generated method stub
-		if (mediaPlayer != null)
+		if (mediaPlayer != null){
 			mediaPlayer.pause();
-			playStatus = LocalConst.paused;
+		}
+		playStatus = LocalConst.paused;
 	}
 
 	public void stop() {
 		// TODO Auto-generated method stub
-		if (mediaPlayer != null)
-			mediaPlayer.stop();
-			playStatus = LocalConst.stopped;
+		clearMusicPlaying();
+		playStatus = LocalConst.stopped;
 	}
 
-	
 	/**
-	 * 这里不太好
-	 * 只需要发送：
-	 * 		路径是什么
-	 * 		点亮什么
-	 * 		熄灭什么
+	 * 这里不太好 只需要发送： 路径是什么 点亮什么 熄灭什么
 	 */
-	public void updatePlayingFlag(
-			int playType,
-			int playing,
-			String playPath,
-			int playPlTab
-			){
+	public void updatePlayingFlag(int playType, int playing, String playPath,
+			int playPlTab) {
 		/**
 		 * 需要发送item位置，如果有多个列表的话，需要发送列表编号
 		 */
-		Log.d(LocalConst.DTAG, "audio/video: path in playlist " + playingFile.getPath());
-				Intent localIntent = new Intent(
-						LocalConst.BROADCAST_SERVICE_STATUS)
+		Log.d(LocalConst.DTAG,
+				"audio/video: path in playlist " + playingFile.getPath());
+		Intent localIntent = new Intent(LocalConst.BROADCAST_SERVICE_STATUS)
 				// Puts the status into the Intent
-						.putExtra(LocalConst.PLAY_TYPE, playType)
-						.putExtra(LocalConst.PLAY_STATUS, playing)
-						.putExtra(LocalConst.PLAY_PATH, playPath)
-						.putExtra(LocalConst.PLAY_PL_TAB, playPlTab);
-				// Broadcasts the Intent to receivers in this app.
-				LocalBroadcastManager.getInstance(this).sendBroadcast(
-						localIntent);
+				.putExtra(LocalConst.PLAY_TYPE, playType)
+				.putExtra(LocalConst.PLAY_STATUS, playing)
+				.putExtra(LocalConst.PLAY_PATH, playPath)
+				.putExtra(LocalConst.PLAY_LIST_INDEX, playListItemIndex)
+				.putExtra(LocalConst.PLAY_PL_TAB, playPlTab);
+		
+		// Broadcasts the Intent to receivers in this app.
+		LocalBroadcastManager.getInstance(this).sendBroadcast(localIntent);
 	}
-	
+
 	public void clearMusicPlaying() {
 		// TODO Auto-generated method stub
 		Log.d(LocalConst.DTAG, "audio/video: begin clear music playing");
-		if (mediaPlayer != null){
-			if(playingFile != null){
-				updatePlayingFlag(playingType, LocalConst.clear, playingFile.getPath(), playingPlTab);
+		if (mediaPlayer != null) {
+			if (playingFile != null) {
+				updatePlayingFlag(playingType, LocalConst.clear,
+						playingFile.getPath(), playingPlTab);
 			}
 			cancelNotification();
 
-			try{
-				mediaPlayer.stop();			
+			try {
+				mediaPlayer.stop();
 				mediaPlayer.release();
-			}catch(Exception e){
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			mediaPlayer = null;
@@ -528,7 +551,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 		}
 		Log.d(LocalConst.DTAG, "audio/video: after clear music playing");
 	}
-	
+
 	@Override
 	public int getDuration() {
 		// TODO Auto-generated method stub

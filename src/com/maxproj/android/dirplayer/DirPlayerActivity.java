@@ -214,6 +214,7 @@ public class DirPlayerActivity extends FragmentActivity implements
     int servicePlaying = 0; //播放状态
     String servicePlayPath; //列表播放的路径
     int servicePlayPlTab = 0;
+    int servicePlayListIndex = 0;
 //    int playStatus_fl_record = 0; //播放状态
 //    int playListIndex = 0; //列表下标
 //    int playListItemIndex = 0; //播放下标
@@ -500,7 +501,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 				if(mService != null){
 					// 退出视频，并隐藏VideoView
 					clearVideoViewPlaying();
-					mService.play(f, LocalConst.SinglePlay); // clearMusicPlaying() will be called
+					mService.playFile(f, LocalConst.SinglePlay); // clearMusicPlaying() will be called
 					Log.d(LocalConst.DTAG, "audio/video: after mService.play(f, null)");
 					// mediaController.show(); // 开始播放时是否要显示一下控制面板？
 					Log.d(LocalConst.DTAG, "audio/video: after mediaController.show()");
@@ -2736,14 +2737,18 @@ public class DirPlayerActivity extends FragmentActivity implements
 		servicePlayType = intent.getIntExtra(LocalConst.PLAY_TYPE, -1);
 		servicePlayPath = intent.getStringExtra(LocalConst.PLAY_PATH);
 		servicePlayPlTab = intent.getIntExtra(LocalConst.PLAY_PL_TAB, -1);
+		servicePlayListIndex = intent.getIntExtra(LocalConst.PLAY_LIST_INDEX, -1);
+		
 		
 		if(servicePlayType == LocalConst.SinglePlay){
 			/**
 			 * 点击，并且播放后，在这里动态改变播放标记
+			 * todo: 循环查找非常耗时，这里可以优化一下，也即在list被点击时记录位置，这里根据位置设置标志
 			 */
 			for (int i = 0; i < LocalConst.tabCount; i++) {
 				for(LvRow lr:viewListItems[i]){
-					if(lr.getFile().getPath().equals(servicePlayPath)){
+					if(lr.getPath().equals(servicePlayPath)){
+						//注意，下面一行也能清除播放标记
 						lr.setPlayingStatus(servicePlaying);
 					}
 				}
@@ -2756,17 +2761,23 @@ public class DirPlayerActivity extends FragmentActivity implements
 			 * 点击，并且播放后，在这里动态改变播放标记
 			 */
 
-			for(LvRow lr:playListItems[servicePlayPlTab]){
-				if(lr.getFile().getPath().equals(servicePlayPath)){
-					lr.setPlayingStatus(servicePlaying);
-				}
-			}
+//			for(LvRow lr:playListItems[servicePlayPlTab]){
+//				if(lr.getPath().equals(servicePlayPath)){
+//					lr.setPlayingStatus(servicePlaying);
+//				}
+//			}
+			Log.d(LocalConst.DTAG,"playlist index: " + servicePlayListIndex);
+			playListItems[servicePlayPlTab].get(servicePlayListIndex).setPlayingStatus(servicePlaying);
+			
 			if(playListArrayAdapter[servicePlayPlTab] != null){
 				playListArrayAdapter[servicePlayPlTab].notifyDataSetChanged();
 			}
 			
 		}
 		if(currentPagerTab == 3){
+			/**
+			 * 在播放列表显示时，即便播放的是文件列表的曲目，也显示这个曲目名
+			 */
 			if(servicePlaying == LocalConst.playing){
 				updateBottomStatus(new File(servicePlayPath).getName());
 			}else{
