@@ -81,7 +81,6 @@ public class FragmentPlayList  extends Fragment {
         void onFragmentPlayListButton4();
         void onFragmentPlayListButton5();
         void onFragmentPlayListButton6();
-        void onFragmentPlayListButton7();
         PlayService getServiceConnection();
         void sysAttachFragmentPlayListLowMem(FragmentPlayList fragment);
     }

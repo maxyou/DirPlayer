@@ -233,6 +233,13 @@ public class DirPlayerActivity extends FragmentActivity implements
             // We've bound to LocalService, cast the IBinder and get LocalService instance
             LocalBinder binder = (LocalBinder) service;
             mService = binder.getService();
+			if(mService != null){
+				for(int i=0;i<LocalConst.plCount;i++){
+    				mService.updatePlayList(i, playListItems[i]);
+    				Log.d(LocalConst.DTAG, "playlist: mService != null");
+    			}
+    		}
+            Log.d(LocalConst.DTAG, "playlist: mService = binder.getService();");
             mBound = true;
         }
 
@@ -323,9 +330,9 @@ public class DirPlayerActivity extends FragmentActivity implements
 
 
 
-	private void saveBookMark2File() {
-		LocalConst.saveList2File(bookMarkItems, LocalConst.bookmark_file);
-	}
+//	private void saveBookMark2File() {
+//		LocalConst.saveList2File(bookMarkItems, LocalConst.bookmark_file);
+//	}
 
 	public void onFragmentBookMarkClicked(int i) {
 		Log.d(LocalConst.DTAG, "onFragmentBookMarkClicked " + i);
@@ -729,7 +736,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 			
 			Toast.makeText(this, "您添加了收藏： " + currentPath[tab], Toast.LENGTH_LONG).show();
 			
-			File f = new File(currentPath[tab]);
+//			File f = new File(currentPath[tab]);
 			
 			// 判断当前目录是否已经收藏
 			if(checkFileInLvRowList(currentPath[tab], bookMarkItems))
@@ -843,7 +850,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 							case 5:
 							case 6:
 							case 7:
-								savePlayList2File(fc.fresh - 3);
+//								savePlayList2File(fc.fresh - 3);
 								//更新adapter。注意这个操作不能少，否则系统提示adapter被异常修改而退出
 								updatePlayListAdapter(fc.fresh - 3);
 								break;
@@ -1878,6 +1885,16 @@ public class DirPlayerActivity extends FragmentActivity implements
 		Log.d(LocalConst.FRAGMENT_LIFE, "activity onStart() after updateDirInfor()!");
 
 		/**
+		 * 读取文件中的播放列表
+		 */
+		currentPlTab = sharedPref.getInt(LocalConst.PL_TAB_IN_PREF, 0);
+		for(int i=0;i<LocalConst.plCount;i++){
+			getPlayList(i);
+		}
+//		updatePlayListAdapterAll();
+//		Log.d(LocalConst.FRAGMENT_LIFE, "activity onStart() after updatePlayListAdapter()!");
+
+		/**
 		 * 音视频媒体相关初始化
 		 */
 		mainWindow = findViewById(R.id.main_window); // 停放controller的地方
@@ -1900,15 +1917,6 @@ public class DirPlayerActivity extends FragmentActivity implements
 		vv.setOnTouchListener(vvOnTouchListener);
 		Log.d(LocalConst.FRAGMENT_LIFE, "activity onStart() after vv.setOnTouchListener()!");
 		
-		/**
-		 * 播放列表
-		 */
-		currentPlTab = sharedPref.getInt(LocalConst.PL_TAB_IN_PREF, 0);
-		for(int i=0;i<LocalConst.plCount;i++){
-			getPlayList(i);
-		}
-//		updatePlayListAdapterAll();
-//		Log.d(LocalConst.FRAGMENT_LIFE, "activity onStart() after updatePlayListAdapter()!");
 		/**
 		 * 启动音频播放service
 		 */
@@ -1951,6 +1959,10 @@ public class DirPlayerActivity extends FragmentActivity implements
          * 在退出时备份各种列表
          */
         LocalConst.saveList2File(bookMarkItems, LocalConst.bookmark_file);
+		for(int i=0;i<LocalConst.plCount;i++){
+			LocalConst.saveList2File(playListItems[i], LocalConst.playlist_file_prefix + i);
+		}
+        
         
         // Unbind from the service
         if (mBound) {
@@ -2568,7 +2580,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 		moveUpSelected(playListItems[currentPlTab]);
 		playListArrayAdapter[currentPlTab].notifyDataSetChanged();
 
-		savePlayList2File(currentPlTab);		
+//		savePlayList2File(currentPlTab);		
 		
 	}
 	
@@ -2605,7 +2617,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 		// 下移
 		moveDownSelected(playListItems[currentPlTab]);
 		playListArrayAdapter[currentPlTab].notifyDataSetChanged();
-		savePlayList2File(currentPlTab);
+//		savePlayList2File(currentPlTab);
 	}
 	public void onFragmentPlayListButton6() {
 		// 删除
@@ -2616,20 +2628,10 @@ public class DirPlayerActivity extends FragmentActivity implements
 		}
 		playListArrayAdapter[currentPlTab].notifyDataSetChanged();
 
-		savePlayList2File(currentPlTab);
+//		savePlayList2File(currentPlTab);
 
 	}
-	public void onFragmentPlayListButton7() {
-		// 删除
-		Iterator<LvRow> iter = playListItems[currentPlTab].iterator();
-		while (iter.hasNext()) {
-			if (iter.next().getSelected() == true)
-				iter.remove();
-		}
-		playListArrayAdapter[currentPlTab].notifyDataSetChanged();
 
-		savePlayList2File(currentPlTab);
-	}
     public PlayService getServiceConnection(){
     	return mService;
     }
@@ -2647,12 +2649,12 @@ public class DirPlayerActivity extends FragmentActivity implements
 	 * 1、给play service
 	 * 2、重新启动时读取
 	 */
-	private void savePlayList2File(int plTab) {
-		LocalConst.saveList2File(playListItems[plTab], LocalConst.playlist_file_prefix + plTab);
-		
-		if(mService != null)
-			mService.updatePlayList(plTab);
-	}
+//	private void savePlayList2File(int plTab) {
+//		LocalConst.saveList2File(playListItems[plTab], LocalConst.playlist_file_prefix + plTab);
+//		
+//		if(mService != null)
+//			mService.updatePlayList(plTab, playListItems[plTab]);
+//	}
 
 
 

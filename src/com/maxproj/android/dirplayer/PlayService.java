@@ -136,7 +136,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 
 		Log.d(LocalConst.DTAG, "service: onCreate()");
 		for(int i=0;i<LocalConst.plCount;i++){
-			updatePlayList(i);
+//			updatePlayList(i);
 		}
 		
 		/**
@@ -178,8 +178,11 @@ public class PlayService extends Service implements MediaPlayerControl {
 	/**
 	 * service通过文件获取播放列表
 	 */
-	public void updatePlayList(int plTab) {
-		getPlayList(plTab);
+	public void updatePlayList(int plTab, LinkedList<LvRow> ll) {
+//		getPlayListFromFile(plTab);
+		
+		playListItemsService[plTab] = ll;
+		
 	}
 
 	@Override
@@ -193,10 +196,10 @@ public class PlayService extends Service implements MediaPlayerControl {
 	 * 拷贝自DirPlayerActivity.java，以后重构合并
 	 * 应该直接new一个list，读取数据后返回这个list
 	 */
-	private void getPlayList(int plTab) {
+	private void getPlayListFromFile(int plTab) {
 		playListItemsService[plTab].clear();
 		playListItemsService[plTab] = LocalConst.getListFromFile(LocalConst.playlist_file_prefix + plTab);
-		Log.d(LocalConst.DTAG, "play service getPlayList() "+plTab+" size " + playListItemsService[plTab].size());
+		Log.d(LocalConst.DTAG, "play service getPlayListFromFile() "+plTab+" size " + playListItemsService[plTab].size());
 	}
 	
 	/**
@@ -205,14 +208,17 @@ public class PlayService extends Service implements MediaPlayerControl {
 	public void playList(int i, int plTab) {
 		Log.d(LocalConst.DTAG, "playList: " + i);
 
-		LvRow lr = playListItemsService[plTab].get(i);
-		if (lr == null)
-			return;
-
-		playListItemIndex = i; // 更新当前指针
-		playingPlTab = plTab;
-
-		play(lr.getFile(), LocalConst.ListPlay);
+		if(i < playListItemsService[plTab].size()){
+			
+			LvRow lr = playListItemsService[plTab].get(i);
+			if (lr == null)
+				return;
+	
+			playListItemIndex = i; // 更新当前指针
+			playingPlTab = plTab;
+	
+			play(lr.getFile(), LocalConst.ListPlay);
+		}
 	}
 	public void mediaPlayerErrorProcess(){
 		clearMusicPlaying();
