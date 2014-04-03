@@ -39,6 +39,7 @@
         android:layout_weight="1"   
 	    android:layout_height="wrap_content"        
         android:text="@string/bottom_about"		
+        android:paddingLeft="5dp"
         />
 	   	<ImageView
         android:id="@+id/bottom_icon"

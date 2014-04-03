@@ -1627,7 +1627,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 						currentPath[tab]);
 				
 				if(tab == currentPagerTab){
-					updateBottomStatus(currentPath[tab]);
+					updateBottomStatus(pathTrim4Show(currentPath[tab]));
 				}
 				Log.d(LocalConst.LIFECYCLE,
 						"DirPlayerActivity.updateFileInfor()!"+" "+fragmentListview[tab]+" "+myArrayAdapter);
@@ -1646,7 +1646,26 @@ public class DirPlayerActivity extends FragmentActivity implements
 		}
 
 	}
-
+	private String pathTrim4Show(String path) {
+		
+		/**
+		 *	/mnt/sdcard --> /
+		 *	/mnt/sdcard/MyDoc --> /MyDoc
+		 *
+		 *	如果path等于rootPath，返回“/”
+		 *	否则去掉pathRoot
+		 */
+		if(path == null){//可能在初始状态会得到null
+			Log.d(LocalConst.DTAG, "pathTrim4Show() get path: " + path);
+			return "/";
+		}
+		if(path.equals(LocalConst.pathRoot)){
+			return "/";
+		}else{
+			return path.substring(LocalConst.pathRoot.length());
+		}
+	}
+	
 	/**
 	 *	集中所有的dir和file到对应list
 	 *	对list里面的items排序
@@ -2250,15 +2269,23 @@ public class DirPlayerActivity extends FragmentActivity implements
 		currentPagerTab = tab.getPosition();
 		mViewPager.setCurrentItem(currentPagerTab);
 		Log.d(LocalConst.DTAG, "MainActivityReceiver " + currentPagerTab); 
-		if(currentPagerTab < 2){
+		if(currentPagerTab < 2){//左右窗口
 			//更新当前路径
-			updateBottomStatus(currentPath[currentPagerTab]);
-		}else if(currentPagerTab == 2){
-			updateBottomStatus("");
-		}else if(currentPagerTab == 3){
+			updateBottomStatus(pathTrim4Show(currentPath[currentPagerTab]));
+		}else if(currentPagerTab == 2){//收藏窗口
+			updateBottomStatus(getResources().getString(R.string.bottom_about));
+		}else if(currentPagerTab == 3){//播放列表。当前曲目，或者空白标记
 			//更新为正在播放曲目
 			if(servicePlayPath != null){
-				updateBottomStatus(new File(servicePlayPath).getName());
+//			    int servicePlayType = 0; //播放类型
+//			    int servicePlaying = 0; //播放状态
+//			    String servicePlayPath; //列表播放的路径
+			    
+				if(servicePlaying == LocalConst.playing){
+					updateBottomStatus(new File(servicePlayPath).getName());
+				}else{
+					updateBottomStatus(getResources().getString(R.string.bottom_about));
+				}
 			}
 		}
 		
@@ -2643,28 +2670,6 @@ public class DirPlayerActivity extends FragmentActivity implements
 		playListItems[plTab] = LocalConst.getListFromFile(LocalConst.playlist_file_prefix + plTab);
 	}
 	
-
-
-	/**
-	 * 1、给play service
-	 * 2、重新启动时读取
-	 */
-//	private void savePlayList2File(int plTab) {
-//		LocalConst.saveList2File(playListItems[plTab], LocalConst.playlist_file_prefix + plTab);
-//		
-//		if(mService != null)
-//			mService.updatePlayList(plTab, playListItems[plTab]);
-//	}
-
-
-
-
-//	public void updateFragmentLight(){
-//		if(mService != null){
-//			mService.updateLight();
-//		}
-//	}
-	
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		// TODO Auto-generated method stub
@@ -2746,7 +2751,6 @@ public class DirPlayerActivity extends FragmentActivity implements
 					myArrayAdapter[i].notifyDataSetChanged();
 				}
 			}
-			return;
 		}else if(servicePlayType == LocalConst.ListPlay){
 			/**
 			 * 点击，并且播放后，在这里动态改变播放标记
@@ -2761,12 +2765,13 @@ public class DirPlayerActivity extends FragmentActivity implements
 				playListArrayAdapter[servicePlayPlTab].notifyDataSetChanged();
 			}
 			
+		}
+		if(currentPagerTab == 3){
 			if(servicePlaying == LocalConst.playing){
 				updateBottomStatus(new File(servicePlayPath).getName());
 			}else{
-				updateBottomStatus("");
+				updateBottomStatus(getResources().getString(R.string.bottom_about));
 			}
-			return;
 		}
 	}
 	private class MainActivityReceiver extends BroadcastReceiver
