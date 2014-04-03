@@ -35,38 +35,22 @@ public class FragmentPlayList  extends Fragment {
      * 进度原因，这里先设置多个view，非当前的view先隐藏
      */
     class PlayListTabGroup{
-    	int tabViewId; 
-    	LinearLayout tabView; 
-    	
     	int listViewId;
     	ListView listView;
     	
-    	int pathId;
-    	TextView pathView;
-    	String path;
     	
     	MyArrayAdapter listAdapter;
 
     	int radioId;
     	
     	public PlayListTabGroup(
-    			int tabViewId,
-    			LinearLayout tabView,
     	    	int listViewId,
     	    	ListView listView,    	    	
-    	    	int pathId,
-    	    	TextView pathView,
-    	    	String path,    	    	
     	    	MyArrayAdapter listAdapter,
     	    	int radioId
     			){
-    		this.tabViewId = tabViewId;
-    		this.tabView = tabView;
 	    	this.listViewId = listViewId;
 	    	this.listView= listView;	    	
-	    	this.pathId = pathId;
-	    	this.pathView = pathView;
-	    	this.path = path;	    	
 	    	this.listAdapter = listAdapter;
 	    	this.radioId = radioId;
     	}
@@ -173,15 +157,10 @@ public class FragmentPlayList  extends Fragment {
 
 		for (int i = 0; i < LocalConst.plCount; i++) {
 			playListTabGroup[i] = new PlayListTabGroup(
-	    			LocalConst.plViewId[i][0],//tabViewId
-	    			(LinearLayout)fragmentView.findViewById(LocalConst.plViewId[i][0]),//tabView
-	    			LocalConst.plViewId[i][1],//listview id
-	    	    	(ListView)fragmentView.findViewById(LocalConst.plViewId[i][1]),//listview    	    	
-	    	    	LocalConst.plViewId[i][2],//path view id
-	    	    	(TextView)fragmentView.findViewById(LocalConst.plViewId[i][2]),//path view
-	    	    	null,//path
+	    			LocalConst.plViewId[i][0],//listview id
+	    	    	(ListView)fragmentView.findViewById(LocalConst.plViewId[i][0]),//listview    	    	
 	    	    	null,//adapter
-	    	    	LocalConst.plViewId[i][3]//radio id
+	    	    	LocalConst.plViewId[i][1]//radio id
 					);
 			playListTabGroup[i].listView.setOnItemClickListener(new ItemClicklistener(i));
 		}
@@ -232,9 +211,9 @@ public class FragmentPlayList  extends Fragment {
     	Log.d(LocalConst.LIFECYCLE, "pl showPlayListView("+localPlTab+")");
 		for(int i=0;i<LocalConst.plCount;i++){
 			if(i == localPlTab){
-				playListTabGroup[i].tabView.setVisibility(View.VISIBLE);
+				playListTabGroup[i].listView.setVisibility(View.VISIBLE);
 			}else{
-				playListTabGroup[i].tabView.setVisibility(View.INVISIBLE);				
+				playListTabGroup[i].listView.setVisibility(View.INVISIBLE);				
 			}
 		}
     }
@@ -282,18 +261,7 @@ public class FragmentPlayList  extends Fragment {
         mService = fragmentPlayListInterface.getServiceConnection();
         Log.d(LocalConst.LIFECYCLE, "pl onActivityCreated()");
     }
-    public void setPathView(String path, int plTab){
-    	/**
-    	 * 这里有个问题。
-    	 * 刚开机，还没有切换到播放tab，也即这个tab还没有初始化，此刻设置pathView导致空指针异常
-    	 */
-    	if(playListTabGroup[plTab] != null){
-    		playListTabGroup[plTab].path = path;
-    		if(playListTabGroup[plTab].pathView != null){
-    			playListTabGroup[plTab].pathView.setText(path);
-    		}
-    	}
-    }
+
     private class ItemClicklistener implements AdapterView.OnItemClickListener {
     	
     	int inner_plTab;

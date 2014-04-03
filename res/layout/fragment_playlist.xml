@@ -62,105 +62,38 @@
         android:layout_height="0dp"
         android:layout_weight="1" >
 
-        <LinearLayout
-            android:id="@+id/fragment_playlist_path_1"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:visibility="invisible" >
-
             <ListView
                 android:id="@+id/fragment_playlist_1"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
-
-            <TextView
-                android:id="@+id/current_play_1"
-                style="@style/lvRowText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/fragment_playlist_path_2"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:visibility="invisible" >
+                android:layout_height="match_parent"
+                 />
 
             <ListView
                 android:id="@+id/fragment_playlist_2"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
+                android:layout_height="match_parent"
+                 />
 
-            <TextView
-                android:id="@+id/current_play_2"
-                style="@style/lvRowText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/fragment_playlist_path_3"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:visibility="invisible" >
 
             <ListView
                 android:id="@+id/fragment_playlist_3"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
-
-            <TextView
-                android:id="@+id/current_play_3"
-                style="@style/lvRowText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/fragment_playlist_path_4"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:visibility="invisible" >
+                android:layout_height="match_parent"
+                 />
 
             <ListView
                 android:id="@+id/fragment_playlist_4"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
+                android:layout_height="match_parent"
+                 />
 
-            <TextView
-                android:id="@+id/current_play_4"
-                style="@style/lvRowText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/fragment_playlist_path_5"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:visibility="invisible" >
 
             <ListView
                 android:id="@+id/fragment_playlist_5"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
+                android:layout_height="match_parent"
+                 />
 
-            <TextView
-                android:id="@+id/current_play_5"
-                style="@style/lvRowText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
     </RelativeLayout>
 
     <LinearLayout
