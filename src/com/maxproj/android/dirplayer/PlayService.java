@@ -48,10 +48,10 @@ public class PlayService extends Service implements MediaPlayerControl {
 			playListItemsService[i] = new LinkedList<LvRow>();
 		}
 	}
-	int playingType;// 播放fileList或playList？
+	int playingType = LocalConst.NoPlay;// 播放fileList或playList？
 	int playStatus = LocalConst.clear;
 	int playingPlTab = 0;
-	File playingFile;// 当前播放的文件
+	File playingFile = null;// 当前播放的文件
 	static int playListItemIndex = 0; // 第一首
 	int playSequence = LocalConst.play_seq_normal;
 
@@ -72,7 +72,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 			 */
 		}
 
-		clearMusicPlaying();
+		clearLastMusicPlaying();
 		
 		calcNextItem();
 
@@ -114,7 +114,13 @@ public class PlayService extends Service implements MediaPlayerControl {
 		public void onCompletion(MediaPlayer mp) {
 			updatePlayingFlag(playingType, LocalConst.clear,
 					playingFile.getPath(), playingPlTab);
+			
+			//clear record
+			playingType = LocalConst.NoPlay;
+			playStatus = LocalConst.clear;
+			playingFile = null;
 		}
+		
 	};
 	/**
 	 * 音频播放
@@ -222,7 +228,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 			if (lr == null)
 				return;
 
-			clearMusicPlaying();
+			clearLastMusicPlaying();
 			
 			playListItemIndex = i; // 更新当前指针
 			playingPlTab = plTab;
@@ -232,12 +238,18 @@ public class PlayService extends Service implements MediaPlayerControl {
 	}
 
 	public void mediaPlayerErrorProcess() {
-		clearMusicPlaying();
+		clearLastMusicPlaying();
 
 		if (playingType == LocalConst.ListPlay) {
 			gotoNextMusic();
 		} else if (playingType == LocalConst.SinglePlay) {
-
+			updatePlayingFlag(playingType, LocalConst.clear,
+					playingFile.getPath(), playingPlTab);
+			
+			//clear record
+			playingType = LocalConst.NoPlay;
+			playStatus = LocalConst.clear;
+			playingFile = null;
 		}
 	}
 
@@ -251,13 +263,13 @@ public class PlayService extends Service implements MediaPlayerControl {
 		}
 	};
 	public void playFile(File f, int type) {
-		clearMusicPlaying();
+		clearLastMusicPlaying();
 		play(f, type);
 	}
 	private void play(File f, int type) {
 		Log.d(LocalConst.DTAG, "audio/video: play in service: " + f.getPath());
 
-//		clearMusicPlaying();
+//		clearLastMusicPlaying();
 
 		playingType = type;
 		playingFile = f;
@@ -370,7 +382,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 				notifyView.setViewVisibility(R.id.notification_goto_next,
 						View.GONE);
 				notifyView.setViewVisibility(R.id.notification_seq, View.GONE);
-			}
+			}//是否要考虑playingType == LocalConst.NoPlay？
 
 			notifyView.setOnClickPendingIntent(R.id.notification_goto_pause,
 					PendingIntent.getBroadcast(this, 0, new Intent(
@@ -504,10 +516,19 @@ public class PlayService extends Service implements MediaPlayerControl {
 
 	public void stop() {
 		// TODO Auto-generated method stub
-		clearMusicPlaying();
+		clearLastMusicPlaying();
 		playStatus = LocalConst.stopped;
 	}
-
+	public void pleaseUpdatePlayingFlag(){
+		if(playingFile != null){
+			updatePlayingFlag(playingType, playStatus, playingFile.getPath(),
+				playingPlTab);
+		}else{
+			updatePlayingFlag(playingType, playStatus, null,
+					playingPlTab);
+		}
+		
+	}
 	/**
 	 * 这里不太好 只需要发送： 路径是什么 点亮什么 熄灭什么
 	 */
@@ -516,8 +537,6 @@ public class PlayService extends Service implements MediaPlayerControl {
 		/**
 		 * 需要发送item位置，如果有多个列表的话，需要发送列表编号
 		 */
-		Log.d(LocalConst.DTAG,
-				"audio/video: path in playlist " + playingFile.getPath());
 		Intent localIntent = new Intent(LocalConst.BROADCAST_SERVICE_STATUS)
 				// Puts the status into the Intent
 				.putExtra(LocalConst.PLAY_TYPE, playType)
@@ -530,7 +549,15 @@ public class PlayService extends Service implements MediaPlayerControl {
 		LocalBroadcastManager.getInstance(this).sendBroadcast(localIntent);
 	}
 
-	public void clearMusicPlaying() {
+	public void quitMusicPlaying(){
+		clearLastMusicPlaying();
+		
+		//clear record
+		playingType = LocalConst.NoPlay;
+		playStatus = LocalConst.clear;
+		playingFile = null;
+	}
+	private void clearLastMusicPlaying() {
 		// TODO Auto-generated method stub
 		Log.d(LocalConst.DTAG, "audio/video: begin clear music playing");
 		if (mediaPlayer != null) {

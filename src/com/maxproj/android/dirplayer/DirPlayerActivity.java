@@ -520,7 +520,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 				// 如果有音频或其他再播放，停止，防止声音冲突
 				if (mService != null){					
 					// stop first
-					mService.clearMusicPlaying();
+					mService.quitMusicPlaying();
 					Log.d(LocalConst.DTAG, "audio/video: after clear audio playing");
 				}
 				Log.d(LocalConst.DTAG, "audio/video: begin vv play");
@@ -2014,6 +2014,10 @@ public class DirPlayerActivity extends FragmentActivity implements
 		Log.d(LocalConst.LIFECYCLE, "DirPlayerActivity.onResume()");
 		
 		controllerPromptCount = 2;
+		
+		if(mService != null){
+			mService.pleaseUpdatePlayingFlag();
+		}
 	}
 	@Override
 	protected void onResumeFragments() {
@@ -2737,7 +2741,12 @@ public class DirPlayerActivity extends FragmentActivity implements
 		servicePlayPlTab = intent.getIntExtra(LocalConst.PLAY_PL_TAB, -1);
 		servicePlayListIndex = intent.getIntExtra(LocalConst.PLAY_LIST_INDEX, -1);
 		
-		
+		/**
+		 * 三种可能：
+		 * 	noPlay
+		 * 	ListPlay
+		 * 	SinglePlay
+		 */
 		if(servicePlayType == LocalConst.SinglePlay){
 			/**
 			 * 点击，并且播放后，在这里动态改变播放标记
@@ -2771,13 +2780,16 @@ public class DirPlayerActivity extends FragmentActivity implements
 				playListArrayAdapter[servicePlayPlTab].notifyDataSetChanged();
 			}
 			
-		}
+		}//如果servicePlayType == LocalConst.noPlay
+		
 		if(currentPagerTab == 3){
 			/**
 			 * 在播放列表显示时，即便播放的是文件列表的曲目，也显示这个曲目名
 			 */
 			if(servicePlaying == LocalConst.playing){
-				updateBottomStatus(new File(servicePlayPath).getName());
+				if(servicePlayPath != null){
+					updateBottomStatus(new File(servicePlayPath).getName());
+				}
 			}else{
 				updateBottomStatus(getResources().getString(R.string.bottom_about));
 			}

@@ -119,7 +119,7 @@ public class LocalConst {
 	/**
 	 * 音乐播放状态
 	 */
-//    public static final int NoPlay       = 0;
+    public static final int NoPlay       = 0;
     public static final int SinglePlay       = 1;
     public static final int ListPlay      = 2;
     
@@ -304,10 +304,12 @@ public class LocalConst {
 				for (LvRow lr : list) {
 					String flag = null;
 					
+					/**
+					 *	有没有必要存储“正在播放”标记？
+					 *	存储之后不好找机会将其清掉
+					 *	现在改为不存储，每次恢复数据时请求service更新“正在播放”标记 
+					 */
 //					flag = (lr.getPlayingStatus() == LocalConst.playing)?"y":"n";
-					
-					//实际上没有必要存储“正在播放”标记
-					//而且存储之后没有机会将其清掉
 					flag = (lr.getPlayingStatus() == LocalConst.playing)?"n":"n";
 					
 					flag += (lr.getSelected() == true)?"y":"n";
