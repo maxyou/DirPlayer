@@ -2277,16 +2277,14 @@ public class DirPlayerActivity extends FragmentActivity implements
 			updateBottomStatus(getResources().getString(R.string.bottom_about));
 		}else if(currentPagerTab == 3){//播放列表。当前曲目，或者空白标记
 			//更新为正在播放曲目
-			if(servicePlayPath != null){
-//			    int servicePlayType = 0; //播放类型
-//			    int servicePlaying = 0; //播放状态
-//			    String servicePlayPath; //列表播放的路径
-			    
-				if(servicePlaying == LocalConst.playing){
-					updateBottomStatus(new File(servicePlayPath).getName());
-				}else{
-					updateBottomStatus(getResources().getString(R.string.bottom_about));
-				}
+//		    int servicePlayType = 0; //播放类型
+//		    int servicePlaying = 0; //播放状态
+//		    String servicePlayPath; //列表播放的路径
+			if((servicePlaying == LocalConst.playing)
+				&&(servicePlayPath != null)){
+				updateBottomStatus(new File(servicePlayPath).getName());
+			}else{
+				updateBottomStatus(getResources().getString(R.string.bottom_about));
 			}
 		}
 		
