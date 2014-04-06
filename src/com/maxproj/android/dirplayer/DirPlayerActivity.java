@@ -728,7 +728,8 @@ public class DirPlayerActivity extends FragmentActivity implements
 		 * 如果没有任何东西被选择，添加当前目录
 		 */
 		
-		calcSelectItems(tab);
+//		calcSelectItems(tab);
+		selectedItems[tab] = generateSelectItems(viewListItems[tab]);
 		if(selectedItems[tab].size() == 0){
 			/**
 			 * 没有条目被选择，添加当前目录到收藏
@@ -1434,19 +1435,28 @@ public class DirPlayerActivity extends FragmentActivity implements
 		
 		setShowCopyProcess(true);
 	}
-
 	
-	public void calcSelectItems(int tab){
-		selectedItems[tab].clear();
-		for (LvRow lr : viewListItems[tab]) {
+	public LinkedList<LvRow> generateSelectItems(LinkedList<LvRow> list){
+		LinkedList<LvRow> selectedItems = new LinkedList<LvRow>();
+		for (LvRow lr : list) {
 			if (lr.getSelected() == true) {
-				selectedItems[tab].add(lr);
-				Log.d(LocalConst.DTAG,
-						"operateMenu(): tab " + tab + " selected: "
-							+ lr.getName());
+				selectedItems.add(lr);
 			}
 		}
+		return selectedItems;
 	}
+	
+//	public void calcSelectItems(int tab){
+//		selectedItems[tab].clear();
+//		for (LvRow lr : viewListItems[tab]) {
+//			if (lr.getSelected() == true) {
+//				selectedItems[tab].add(lr);
+//				Log.d(LocalConst.DTAG,
+//						"operateMenu(): tab " + tab + " selected: "
+//							+ lr.getName());
+//			}
+//		}
+//	}
 	/*
 	 * 将用户命令添加到list 
 	 */
@@ -1460,7 +1470,8 @@ public class DirPlayerActivity extends FragmentActivity implements
 				+ ", path B: " + currentPath[1]);
 
 		for (int i = 0; i < LocalConst.tabCount; i++) {// A是0，B是1
-			calcSelectItems(i);
+//			calcSelectItems(i);
+			selectedItems[i] = generateSelectItems(viewListItems[i]);
 		}
 		
 		Log.d(LocalConst.DTAG, "dir copy: cmdList.clear() in addCmds()"
@@ -1548,7 +1559,14 @@ public class DirPlayerActivity extends FragmentActivity implements
 			}
 			cmdList.add(new FileCmd(LocalConst.CMD_FRESH, null, null, true, tab));
 			break;
-
+		case 8: // 从收藏添加到播放列表
+			for (LvRow lr : selectedItems[tab]) {
+				//addToPlayList(lr);
+				cmdList.add(new FileCmd(LocalConst.CMD_ADD_PLAY, lr.getFile(), null, true,
+						3 + currentPlTab)); //第一个播放列表在总表的索引是3.收藏表是2，左右窗口和0和1
+			}
+			cmdList.add(new FileCmd(LocalConst.CMD_FRESH, null, null, true, 3 + currentPlTab));
+			break;
 		default:
 			break;
 		}
