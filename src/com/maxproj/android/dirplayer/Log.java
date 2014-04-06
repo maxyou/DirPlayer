@@ -31,7 +31,7 @@ public class Log {
 	public static String tagFilter = LocalConst.TMP;
 //	public static ArrayList<String> tagFilter = new ArrayList<String>();
 
-	public static int log2FileSwitch = 1;
+	public static int log2FileSwitch = 0;
 	
 	/**
 	 * 加在链表的末尾
