@@ -31,8 +31,13 @@
 	<string name="flc_ibn_mkdir" >创建文件夹</string>
 	<string name="flc_ibn_rename" >改名</string>
 	    
-    
-    
+    <!-- 
+    	收藏窗口操作命令
+	 -->
+	<string name="bmc_ibn_add" >加入播放列表</string>    
+	<string name="bmc_ibn_copy_2_left" >&lt;-拷贝到左窗口</string>  
+	<string name="bmc_ibn_copy_2_right" >拷贝到右窗口-&gt;</string>  
+    <string name="bmc_ibn_del" >从收藏中删除</string>
     
     <!-- 
     	播放相关
@@ -100,7 +105,7 @@
     </string>
 	<string name="bm_act5" >下移
     </string>
-    <string name="bm_act6" >删除
+    <string name="bm_act6" >操作
     </string>
     
 	<string name="pl_act1" >全选
@@ -123,7 +128,7 @@
     </string>
 
     <!-- 
-    	对话框操作相关
+    	文件窗口操作菜单相关
 	-->
 	<string name="prompt" >怎样操作被选择的文件？
     </string>
@@ -162,7 +167,14 @@
     <string name="rename_fail_notice">由于某种原因，本次改名失败
     </string>
     
-
+    <!-- 
+    	收藏窗口操作菜单相关
+	-->
+	<string name="bookmark_prompt" >怎样操作被选择的收藏？
+    </string>
+    
+    
+    
     <!-- 
     	设置相关
 	-->

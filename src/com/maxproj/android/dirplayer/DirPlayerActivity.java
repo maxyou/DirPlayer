@@ -100,7 +100,8 @@ public class DirPlayerActivity extends FragmentActivity implements
 		ActionBar.TabListener, FragmentListview.FragmentListviewInterface,
 		FragmentBookMark.FragmentBookMarkInterface,
 		FragmentPlayList.FragmentPlayListInterface,
-		DialogFileList.DialogFileListInterface
+		DialogFileList.DialogFileListInterface,
+		DialogBookMark.DialogBookMarkInterface
 		{
 	
 	/**
@@ -405,17 +406,16 @@ public class DirPlayerActivity extends FragmentActivity implements
 	
 	public void onFragmentBookMarkButton6() {
 		Log.d(LocalConst.DTAG, "onFragmentBookMarkButton6 ");
-		// 删除
-		Iterator<LvRow> iter = bookMarkItems.iterator();
-		while (iter.hasNext()) {
-			if (iter.next().getSelected() == true)
-				iter.remove();
-		}
-		bookMarkArrayAdapter.notifyDataSetChanged();
+		// 操作
+		bookMarkMenu();
 		
-		//改为在onStop时备份
-//		saveBookMark2File();
 	}
+	private void bookMarkMenu() { // operate selected files
+
+		DialogBookMark.newInstance().show(getSupportFragmentManager(), "");
+		
+	}
+	
 	private void updateBookMarkInfor() {
 		// 本函数和bookMarkArrayAdapter.notifyDataSetChanged()有什么区别？回头想下能否去掉
 		// 总得设置一次adapter？
@@ -2918,8 +2918,39 @@ public class DirPlayerActivity extends FragmentActivity implements
 		// TODO Auto-generated method stub
 		addCmds(7, tab);
 	}
+
+
+	@Override
+	public void onDialogBookMarkAdd2PlayList() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void onDialogBookMarkCopy2Left() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void onDialogBookMarkCopy2Right() {
+		// TODO Auto-generated method stub
+		
+	}
 	
-	
-	
+	@Override
+	public void onDialogBookMarkDel() {
+		// TODO Auto-generated method stub
+		Iterator<LvRow> iter = bookMarkItems.iterator();
+		while (iter.hasNext()) {
+			if (iter.next().getSelected() == true)
+				iter.remove();
+		}
+		bookMarkArrayAdapter.notifyDataSetChanged();
+		
+	}
+		
 	
 }
