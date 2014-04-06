@@ -514,6 +514,9 @@ public class PlayService extends Service implements MediaPlayerControl {
 		}
 	}
 
+	public int getPlaySeq(){
+		return playSequence;
+	}
 	@Override
 	public void start() {
 		// TODO Auto-generated method stub

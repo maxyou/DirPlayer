@@ -1,192 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- 
-    	系统相关
-	 -->
-    <string name="app_name">DirPlayer
-    </string>
-    <string name="bottom_about" > 简单播放，简单生活
-    </string>
-    <string name="dealby" >请选择处理程序
-    </string>
-    <string name="about">联系开发者： dev@dirplayer.com
-    </string>
-    <string name="help">帮助
-    </string>
-    <string name="action_settings" >设置
-    </string>
-    <string name="hello_world" >Hello world!
-    </string>
+<!--     	系统相关 -->
+    <string name="app_name">DirPlayer</string>
+    <string name="bottom_about"> 简单播放，简单生活</string>
+    <string name="dealby">请选择处理程序</string>
+    <string name="about">联系开发者： dev@dirplayer.com</string>
+    <string name="help">帮助</string>
+    <string name="action_settings">设置</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_section1">左窗口</string>
+    <string name="title_section2">右窗口</string>
+    <string name="title_section3">收藏</string>
+    <string name="title_section4">播放</string>
     
-    <!-- 
-    	左右文件浏览窗口操作命令
-	 -->
-	<string name="flc_ibn_add" >加入播放列表</string>    
-	<string name="flc_ibn_l2r_copy" >从左拷到右-&gt;</string>  
-	<string name="flc_ibn_l2r_move" >从左移到右=&gt;</string>  
-	<string name="flc_ibn_r2l_copy" >&lt;-从右拷到左</string>  
-	<string name="flc_ibn_r2l_move" >&lt;=从右移到左</string>  
-	<string name="flc_ibn_del" >删除所选</string>
-	<string name="flc_ibn_mkdir" >创建文件夹</string>
-	<string name="flc_ibn_rename" >改名</string>
-	    
-    <!-- 
-    	收藏窗口操作命令
-	 -->
-	<string name="bmc_ibn_add" >加入播放列表</string>    
-	<string name="bmc_ibn_copy_2_left" >&lt;-拷贝到左窗口</string>  
-	<string name="bmc_ibn_copy_2_right" >拷贝到右窗口-&gt;</string>  
-    <string name="bmc_ibn_del" >从收藏中删除</string>
-    
-    <!-- 
-    	播放相关
-	 -->
-	<string name="play_seq_normal" >顺序
-    </string>
-    <string name="play_seq_random" >随机
-    </string>
-    <string name="play_seq_single" >单曲
-    </string>
-        
-    <string name="notification_goto_last" >上一首
-    </string>
-    <string name="notification_goto_next" >下一首
-    </string>
-    <string name="notification_goto_pause" >按我暂停
-    </string>
-    <string name="notification_goto_play" >按我播放
-    </string>
-    <string name="notification_back_msg" >点击这里返回到播放器!
-    </string>
-    <string name="mediacontroller_prompt">屏幕顶部消息栏有播放按钮，或从状态栏往上滑出播放按钮
-    </string>
-    
-    
-    <!-- 
-    	窗口操作相关
-	-->
-    <string name="title_section1">左窗口
-    </string>
-    <string name="title_section2">右窗口
-    </string>
-    <string name="title_section3">收藏
-    </string>
-    <string name="title_section4">播放
-    </string>
+<!--     	左右文件浏览窗口操作命令 -->
+    <string name="prompt">怎样操作？</string>
+    <string name="flc_ibn_add">加入播放列表</string>
+    <string name="flc_ibn_l2r_copy">从左拷到右-&gt;</string>
+    <string name="flc_ibn_l2r_move">从左移到右=&gt;</string>
+    <string name="flc_ibn_r2l_copy">&lt;-从右拷到左</string>
+    <string name="flc_ibn_r2l_move">&lt;=从右移到左</string>
+    <string name="flc_ibn_del">删除所选</string>
+    <string name="flc_ibn_mkdir">创建文件夹</string>
+    <string name="flc_ibn_rename">改名</string>
+    <string name="fl_act1">全选</string>
+    <string name="fl_act2">清除</string>
+    <string name="fl_act3">反选</string>
+    <string name="fl_act4">向上</string>
+    <string name="fl_act5">收藏</string>
+    <string name="fl_act6">操作</string>
+    <string name="cancel_copy">取消后续拷贝</string>
+    <string name="background_copy">后台拷贝</string>
+    <string name="negative">取消</string>
+    <string name="positive">确定</string>
+    <string name="mkdir_prompt">请输入文件夹名称</string>
+    <string name="progress_prompt">当前操作进度</string>
+    <string name="left_window_path">left_window_path</string>
+    <string name="right_window_path">right_window_path</string>
+    <string name="rename_prompt">改名</string>
+    <string name="rename_origin_prompt">原名：</string>
+    <string name="rename_new_prompt">改为：</string>
+    <string name="rename_negative">取消</string>
+    <string name="rename_neutral">取消所有</string>
+    <string name="rename_positive">确定</string>
+    <string name="rename_fail_notice">由于某种原因，本次改名失败</string>
 
-    <string name="act1" >分享
-    </string>
-    <string name="act2" >接收
-    </string>
-    <string name="act3" >搜索
-    </string>
+<!--     	收藏窗口操作命令 -->
+    <string name="bookmark_prompt">怎样操作？</string>
+    <string name="bmc_ibn_add">添加到播放列表</string>
+    <string name="bmc_ibn_copy_2_left">&lt;-拷贝到左窗口</string>
+    <string name="bmc_ibn_copy_2_right">拷贝到右窗口-&gt;</string>
+    <string name="bmc_ibn_del">从收藏中删除</string>
+    <string name="bm_act1">全选</string>
+    <string name="bm_act2">清除</string>
+    <string name="bm_act3">反选</string>
+    <string name="bm_act4">上移</string>
+    <string name="bm_act5">下移</string>
+    <string name="bm_act6">操作</string>
     
-    <string name="fl_act1" >全选
-    </string>
-    <string name="fl_act2" >清除
-    </string>
-    <string name="fl_act3" >反选
-    </string>
-    <string name="fl_act4" >向上
-    </string>
-	<string name="fl_act5" >收藏
-    </string>
-    <string name="fl_act6" >操作
-    </string>
+<!--     	播放窗口操作命令 -->
+    <string name="plc_ibn_add">添加到收藏列表</string>
+    <string name="plc_ibn_del">从列表中删除</string>
+    <string name="plc_ibn_seq">切换播放次序：</string>
+    <string name="pl_act1">全选</string>
+    <string name="pl_act2">清除</string>
+    <string name="pl_act3">反选</string>
+    <string name="pl_act4">上移</string>
+    <string name="pl_act5">下移</string>
+    <string name="pl_act6">操作</string>
+    <string name="play_seq_normal">顺序</string>
+    <string name="play_seq_random">随机</string>
+    <string name="play_seq_single">单曲</string>
+    <string name="notification_goto_last">上一首</string>
+    <string name="notification_goto_next">下一首</string>
+    <string name="notification_goto_pause">按我暂停</string>
+    <string name="notification_goto_play">按我播放</string>
+    <string name="notification_back_msg">点击这里返回到播放器!</string>
+    <string name="mediacontroller_prompt">屏幕顶部消息栏有播放按钮，或从状态栏往上滑出播放按钮</string>
 
-	<string name="bm_act1" >全选
-    </string>
-    <string name="bm_act2" >清除
-    </string>
-    <string name="bm_act3" >反选
-    </string>
-    <string name="bm_act4" >上移
-    </string>
-	<string name="bm_act5" >下移
-    </string>
-    <string name="bm_act6" >操作
-    </string>
-    
-	<string name="pl_act1" >全选
-    </string>
-    <string name="pl_act2" >清除
-    </string>
-    <string name="pl_act3" >反选
-    </string>
-    <string name="pl_act4" >上移
-    </string>
-	<string name="pl_act5" >下移
-    </string>
-	<string name="pl_act6" >删除
-    </string>
-		
-    <string name="current_path_prompt">当前位置是
-    </string>
-	
-    <string name="pl_path" >播放曲目：
-    </string>
 
-    <!-- 
-    	文件窗口操作菜单相关
-	-->
-	<string name="prompt" >怎样操作被选择的文件？
-    </string>
-    <string name="cancel_copy" >取消后续拷贝
-    </string>
-    <string name="background_copy" >后台拷贝
-    </string>
-    <string name="negative" >取消
-    </string>
-    <string name="positive" >确定
-    </string>    
-    <string name="mkdir_prompt" >请输入文件夹名称
-    </string>    
-        
-    <string name="progress_prompt" >当前操作进度
-    </string>
-    
-    <string name="left_window_path" >left_window_path
-    </string>
-    <string name="right_window_path" >right_window_path
-    </string>
+<!--     	设置相关 -->
 
-    <string name="rename_prompt">改名
-    </string>
-    <string name="rename_origin_prompt">原名：
-    </string>
-    <string name="rename_new_prompt">改为：
-    </string>
-    
-    <string name="rename_negative">取消
-    </string>
-    <string name="rename_neutral">取消所有
-    </string>
-    <string name="rename_positive">确定
-    </string>
-    <string name="rename_fail_notice">由于某种原因，本次改名失败
-    </string>
-    
-    <!-- 
-    	收藏窗口操作菜单相关
-	-->
-	<string name="bookmark_prompt" >怎样操作被选择的收藏？
-    </string>
-    
-    
-    
-    <!-- 
-    	设置相关
-	-->
-    
-    <string name="setting1_key">setting1_key
-    </string>
-    <string name="setting1_title">是否显示顶部标题条
-    </string>
-    <string name="seting1_summ">目前选择显示顶部标题条
-    </string>
-    <string name="seting1_summ2">目前选择隐藏顶部标题条
-    </string>
+    <string name="setting1_key">setting1_key</string>
+    <string name="setting1_title">是否显示顶部标题条</string>
+    <string name="seting1_summ">目前选择显示顶部标题条</string>
+    <string name="seting1_summ2">目前选择隐藏顶部标题条</string>
 
-    
 </resources>

@@ -84,6 +84,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.MediaController;
+import android.widget.RadioButton;
 import android.widget.MediaController.MediaPlayerControl;
 import android.widget.ShareActionProvider;
 import android.widget.TextView;
@@ -93,11 +94,13 @@ import com.maxproj.android.dirplayer.PlayService.LocalBinder;
 //import android.widget.MediaController;
 
 public class DirPlayerActivity extends FragmentActivity implements
-		ActionBar.TabListener, FragmentListview.FragmentListviewInterface,
+		ActionBar.TabListener,
+		FragmentListview.FragmentListviewInterface,
 		FragmentBookMark.FragmentBookMarkInterface,
 		FragmentPlayList.FragmentPlayListInterface,
 		DialogFileList.DialogFileListInterface,
-		DialogBookMark.DialogBookMarkInterface
+		DialogBookMark.DialogBookMarkInterface,
+		DialogPlayList.DialogPlayListInterface
 		{
 	
 	/**
@@ -217,6 +220,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 //    int playListItemIndex = 0; //播放下标
 //    String fileListPath; //文件播放的路径
     
+//    int playSequence = LocalConst.play_seq_normal;
     
     /**
      * 下面两个，放在这里初始化，还是放在onCreate()更好？
@@ -753,11 +757,11 @@ public class DirPlayerActivity extends FragmentActivity implements
 			for (LvRow lr : selectedItems[tab]) {
 				
 				// 判断是否已经收藏
-				if(checkFileInLvRowList(lr.getPath(), bookMarkItems)){
-					continue;
-				}else{
+//				if(checkFileInLvRowList(lr.getPath(), bookMarkItems)){
+//					continue;
+//				}else{
 					bookMarkItems.add(lr);
-				}
+//				}
 			}
 			
 			Toast.makeText(this, "您添加了收藏： " + selectedItems[tab].getFirst().getFile().getPath()+"等等", Toast.LENGTH_LONG).show();
@@ -2664,19 +2668,18 @@ public class DirPlayerActivity extends FragmentActivity implements
 		playListArrayAdapter[currentPlTab].notifyDataSetChanged();
 //		savePlayList2File(currentPlTab);
 	}
-	public void onFragmentPlayListButton6() {
-		// 删除
-		Iterator<LvRow> iter = playListItems[currentPlTab].iterator();
-		while (iter.hasNext()) {
-			if (iter.next().getSelected() == true)
-				iter.remove();
-		}
-		playListArrayAdapter[currentPlTab].notifyDataSetChanged();
-
-//		savePlayList2File(currentPlTab);
-
+	public void onFragmentPlayListButton6(int plTab) {
+		// 操作
+		playListMenu(plTab);
 	}
 
+	private void playListMenu(int plTab) { // operate selected files
+
+		DialogPlayList.newInstance(plTab).show(getSupportFragmentManager(), "");
+	}
+
+
+	
     public PlayService getServiceConnection(){
     	return mService;
     }
@@ -3009,6 +3012,41 @@ public class DirPlayerActivity extends FragmentActivity implements
 		bookMarkArrayAdapter.notifyDataSetChanged();
 		
 	}
+
+
+	@Override
+	public void onDialogPlayListAdd(int plTab) {
+		LinkedList<LvRow> selectedItems = generateSelectItems(playListItems[plTab]);
+
+		for (LvRow lr : selectedItems) {			
+			bookMarkItems.add(lr);			
+		}
 		
-	
+		Toast.makeText(this, "您添加了收藏： " + selectedItems.getFirst().getFile().getPath()+"等等", Toast.LENGTH_LONG).show();
+		
+		bookMarkArrayAdapter.notifyDataSetChanged();		
+	}
+
+	@Override
+	public void onDialogPlayListDel(int plTab) {
+		// TODO Auto-generated method stub
+		Iterator<LvRow> iter = playListItems[plTab].iterator();
+		while (iter.hasNext()) {
+			if (iter.next().getSelected() == true)
+				iter.remove();
+		}
+		playListArrayAdapter[plTab].notifyDataSetChanged();
+		
+	}
+
+	@Override
+	public void onDialogPlayListSeq() {
+		// TODO Auto-generated method stub
+		mService.playSeqSwitch();
+		mService.sendNotification();
+	}
+	public int getPlaySeq(){
+		return mService.getPlaySeq();
+	}
+
 }

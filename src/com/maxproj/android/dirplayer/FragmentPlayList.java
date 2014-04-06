@@ -64,7 +64,7 @@ public class FragmentPlayList  extends Fragment {
         void onFragmentPlayListButton3();
         void onFragmentPlayListButton4();
         void onFragmentPlayListButton5();
-        void onFragmentPlayListButton6();
+        void onFragmentPlayListButton6(int localPlTab);
         PlayService getServiceConnection();
         void sysAttachFragmentPlayListLowMem(FragmentPlayList fragment);
     }
@@ -148,10 +148,10 @@ public class FragmentPlayList  extends Fragment {
             }
         });
         b6 = (Button)fragmentView.findViewById(R.id.pl_b6);
-        b6.setOnClickListener(new View.OnClickListener() { // 删除
+        b6.setOnClickListener(new View.OnClickListener() { // 操作
             @Override
             public void onClick(View view) {
-            	fragmentPlayListInterface.onFragmentPlayListButton6();
+            	fragmentPlayListInterface.onFragmentPlayListButton6(localPlTab);
             }
         });
 
