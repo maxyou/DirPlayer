@@ -742,8 +742,8 @@ public class DirPlayerActivity extends FragmentActivity implements
 //			File f = new File(currentPath[tab]);
 			
 			// 判断当前目录是否已经收藏
-			if(checkFileInLvRowList(currentPath[tab], bookMarkItems))
-				return;
+//			if(checkFileInLvRowList(currentPath[tab], bookMarkItems))
+//				return;
 			
 			LvRow lr = new LvRow(currentPath[tab], 
 					false, //未被选择
@@ -3018,6 +3018,9 @@ public class DirPlayerActivity extends FragmentActivity implements
 	public void onDialogPlayListAdd(int plTab) {
 		LinkedList<LvRow> selectedItems = generateSelectItems(playListItems[plTab]);
 
+		if(selectedItems.size() == 0)
+			return;
+		
 		for (LvRow lr : selectedItems) {			
 			bookMarkItems.add(lr);			
 		}
