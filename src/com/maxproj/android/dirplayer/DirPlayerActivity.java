@@ -23,13 +23,9 @@ package com.maxproj.android.dirplayer;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -121,7 +117,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	ActionBar actionBar = null;
 	
 	int controllerPromptCount = 0;
-	
+	 
 	/**
 	 * 设置
 	 */
@@ -270,6 +266,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	 */
 	FragmentBookMark fragmentBookMark = null;
 	LinkedList<LvRow> bookMarkItems = new LinkedList<LvRow>();
+	LinkedList<LvRow> bookMarkSelectedItems = new LinkedList<LvRow>();
 	MyArrayAdapter bookMarkArrayAdapter;// = new
 												// BookMarkArrayAdapter(this,
 												// R.layout.bookmark_row,
@@ -421,7 +418,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 		// 总得设置一次adapter？
 
 		bookMarkArrayAdapter = new MyArrayAdapter(this,
-				R.layout.file_row, bookMarkItems);
+				R.layout.file_row, bookMarkItems, LocalConst.TAB_BOOKMARK);
 		Log.d(LocalConst.DTAG, "after new BookMarkArrayAdapter");
 
 		if (fragmentBookMark != null) {
@@ -854,7 +851,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 							case 7:
 //								savePlayList2File(fc.fresh - 3);
 								//更新adapter。注意这个操作不能少，否则系统提示adapter被异常修改而退出
-								updatePlayListAdapter(fc.fresh - 3);
+								updatePlayListAdapter(fc.fresh - LocalConst.TAB_PLAYLIST);
 								break;
 						}
 						
@@ -865,7 +862,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 						break;
 					case LocalConst.CMD_ADD_PLAY:
 						Log.d(LocalConst.DTAG, "add to playlit");
-						new addToPlayListAsyncTask(new LvRow(fc.src, false, LocalConst.clear), fc.fresh - 3)// 01是左右窗口，2是收藏，3开始是5个播放列表
+						new addToPlayListAsyncTask(new LvRow(fc.src, false, LocalConst.clear), fc.fresh - LocalConst.TAB_PLAYLIST)// 01是左右窗口，2是收藏，3开始是5个播放列表
 							.execute();
 						break;
 					case LocalConst.CMD_RENAME:
@@ -1142,13 +1139,22 @@ public class DirPlayerActivity extends FragmentActivity implements
 	 *  
 	 */	
 	private Boolean copyFilesValidity(File src, String des){
-		if (src.getParent().equals(des)){ //父目录不能等于目标，否则相当于在原地拷贝
-			return false;
-		}else if(des.startsWith(src.getPath())){//源包含了目标
-			return false;
-		}else if(src.getPath().equals(des)){
+		if(!src.exists()){
+			Log.d(LocalConst.DTAG, "copy null trace 31");
 			return false;
 		}
+		
+		if (src.getParent().equals(des)){ //父目录不能等于目标，否则相当于在原地拷贝
+			Log.d(LocalConst.DTAG, "copy null trace 5");
+			return false;
+		}else if(des.startsWith(src.getPath())){//源包含了目标
+			Log.d(LocalConst.DTAG, "copy null trace 6");
+			return false;
+		}else if(src.getPath().equals(des)){
+			Log.d(LocalConst.DTAG, "copy null trace 7");
+			return false;
+		}
+		Log.d(LocalConst.DTAG, "copy null trace 8");
 		return true;
 	}
 	/**
@@ -1169,7 +1175,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	 */
 	private void copyFiles(File srcFile, String desPathStr, Boolean force)
 			throws IOException {
-		
+		Log.d(LocalConst.DTAG, "copy null trace 1");
 		if(!copyFilesValidity(srcFile,desPathStr)){
 			Log.d(LocalConst.DTAG, "Handler copyFile: validaity check failed: " + srcFile.getPath()
 					+ " to " + desPathStr);
@@ -1177,21 +1183,20 @@ public class DirPlayerActivity extends FragmentActivity implements
 			/**
 			 * 如果不合法，停止后续所有操作
 			 */
-			Log.d(LocalConst.DTAG, "dir copy: cmdList.clear() in copyFiles()"+ Thread.currentThread().getStackTrace()[1].getLineNumber());
 			cmdList.clear();
+			Log.d(LocalConst.DTAG, "copy null trace 2");
 			return;
 		}
 		
-		
+		Log.d(LocalConst.DTAG, "copy null trace 3");
 		/**
 		 * 如果存在同名的File，并且force被设置，直接删除同名的File
 		 * 否则停止本File的拷贝，但是继续后面的拷贝
 		 */
 		File desFile = new File(desPathStr, srcFile.getName());
+		Log.d(LocalConst.DTAG, "copy null trace 10");
 		if (desFile.exists()) {
 			if (force == true) {// 覆盖同名文件
-				Log.d(LocalConst.DTAG,
-						"Handler copyFile: delete file before copy");
 				deleteFileOrDir(desFile);
 			} else {
 				Log.d(LocalConst.DTAG, "Handler copyFile: do nothing");
@@ -1201,7 +1206,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 				return;
 			}
 		}
-		
+		Log.d(LocalConst.DTAG, "copy null trace 11");
 		if (srcFile.isFile()) {// 一个文件
 			Log.d(LocalConst.DTAG, "dir copy: srcFile.isFile()");
 
@@ -1232,6 +1237,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 				return;
 			}
 		}
+		Log.d(LocalConst.DTAG, "copy null trace 20");
 	}
 
 	/**
@@ -1409,7 +1415,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 
 		
 		playListArrayAdapter[plTab] = new MyArrayAdapter(this, R.layout.file_row,
-				playListItems[plTab]);
+				playListItems[plTab], LocalConst.TAB_PLAYLIST + plTab);
 
 		if (fragmentPlayList != null) {
 			fragmentPlayList.setListviewAdapter(playListArrayAdapter[plTab], plTab);
@@ -1424,17 +1430,8 @@ public class DirPlayerActivity extends FragmentActivity implements
 		}
 	}
 	
-	/**
-	 * 这里做每一次cmd操作之前的准备
-	 */
-	public void cmdPrepare(){
-		/**
-		 * 先读取配置文件
-		 */
-		
-		
-		setShowCopyProcess(true);
-	}
+
+
 	
 	public LinkedList<LvRow> generateSelectItems(LinkedList<LvRow> list){
 		LinkedList<LvRow> selectedItems = new LinkedList<LvRow>();
@@ -1461,30 +1458,11 @@ public class DirPlayerActivity extends FragmentActivity implements
 	 * 将用户命令添加到list 
 	 */
 	private void addCmds(int cmdPosition, int tab) {
-		// Toast.makeText(
-		// this,
-		// "cmd: " + cmdIndex + ", path A: " + currentPath[0]
-		// + ", path B: " + currentPath[1], Toast.LENGTH_LONG)
-		// .show();
-		Log.d(LocalConst.DTAG, "cmd: " + cmdPosition + ", path A: " + currentPath[0]
-				+ ", path B: " + currentPath[1]);
 
-		for (int i = 0; i < LocalConst.tabCount; i++) {// A是0，B是1
-//			calcSelectItems(i);
-			selectedItems[i] = generateSelectItems(viewListItems[i]);
-		}
-		
-		Log.d(LocalConst.DTAG, "dir copy: cmdList.clear() in addCmds()"
-				+ Thread.currentThread().getStackTrace()[1].getLineNumber());
-		
 		cmdList.clear();
-		cmdPrepare();
 		
-		// try {
 		switch (cmdPosition) {
 		/**
-		 * 左窗口 == A窗口 == 数组下标0 == tab 0
-		 * 右窗口 == B窗口 == 数组下边1 == tab 1
 		 * 注意移动时需要刷新两边
 		 */
 		case 0: // 添加到播放列表
@@ -1496,7 +1474,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 			for (LvRow lr : selectedItems[tab]) {
 				//addToPlayList(lr);
 				cmdList.add(new FileCmd(LocalConst.CMD_ADD_PLAY, lr.getFile(), null, true,
-						3 + currentPlTab)); //第一个播放列表在总表的索引是3.收藏表是2，左右窗口和0和1
+						LocalConst.TAB_PLAYLIST + currentPlTab)); //第一个播放列表在总表的索引是3.收藏表是2，左右窗口和0和1
 			}
 			// savePlayList2File(currentPlTab);
 			// updatePlayListAdapter(currentPlTab);
@@ -1508,9 +1486,10 @@ public class DirPlayerActivity extends FragmentActivity implements
 			 * 在播放列表刷新时插入savePlayList2File(currentPlTab)操作
 			 */
 			
-			cmdList.add(new FileCmd(LocalConst.CMD_FRESH, null, null, true, 3 + currentPlTab));
+			cmdList.add(new FileCmd(LocalConst.CMD_FRESH, null, null, true, LocalConst.TAB_PLAYLIST + currentPlTab));
 			break;
 		case 1: // 从A拷贝到B
+			setShowCopyProcess(true);
 			for (LvRow lr : selectedItems[0]) {
 				cmdList.add(new FileCmd(LocalConst.CMD_COPY, lr.getFile(), currentPath[1], true,
 						0));
@@ -1526,6 +1505,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 			cmdList.add(new FileCmd(LocalConst.CMD_FRESH, null, null, true, LocalConst.TAB_RIGHT));
 			break;
 		case 3: // 从B拷贝到A
+			setShowCopyProcess(true);
 			for (LvRow lr : selectedItems[1]) {
 				cmdList.add(new FileCmd(LocalConst.CMD_COPY, lr.getFile(), currentPath[0], true,
 						0));
@@ -1560,12 +1540,28 @@ public class DirPlayerActivity extends FragmentActivity implements
 			cmdList.add(new FileCmd(LocalConst.CMD_FRESH, null, null, true, tab));
 			break;
 		case 8: // 从收藏添加到播放列表
-			for (LvRow lr : selectedItems[tab]) {
+			for (LvRow lr : bookMarkSelectedItems) {
 				//addToPlayList(lr);
 				cmdList.add(new FileCmd(LocalConst.CMD_ADD_PLAY, lr.getFile(), null, true,
-						3 + currentPlTab)); //第一个播放列表在总表的索引是3.收藏表是2，左右窗口和0和1
+						LocalConst.TAB_PLAYLIST + currentPlTab)); //第一个播放列表在总表的索引是3.收藏表是2，左右窗口和0和1
 			}
-			cmdList.add(new FileCmd(LocalConst.CMD_FRESH, null, null, true, 3 + currentPlTab));
+			cmdList.add(new FileCmd(LocalConst.CMD_FRESH, null, null, true, LocalConst.TAB_PLAYLIST + currentPlTab));
+			break;
+		case 9: // 从收藏拷贝到左窗口
+			setShowCopyProcess(true);
+			for (LvRow lr : bookMarkSelectedItems) {
+				cmdList.add(new FileCmd(LocalConst.CMD_COPY, lr.getFile(), currentPath[LocalConst.TAB_LEFT], true,
+						0));
+			}
+			cmdList.add(new FileCmd(LocalConst.CMD_FRESH, null, null, true, LocalConst.TAB_LEFT));
+			break;
+		case 10: // 从收藏拷贝到右窗口
+			setShowCopyProcess(true);
+			for (LvRow lr : bookMarkSelectedItems) {
+				cmdList.add(new FileCmd(LocalConst.CMD_COPY, lr.getFile(), currentPath[LocalConst.TAB_RIGHT], true,
+						0));
+			}
+			cmdList.add(new FileCmd(LocalConst.CMD_FRESH, null, null, true, LocalConst.TAB_RIGHT));
 			break;
 		default:
 			break;
@@ -1638,7 +1634,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 			constructViewList(tab);
 
 			myArrayAdapter[tab] = new MyArrayAdapter(this, R.layout.file_row,
-					viewListItems[tab]);
+					viewListItems[tab], LocalConst.TAB_LEFT + tab);
 			Log.d(LocalConst.FRAGMENT_LIFE, "after new MyArrayAdapter");
 
 			if (fragmentListview[tab] != null) {
@@ -1826,7 +1822,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 		{
 			for (int i = 0; i < LocalConst.plCount; i++) {
 				playListItems[i] = new LinkedList<LvRow>();
-				playListArrayAdapter[i] = new MyArrayAdapter(this, R.layout.fragment_playlist, null);
+				playListArrayAdapter[i] = new MyArrayAdapter(this, R.layout.fragment_playlist, null, LocalConst.TAB_PLAYLIST+i);
 			}
 			for (int i = 0; i < LocalConst.tabCount; i++) {
 				viewListItems[i] = new LinkedList<LvRow>();
@@ -2292,12 +2288,13 @@ public class DirPlayerActivity extends FragmentActivity implements
 		currentPagerTab = tab.getPosition();
 		mViewPager.setCurrentItem(currentPagerTab);
 		Log.d(LocalConst.DTAG, "MainActivityReceiver " + currentPagerTab); 
-		if(currentPagerTab < 2){//左右窗口
+		if((currentPagerTab == LocalConst.TAB_LEFT)
+			||(currentPagerTab == LocalConst.TAB_RIGHT)){//左右窗口
 			//更新当前路径
 			updateBottomStatus(pathTrim4Show(currentPath[currentPagerTab]));
-		}else if(currentPagerTab == 2){//收藏窗口
+		}else if(currentPagerTab == LocalConst.TAB_BOOKMARK){//收藏窗口
 			updateBottomStatus(getResources().getString(R.string.bottom_about));
-		}else if(currentPagerTab == 3){//播放列表。当前曲目，或者空白标记
+		}else if(currentPagerTab == LocalConst.TAB_PLAYLIST){//播放列表。当前曲目，或者空白标记
 			//更新为正在播放曲目
 //		    int servicePlayType = 0; //播放类型
 //		    int servicePlaying = 0; //播放状态
@@ -2343,7 +2340,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 			// Return a DummySectionFragment (defined as a static inner class
 			// below) with the page number as its lone argument.
 
-			if (position == 3) { // 第四个tab为播放列表
+			if (position == LocalConst.TAB_PLAYLIST) { // 第四个tab为播放列表
 //				Log.d(LocalConst.FRAGMENT_LIFE, "getItem(" + position + ") return fragmentPlayList");
 				Log.d(LocalConst.PL,
 						"DirPlayerActivity.SectionsPagerAdapter.getItem()"
@@ -2351,7 +2348,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 
 				return fragmentPlayList;
 			}
-			if (position == 2) { // 第三个tab为标签
+			if (position == LocalConst.TAB_BOOKMARK) { // 第三个tab为标签
 //				Log.d(LocalConst.FRAGMENT_LIFE, "getItem(" + position + ") return fragmentBookMark");
 				Log.d(LocalConst.BM,
 						"DirPlayerActivity.SectionsPagerAdapter.getItem()"
@@ -2376,7 +2373,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 		@Override
 		public int getCount() {
 			// Show 3 total pages.
-			return 4;
+			return LocalConst.TAB_PLAYLIST + 1;
 		}
 
 		@Override
@@ -2768,7 +2765,9 @@ public class DirPlayerActivity extends FragmentActivity implements
 		if(servicePlayType == LocalConst.SinglePlay){
 			/**
 			 * 点击，并且播放后，在这里动态改变播放标记
-			 * todo: 循环查找非常耗时，这里可以优化一下，也即在list被点击时记录位置，这里根据位置设置标志
+			 * 循环查找非常耗时，但似乎没有优化的途径
+			 * 
+			 * 注意singlePlay时同一个tab里面没有多个path相同的问题
 			 */
 			for (int i = 0; i < LocalConst.tabCount; i++) {
 				for(LvRow lr:viewListItems[i]){
@@ -2786,13 +2785,37 @@ public class DirPlayerActivity extends FragmentActivity implements
 			 * 点击，并且播放后，在这里动态改变播放标记
 			 */
 
-//			for(LvRow lr:playListItems[servicePlayPlTab]){
-//				if(lr.getPath().equals(servicePlayPath)){
-//					lr.setPlayingStatus(servicePlaying);
-//				}
-//			}
+			
+			// 要点在于，播放列表可能已经改变
 			Log.d(LocalConst.DTAG,"playlist index: " + servicePlayListIndex);
-			playListItems[servicePlayPlTab].get(servicePlayListIndex).setPlayingStatus(servicePlaying);
+			
+			boolean found = false;
+			
+			//首先根据index查找
+			if(servicePlayListIndex < playListItems[servicePlayPlTab].size()){//防止越界异常
+				if(playListItems[servicePlayPlTab].get(servicePlayListIndex).getPath().equals(servicePlayPath)){//看path是否一致
+					playListItems[servicePlayPlTab].get(servicePlayListIndex).setPlayingStatus(servicePlaying);
+					found = true;
+				}
+			}
+			
+			//没找到，只好遍历了。这通常是播放列表中途被修改导致的
+			if(found == false){
+				/**
+				 * 此刻还要考虑列表中有相同曲目的情形
+				 * 		如果是clear标志，必须循环查找并clear，否则以后没机会clear
+				 * 		如果是set标志，可能导致path一致的曲目都被set了，比较难看，更麻烦的是，以后没法clear，所以，只能都不set
+				 * 		但这种情况很少，因为开始播放之后intent就发过来了，这个时间很短，不太可能列表有改变
+				 * 		所以先不处理 
+				 */
+				if(servicePlaying == LocalConst.clear){
+					for(LvRow lr:playListItems[servicePlayPlTab]){
+						if(lr.getPath().equals(servicePlayPath)){
+							lr.setPlayingStatus(servicePlaying);
+						}
+					}
+				}
+			}
 			
 			if(playListArrayAdapter[servicePlayPlTab] != null){
 				playListArrayAdapter[servicePlayPlTab].notifyDataSetChanged();
@@ -2800,7 +2823,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 			
 		}//如果servicePlayType == LocalConst.noPlay
 		
-		if(currentPagerTab == 3){
+		if(currentPagerTab == LocalConst.TAB_PLAYLIST){
 			/**
 			 * 在播放列表显示时，即便播放的是文件列表的曲目，也显示这个曲目名
 			 */
@@ -2885,34 +2908,43 @@ public class DirPlayerActivity extends FragmentActivity implements
 	@Override
 	public void onDialogFileListAdd(int tab) {
 		// TODO Auto-generated method stub
+		
+		selectedItems[tab] = generateSelectItems(viewListItems[tab]);
+		
 		addCmds(0, tab);
 	}
 
 
 	@Override
 	public void onDialogFileListL2rCopy(int tab) {
-		// TODO Auto-generated method stub
+		
+		/**
+		 * 注意形参tab说明命令发出的地点是左或右窗口
+		 * 我们只计算拷贝源地址的selected items就行
+		 */
+
+		selectedItems[LocalConst.TAB_LEFT] = generateSelectItems(viewListItems[LocalConst.TAB_LEFT]);
 		addCmds(1, tab);
 	}
 
 
 	@Override
 	public void onDialogFileListL2rMove(int tab) {
-		// TODO Auto-generated method stub
+		selectedItems[LocalConst.TAB_LEFT] = generateSelectItems(viewListItems[LocalConst.TAB_LEFT]);
 		addCmds(2, tab);
 	}
 
 
 	@Override
 	public void onDialogFileListR2lCopy(int tab) {
-		// TODO Auto-generated method stub
+		selectedItems[LocalConst.TAB_RIGHT] = generateSelectItems(viewListItems[LocalConst.TAB_RIGHT]);
 		addCmds(3, tab);
 	}
 
 
 	@Override
 	public void onDialogFileListR2lMove(int tab) {
-		// TODO Auto-generated method stub
+		selectedItems[LocalConst.TAB_RIGHT] = generateSelectItems(viewListItems[LocalConst.TAB_RIGHT]);
 		addCmds(4, tab);
 	}
 
@@ -2926,36 +2958,44 @@ public class DirPlayerActivity extends FragmentActivity implements
 
 	@Override
 	public void onDialogFileListDel(int tab) {
-		// TODO Auto-generated method stub
+		selectedItems[tab] = generateSelectItems(viewListItems[tab]);
 		addCmds(5, tab);
 	}
 
 
 	@Override
 	public void onDialogFileListRename(int tab) {
-		// TODO Auto-generated method stub
+		selectedItems[tab] = generateSelectItems(viewListItems[tab]);
 		addCmds(7, tab);
 	}
 
 
 	@Override
 	public void onDialogBookMarkAdd2PlayList() {
-		// TODO Auto-generated method stub
-		
+		/**
+		 * 收藏的文件或文件夹可能已经被删除了，但是这样不用检测这个错误
+		 * 因为在ListPlay状态连续检测到三次文件错误就会停止播放
+		 */
+		bookMarkSelectedItems = generateSelectItems(bookMarkItems);
+		addCmds(8, LocalConst.TAB_BOOKMARK);
 	}
 
 
 	@Override
 	public void onDialogBookMarkCopy2Left() {
-		// TODO Auto-generated method stub
-		
+		/**
+		 * 收藏的文件或文件夹可能已经被删除了，但是这样不用检测这个错误
+		 * 因为copyFilesValidity()里面会检测
+		 */
+		bookMarkSelectedItems = generateSelectItems(bookMarkItems);
+		addCmds(9, LocalConst.TAB_BOOKMARK);
 	}
 
 
 	@Override
 	public void onDialogBookMarkCopy2Right() {
-		// TODO Auto-generated method stub
-		
+		bookMarkSelectedItems = generateSelectItems(bookMarkItems);
+		addCmds(10, LocalConst.TAB_BOOKMARK);
 	}
 	
 	@Override

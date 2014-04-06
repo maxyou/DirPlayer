@@ -35,7 +35,7 @@ import android.widget.RemoteViews;
 public class PlayService extends Service implements MediaPlayerControl {
 
 	private final IBinder mBinder = new LocalBinder();
-
+	
 	NotificationInforReceiver mNotificationInforReceiver;
 
 	/**
@@ -54,6 +54,8 @@ public class PlayService extends Service implements MediaPlayerControl {
 	File playingFile = null;// 当前播放的文件
 	static int playListItemIndex = 0; // 第一首
 	int playSequence = LocalConst.play_seq_normal;
+	
+	int playListErrCount = 0;
 
 	public void gotoNextMusic() {
 		// updatePlayingFlag(playingType, LocalConst.clear,
@@ -238,10 +240,17 @@ public class PlayService extends Service implements MediaPlayerControl {
 	}
 
 	public void mediaPlayerErrorProcess() {
-		clearLastMusicPlaying();
-
+		Log.d(LocalConst.DTAG, "play file null trace 10");
+		
 		if (playingType == LocalConst.ListPlay) {
-			gotoNextMusic();
+			/**
+			 * 在ListPlay状态，如果连续发现三次文件错误，则停止播放
+			 * 否则会拽死cpu并死机
+			 */
+			playListErrCount++;
+			if(playListErrCount < 3){
+				gotoNextMusic();
+			}
 		} else if (playingType == LocalConst.SinglePlay) {
 			updatePlayingFlag(playingType, LocalConst.clear,
 					playingFile.getPath(), playingPlTab);
@@ -279,6 +288,10 @@ public class PlayService extends Service implements MediaPlayerControl {
 		Log.d(LocalConst.DTAG, "audio/video: after new MediaPlayer(this)");
 
 		try {
+			if(!f.exists()){
+				Log.d(LocalConst.DTAG, "play file null trace 1");
+				throw new IOException();
+			}
 			mediaPlayer.setDataSource(getApplicationContext(), Uri.fromFile(f));
 			Log.d(LocalConst.DTAG,
 					"audio/video: after mediaPlayer.setDataSource()");
@@ -312,6 +325,10 @@ public class PlayService extends Service implements MediaPlayerControl {
 					playingFile.getPath(), playingPlTab);
 			sendNotification();
 
+			if(mediaPlayer.isPlaying()){
+				playListErrCount = 0;
+			}
+			
 			Log.d(LocalConst.DTAG, "audio/video: after sendNotification()");
 		} catch (IllegalStateException e) {
 			// TODO Auto-generated catch block
@@ -319,6 +336,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			Log.d(LocalConst.DTAG, "play file null trace 2");
 			mediaPlayerErrorProcess();
 		}
 

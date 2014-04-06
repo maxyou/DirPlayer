@@ -10,6 +10,7 @@ import java.net.URLConnection;
 import java.util.LinkedList;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.BaseColumns;
@@ -37,7 +38,6 @@ public class LocalConst {
 	public static final int TAB_RIGHT = 1;
 	public static final int TAB_BOOKMARK = 2;
 	public static final int TAB_PLAYLIST = 3;
-	
 	
 	/**
 	 * 文件及文件夹类型
@@ -327,4 +327,6 @@ public class LocalConst {
 		}
 		
 	}
+	
+	
 }
