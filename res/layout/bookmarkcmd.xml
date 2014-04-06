@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <Button
+        android:id="@+id/bmc_ibn_add"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/bmc_ibn_add" />
+
+    <Button
+        android:id="@+id/bmc_ibn_copy_2_left"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/bmc_ibn_copy_2_left" />
+
+    <Button
+        android:id="@+id/bmc_ibn_copy_2_right"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/bmc_ibn_copy_2_right" />
+
+    <Button
+        android:id="@+id/bmc_ibn_del"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/bmc_ibn_del" />
+</LinearLayout>
