@@ -763,7 +763,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 //				return;
 			
 			LvRow lr = new LvRow(currentPath[tab], 
-					false, //未被选择
+					true, //设置为被选择状态，以利后续操作
 					LocalConst.clear);// 没有播放状态
 			bookMarkItems.add(lr);
 		}else{
@@ -903,7 +903,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 						break;
 					case LocalConst.CMD_ADD_PLAY:
 						Log.d(LocalConst.DTAG, "add to playlit");
-						new addToPlayListAsyncTask(new LvRow(fc.src, false, LocalConst.clear), fc.fresh - LocalConst.TAB_PLAYLIST)// 01是左右窗口，2是收藏，3开始是5个播放列表
+						new addToPlayListAsyncTask(new LvRow(fc.src, true, LocalConst.clear), fc.fresh - LocalConst.TAB_PLAYLIST)// 01是左右窗口，2是收藏，3开始是5个播放列表
 							.execute();
 						break;
 					case LocalConst.CMD_RENAME:
@@ -1482,7 +1482,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 		int i = 0;
 		for (LvRow lr : list) {
 			if (lr.getSelected() == true) {
-				LvRow selectedLr = new LvRow(lr.getFile(), false, LocalConst.clear);
+				LvRow selectedLr = new LvRow(lr.getFile(), true, LocalConst.clear);
 				selectedLr.setOriginIndex(i);
 				selectedItems.add(selectedLr);
 			}
