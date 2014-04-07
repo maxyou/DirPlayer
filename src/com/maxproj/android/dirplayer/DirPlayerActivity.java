@@ -153,6 +153,13 @@ public class DirPlayerActivity extends FragmentActivity implements
 		Boolean force; // 如果目标存在，要不要强制替换
 		int fresh;// 0:左窗口，1：右窗口，2：收藏，3：播放列表
 		LinkedList<LvRow> ll;
+		
+		/**
+		 * 补充信息
+		 * 如果有多种类别，这里可以用联合
+		 */
+		int cmdSrcTabInAll;
+		int listIndex;
 
 		public FileCmd(int cmd, File src, String desPath, Boolean force, int fresh) {
 			this.src = src;
@@ -160,7 +167,11 @@ public class DirPlayerActivity extends FragmentActivity implements
 			this.force = force;
 			this.cmd = cmd;
 			this.fresh = fresh;
+			
+			this.cmdSrcTabInAll = -1; 
 		}
+		
+		
 	}
 
 	static LinkedList<FileCmd> cmdList = new LinkedList<FileCmd>();
@@ -341,11 +352,17 @@ public class DirPlayerActivity extends FragmentActivity implements
 		Log.d(LocalConst.DTAG, "onFragmentBookMarkClicked " + i);
 
 		// 如果是目录。如果是文件呢？
-		File f = bookMarkItems.get(i).getFile();
-		if(f.isDirectory()){
-			updateDirInfor(bookMarkItems.get(i).getFile().getPath(), lastWinTab);
-		}else if(f.isFile()){
-			updateDirInfor(bookMarkItems.get(i).getFile().getParent(), lastWinTab);
+		LvRow lr = bookMarkItems.get(i);
+		File f = lr.getFile();
+		if(f.exists() == false){
+			Toast.makeText(this, "该路径不存在，可能被移走或删除了 " + pathTrim4Show(lr.getPath()), Toast.LENGTH_LONG).show();
+			return;
+		}
+		
+		if(lr.getType() == LocalConst.TYPE_DIR){
+			updateDirInfor(lr.getPath(), lastWinTab);
+		}else if(lr.getType() == LocalConst.TYPE_FILE){
+			updateDirInfor(lr.getFile().getParent(), lastWinTab);
 		}
 		
 		mViewPager.setCurrentItem(lastWinTab);
@@ -737,7 +754,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 			 */
 			Log.d(LocalConst.DTAG, "Button5 add current directory");
 			
-			Toast.makeText(this, "您添加了收藏： " + currentPath[tab], Toast.LENGTH_LONG).show();
+			Toast.makeText(this, "您添加了收藏： " + pathTrim4Show(currentPath[tab]), Toast.LENGTH_LONG).show();
 			
 //			File f = new File(currentPath[tab]);
 			
@@ -764,7 +781,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 //				}
 			}
 			
-			Toast.makeText(this, "您添加了收藏： " + selectedItems[tab].getFirst().getFile().getPath()+"等等", Toast.LENGTH_LONG).show();
+			Toast.makeText(this, "您添加了收藏： " + pathTrim4Show(selectedItems[tab].getFirst().getPath())+"等等", Toast.LENGTH_LONG).show();
 
 		}
 		Log.d(LocalConst.DTAG, "total bookMarkItems: " + bookMarkItems.size());
@@ -830,7 +847,27 @@ public class DirPlayerActivity extends FragmentActivity implements
 						copyFiles(fc.src, fc.desPath, fc.force);
 						break;
 					case LocalConst.CMD_MOVE:
-						moveFiles(fc.src, fc.desPath, fc.force);
+						/**
+						 * 如果move命令来自文件浏览窗口的操作命令，无其他操作
+						 * 如果move命令来自收藏窗口的操作命令，需要修改原始收藏窗口的list
+						 * 使其指向新的地方
+						 */
+						boolean result = moveFiles(fc.src, fc.desPath, fc.force);
+						if(result == true){
+							if (fc.cmdSrcTabInAll == LocalConst.TAB_BOOKMARK){
+								LvRow bookMarkLr = bookMarkItems.get(fc.listIndex);
+								String bookMarkPath = bookMarkLr.getPath();
+								if(bookMarkPath.equals(fc.src.getPath())){
+									/**
+									 * 如果moveTo成功、发自收藏窗口、path吻合
+									 */
+									LvRow updatedLr = new LvRow(new File(fc.desPath, bookMarkLr.getName()), true, LocalConst.clear);
+									bookMarkItems.set(fc.listIndex, updatedLr);
+									Log.d(LocalConst.DTAG, "bookmark move, origin index: " + fc.listIndex);
+								}
+							}
+						}
+						
 						break;
 					case LocalConst.CMD_DELETE:
 						deleteFiles(fc.src);
@@ -1309,7 +1346,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	 * 		或者启动AsyncTash，该任务结束时会发送msg
 	 */
 	
-	private void moveFiles(File srcFile, String desPathStr, Boolean force)
+	private boolean moveFiles(File srcFile, String desPathStr, Boolean force)
 			throws IOException {
 		
 		if(!moveFilesValidity(srcFile,desPathStr)){
@@ -1317,12 +1354,13 @@ public class DirPlayerActivity extends FragmentActivity implements
 					+ " to " + desPathStr);
 			
 			/**
-			 * 如果不合法，停止后续所有操作
+			 * 目前的处理是，如果不合法，停止后续所有操作
+			 * 这似乎不合理，应该允许后续的合法操作
 			 */
 			//Log.d(LocalConst.DTAG, "dir copy: cmdList.clear() in moveFiles()"
 			//		+ Thread.currentThread().getStackTrace()[1].getLineNumber());
 			cmdList.clear();
-			return;
+			return false;
 		}
 		
 		
@@ -1341,16 +1379,17 @@ public class DirPlayerActivity extends FragmentActivity implements
 				
 				//什么也不做，但是激活后面的操作
 				cmdHandler.sendEmptyMessage(1);
-				return;
+				return false;
 			}
 		}
 		
 		boolean result = srcFile.renameTo(desFile);
 		cmdHandler.sendEmptyMessage(1); // let Handler move to next
 										// cmd
-		if (result != true) {
-			throw new IOException();
-		}
+//		if (result != true) {
+//			throw new IOException();
+//		}
+		return result;
 	}
 
 	/**
@@ -1439,10 +1478,15 @@ public class DirPlayerActivity extends FragmentActivity implements
 	
 	public LinkedList<LvRow> generateSelectItems(LinkedList<LvRow> list){
 		LinkedList<LvRow> selectedItems = new LinkedList<LvRow>();
+		
+		int i = 0;
 		for (LvRow lr : list) {
 			if (lr.getSelected() == true) {
-				selectedItems.add(lr);
+				LvRow selectedLr = new LvRow(lr.getFile(), false, LocalConst.clear);
+				selectedLr.setOriginIndex(i);
+				selectedItems.add(selectedLr);
 			}
+			i++;
 		}
 		return selectedItems;
 	}
@@ -1552,19 +1596,42 @@ public class DirPlayerActivity extends FragmentActivity implements
 			cmdList.add(new FileCmd(LocalConst.CMD_FRESH, null, null, true, LocalConst.TAB_PLAYLIST + currentPlTab));
 			break;
 		case 9: // 从收藏拷贝到左窗口
+//			Toast.makeText(this, "从收藏拷贝到左窗口!",
+//					Toast.LENGTH_LONG).show();
 			setShowCopyProcess(true);
 			for (LvRow lr : bookMarkSelectedItems) {
-				cmdList.add(new FileCmd(LocalConst.CMD_COPY, lr.getFile(), currentPath[LocalConst.TAB_LEFT], true,
-						0));
+				cmdList.add(new FileCmd(LocalConst.CMD_COPY, lr.getFile(), currentPath[LocalConst.TAB_LEFT], true, 0));
 			}
 			cmdList.add(new FileCmd(LocalConst.CMD_FRESH, null, null, true, LocalConst.TAB_LEFT));
 			break;
 		case 10: // 从收藏拷贝到右窗口
+//			Toast.makeText(this, "从收藏拷贝到右窗口!",
+//					Toast.LENGTH_LONG).show();
 			setShowCopyProcess(true);
 			for (LvRow lr : bookMarkSelectedItems) {
-				cmdList.add(new FileCmd(LocalConst.CMD_COPY, lr.getFile(), currentPath[LocalConst.TAB_RIGHT], true,
-						0));
+				cmdList.add(new FileCmd(LocalConst.CMD_COPY, lr.getFile(), currentPath[LocalConst.TAB_RIGHT], true, 0));
 			}
+			cmdList.add(new FileCmd(LocalConst.CMD_FRESH, null, null, true, LocalConst.TAB_RIGHT));
+			break;
+		case 11: // 从收藏移动到左窗口
+			for (LvRow lr : bookMarkSelectedItems) {
+				FileCmd fc = new FileCmd(LocalConst.CMD_MOVE, lr.getFile(), currentPath[LocalConst.TAB_LEFT], true, 0);
+				fc.cmdSrcTabInAll = LocalConst.TAB_BOOKMARK;
+				fc.listIndex = lr.getOriginIndex();
+				cmdList.add(fc);
+			}
+			cmdList.add(new FileCmd(LocalConst.CMD_FRESH, null, null, true, LocalConst.TAB_LEFT));
+			cmdList.add(new FileCmd(LocalConst.CMD_FRESH, null, null, true, LocalConst.TAB_RIGHT));
+			break;
+		case 12: // 从收藏移动到右窗口
+			setShowCopyProcess(true);
+			for (LvRow lr : bookMarkSelectedItems) {
+				FileCmd fc = new FileCmd(LocalConst.CMD_MOVE, lr.getFile(), currentPath[LocalConst.TAB_RIGHT], true, 0);
+				fc.cmdSrcTabInAll = LocalConst.TAB_BOOKMARK;
+				fc.listIndex = lr.getOriginIndex();
+				cmdList.add(fc);
+			}
+			cmdList.add(new FileCmd(LocalConst.CMD_FRESH, null, null, true, LocalConst.TAB_LEFT));
 			cmdList.add(new FileCmd(LocalConst.CMD_FRESH, null, null, true, LocalConst.TAB_RIGHT));
 			break;
 		default:
@@ -2992,6 +3059,8 @@ public class DirPlayerActivity extends FragmentActivity implements
 		 */
 		bookMarkSelectedItems = generateSelectItems(bookMarkItems);
 		addCmds(9, LocalConst.TAB_BOOKMARK);
+		Toast.makeText(this, "从收藏拷贝到左窗口!",
+				Toast.LENGTH_LONG).show();
 	}
 
 
@@ -2999,8 +3068,23 @@ public class DirPlayerActivity extends FragmentActivity implements
 	public void onDialogBookMarkCopy2Right() {
 		bookMarkSelectedItems = generateSelectItems(bookMarkItems);
 		addCmds(10, LocalConst.TAB_BOOKMARK);
+		Toast.makeText(this, "从收藏拷贝到右窗口!",
+				Toast.LENGTH_LONG).show();
 	}
-	
+
+	@Override
+	public void onDialogBookMarkMove2Left() {
+		bookMarkSelectedItems = generateSelectItems(bookMarkItems);
+		addCmds(11, LocalConst.TAB_BOOKMARK);
+	}
+
+
+	@Override
+	public void onDialogBookMarkMove2Right() {
+		bookMarkSelectedItems = generateSelectItems(bookMarkItems);
+		addCmds(12, LocalConst.TAB_BOOKMARK);
+	}
+
 	@Override
 	public void onDialogBookMarkDel() {
 		// TODO Auto-generated method stub
@@ -3025,7 +3109,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 			bookMarkItems.add(lr);			
 		}
 		
-		Toast.makeText(this, "您添加了收藏： " + selectedItems.getFirst().getFile().getPath()+"等等", Toast.LENGTH_LONG).show();
+		Toast.makeText(this, "您添加了收藏： " + pathTrim4Show(selectedItems.getFirst().getPath())+"等等", Toast.LENGTH_LONG).show();
 		
 		bookMarkArrayAdapter.notifyDataSetChanged();		
 	}
@@ -3051,5 +3135,6 @@ public class DirPlayerActivity extends FragmentActivity implements
 	public int getPlaySeq(){
 		return mService.getPlaySeq();
 	}
+
 
 }

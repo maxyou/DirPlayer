@@ -51,6 +51,8 @@
     <string name="bmc_ibn_add">添加到播放列表</string>
     <string name="bmc_ibn_copy_2_left">&lt;-拷贝到左窗口</string>
     <string name="bmc_ibn_copy_2_right">拷贝到右窗口-&gt;</string>
+    <string name="bmc_ibn_move_2_left">&lt;=移动到左窗口</string>
+    <string name="bmc_ibn_move_2_right">移动到右窗口=&gt;</string>
     <string name="bmc_ibn_del">从收藏中删除</string>
     <string name="bm_act1">全选</string>
     <string name="bm_act2">清除</string>

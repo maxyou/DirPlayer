@@ -23,7 +23,7 @@ public class LvRow{
     private int type; // 0: paraent, 1: dir, 2: file
     private boolean selected;
     private int playingStatus;
-
+    private int originIndex; //如果这是一个selected list，那么这里存放原始list的索引位置
     
 	/**
 	 * @return the playing
@@ -43,6 +43,13 @@ public class LvRow{
 	public void setType(int type) {
 		this.type = type;
 	}
+	public int getOriginIndex() {
+		return originIndex;
+	}
+	public void setOriginIndex(int originIndex) {
+		this.originIndex = originIndex;
+	}
+	
 	public String getPath(){
         return this.path;
     }

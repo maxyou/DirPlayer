@@ -10,21 +10,50 @@
         android:layout_height="wrap_content"
         android:text="@string/bmc_ibn_add" />
 
-    <Button
-        android:id="@+id/bmc_ibn_copy_2_left"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/bmc_ibn_copy_2_left" />
+        android:orientation="horizontal" >
 
-    <Button
-        android:id="@+id/bmc_ibn_copy_2_right"
+        <Button
+            android:id="@+id/bmc_ibn_copy_2_right"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/bmc_ibn_copy_2_right" />
+
+        <Button
+            android:id="@+id/bmc_ibn_copy_2_left"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/bmc_ibn_copy_2_left" />
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/bmc_ibn_copy_2_right" />
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/bmc_ibn_move_2_right"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/bmc_ibn_move_2_right" />
+
+        <Button
+            android:id="@+id/bmc_ibn_move_2_left"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/bmc_ibn_move_2_left" />
+    </LinearLayout>
 
     <Button
         android:id="@+id/bmc_ibn_del"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/bmc_ibn_del" />
+
 </LinearLayout>

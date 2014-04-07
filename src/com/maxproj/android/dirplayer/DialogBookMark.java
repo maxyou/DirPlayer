@@ -17,6 +17,8 @@ public class DialogBookMark  extends DialogFragment {
         void onDialogBookMarkAdd2PlayList();
         void onDialogBookMarkCopy2Left();
         void onDialogBookMarkCopy2Right();
+        void onDialogBookMarkMove2Left();
+        void onDialogBookMarkMove2Right();
         void onDialogBookMarkDel();
     }
 	
@@ -52,6 +54,7 @@ public class DialogBookMark  extends DialogFragment {
 				dismiss();
 				// TODO Auto-generated method stub
 				dialogBookMarkInterface.onDialogBookMarkCopy2Left();
+				Log.d(LocalConst.DTAG,"dialogBookMarkInterface.onDialogBookMarkCopy2Left()");
 			}
 		});
 	    Button bmc_ibn_copy_2_right = (Button)v.findViewById(R.id.bmc_ibn_copy_2_right);
@@ -62,6 +65,27 @@ public class DialogBookMark  extends DialogFragment {
 				dismiss();
 				// TODO Auto-generated method stub
 				dialogBookMarkInterface.onDialogBookMarkCopy2Right();
+				Log.d(LocalConst.DTAG,"dialogBookMarkInterface.onDialogBookMarkCopy2Right()");
+			}
+		});
+	    Button bmc_ibn_move_2_left = (Button)v.findViewById(R.id.bmc_ibn_move_2_left);
+	    bmc_ibn_move_2_left.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				dismiss();
+				// TODO Auto-generated method stub
+				dialogBookMarkInterface.onDialogBookMarkMove2Left();
+			}
+		});
+	    Button bmc_ibn_move_2_right = (Button)v.findViewById(R.id.bmc_ibn_move_2_right);
+	    bmc_ibn_move_2_right.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				dismiss();
+				// TODO Auto-generated method stub
+				dialogBookMarkInterface.onDialogBookMarkMove2Right();
 			}
 		});
 	    Button bmc_ibn_del = (Button)v.findViewById(R.id.bmc_ibn_del);
