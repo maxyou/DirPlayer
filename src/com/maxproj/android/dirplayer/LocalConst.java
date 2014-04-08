@@ -39,6 +39,16 @@ public class LocalConst {
 	public static final int TAB_BOOKMARK = 2;
 	public static final int TAB_PLAYLIST = 3;
 	
+	public static final int[] tabColor = {
+		0xffffe0e0,//TAB_LEFT
+		0xffe0ffe0,//TAB_RIGHT
+		0xffe0e0ff,//TAB_BOOKMARK
+		0xfff0e8ff,//TAB_PLAYLIST+0
+		0xfff0fff0,//TAB_PLAYLIST+1
+		0xfffff0f0,//TAB_PLAYLIST+2
+		0xfff8e8ff,//TAB_PLAYLIST+3
+		0xfffff8e8 //TAB_PLAYLIST+4		
+	};
 	/**
 	 * 文件及文件夹类型
 	 */

@@ -106,6 +106,12 @@ public class MyArrayAdapter extends ArrayAdapter<LvRow>{
                     listItems.get((Integer)view.getTag()).setSelected(cb.isChecked());
                 }
             });
+            
+            /**
+             * 给tab页面添加条纹色彩，但是“..”条目不添加
+             */
+//            length.setBackgroundColor(LocalConst.tabColor[tabInAll]);
+//            date.setBackgroundColor(LocalConst.tabColor[tabInAll]);
 
         }
 
