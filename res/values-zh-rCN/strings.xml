@@ -84,7 +84,7 @@
 
 <!--     	设置相关 -->
 
-    <string name="setting1_key">setting1_key</string>
+    <string name="setting1_key">setting_key</string>
     <string name="setting1_title">是否显示顶部标题条</string>
     <string name="seting1_summ">目前选择显示顶部标题条</string>
     <string name="seting1_summ2">目前选择隐藏顶部标题条</string>

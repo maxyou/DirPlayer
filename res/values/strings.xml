@@ -35,7 +35,7 @@
     <string name="negative">Cancel</string>
     <string name="positive">OK</string>
     <string name="mkdir_prompt">New folder name?</string>
-    <string name="progress_prompt">Progress...</string>
+    <string name="progress_prompt">Progress</string>
     <string name="left_window_path">left_window_path</string>
     <string name="right_window_path">right_window_path</string>
     <string name="rename_prompt">Rename</string>
@@ -43,7 +43,7 @@
     <string name="rename_new_prompt">New:</string>
     <string name="rename_negative">Cancel</string>
     <string name="rename_neutral">Cancel all</string>
-    <string name="rename_positive">Ok</string>
+    <string name="rename_positive">OK</string>
     <string name="rename_fail_notice">Rename failed</string>
 
 <!--     	收藏窗口操作命令 -->
@@ -64,7 +64,7 @@
 <!--     	播放窗口操作命令 -->
     <string name="plc_ibn_add">Add to bookmark</string>
     <string name="plc_ibn_del">Del</string>
-    <string name="plc_ibn_seq">Switch order</string>
+    <string name="plc_ibn_seq">Switch play order</string>
     <string name="pl_act1">All</string>
     <string name="pl_act2">Clr</string>
     <string name="pl_act3">Rev</string>
@@ -84,7 +84,7 @@
 
 <!--     	设置相关 -->
 
-    <string name="setting1_key">setting1_key</string>
+    <string name="setting1_key">setting_key</string>
     <string name="setting1_title">是否显示顶部标题条</string>
     <string name="seting1_summ">目前选择显示顶部标题条</string>
     <string name="seting1_summ2">目前选择隐藏顶部标题条</string>
