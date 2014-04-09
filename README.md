@@ -1,4 +1,4 @@
-DirPlayer目录播放器说明
+DirPlayer本地音视频播放器说明
 
 
 设计目标
