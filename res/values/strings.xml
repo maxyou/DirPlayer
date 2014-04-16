@@ -3,8 +3,8 @@
 
 <!--     	系统相关 -->
     <string name="app_name">DirPlayer</string>
-    <string name="bottom_about"> simple play, simple life</string>
-    <string name="dealby">Choose operation</string>
+    <string name="bottom_about">Simple play, simple life</string>
+    <string name="dealby">What to do?</string>
     <string name="about">developer: dev@dirplayer.com</string>
     <string name="help">Help</string>
     <string name="action_settings">Setting</string>
@@ -15,7 +15,7 @@
     <string name="title_section4">Play</string>
     
 <!--     	左右文件浏览窗口操作命令 -->
-    <string name="prompt">How to operate?</string>
+    <string name="prompt">What to do?</string>
     <string name="flc_ibn_add">Add to playlist</string>
     <string name="flc_ibn_l2r_copy">Copy left to right-&gt;</string>
     <string name="flc_ibn_l2r_move">Move left to right=&gt;</string>
@@ -30,7 +30,7 @@
     <string name="fl_act4">Up</string>
     <string name="fl_act5">Mark</string>
     <string name="fl_act6">Op</string>
-    <string name="cancel_copy">Cancel following copy</string>
+    <string name="cancel_copy">Cancel subsequent copy</string>
     <string name="background_copy">Backgrand copy</string>
     <string name="negative">Cancel</string>
     <string name="positive">OK</string>
@@ -47,7 +47,7 @@
     <string name="rename_fail_notice">Rename failed</string>
 
 <!--     	收藏窗口操作命令 -->
-    <string name="bookmark_prompt">How to deal?</string>
+    <string name="bookmark_prompt">What to do?</string>
     <string name="bmc_ibn_add">Add to playlist</string>
     <string name="bmc_ibn_copy_2_left">&lt;-Copy to left</string>
     <string name="bmc_ibn_copy_2_right">Copy to right-&gt;</string>
