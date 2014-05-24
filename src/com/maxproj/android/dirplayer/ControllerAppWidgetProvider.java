@@ -16,21 +16,21 @@ public class ControllerAppWidgetProvider extends AppWidgetProvider {
 		// Perform this loop procedure for each App Widget that belongs to this
 		// provider
 		for (int i = 0; i < N; i++) {
-			
-			Log.d(LocalConst.DTAG, "ControllerAppWidgetProvider.onUpdate " + i);
+//			Log.d(LocalConst.DTAG, "ControllerAppWidgetProvider.onUpdate " + i);
 			
 			int appWidgetId = appWidgetIds[i];
 
+			RemoteViews views = new RemoteViews(context.getPackageName(),
+					R.layout.notification);
+
+			views.setImageViewResource(R.id.notification_icon,
+					R.drawable.icon);
+			
 			Intent intent = new Intent(context, DirPlayerActivity.class);
 			PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
 					intent, 0);
-			RemoteViews views = new RemoteViews(context.getPackageName(),
-					R.layout.notification);
 			views.setOnClickPendingIntent(R.id.notification_icon, pendingIntent);
-//			views.setViewVisibility(R.id.notification_infor, View.INVISIBLE);
-
-			// Tell the AppWidgetManager to perform an update on the current app
-			// widget
+			
 			appWidgetManager.updateAppWidget(appWidgetId, views);
 		}
 	}
