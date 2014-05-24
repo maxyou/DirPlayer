@@ -7,37 +7,46 @@
     <uses-sdk
         android:minSdkVersion="13"
         android:targetSdkVersion="18" />
+
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-	<uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-        
         <activity
-            android:launchMode="singleTask"
-            android:configChanges="orientation|screenSize"
             android:name="com.maxproj.android.dirplayer.DirPlayerActivity"
-            android:label="@string/app_name" >
+            android:configChanges="orientation|screenSize"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        
         <activity
-            android:configChanges="orientation|screenSize"
             android:name="com.maxproj.android.dirplayer.SettingsActivity"
-            />
-        
+            android:configChanges="orientation|screenSize" />
+        <activity
+            android:name="com.maxproj.android.dirplayer.ControllerWidgetConfigure"
+            android:configChanges="orientation|screenSize" />
         <service
             android:name="com.maxproj.android.dirplayer.PlayService"
-            android:exported="false"
-            />
-        
+            android:exported="false" />
+
+        <receiver android:name="com.maxproj.android.dirplayer.ControllerAppWidgetProvider" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/controller_appwidget_info" />
+        </receiver>
     </application>
 
 </manifest>

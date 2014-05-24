@@ -11,7 +11,9 @@ import java.util.Random;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.appwidget.AppWidgetManager;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -352,76 +354,79 @@ public class PlayService extends Service implements MediaPlayerControl {
 			RemoteViews notifyView = new RemoteViews(this.getPackageName(),
 					R.layout.notification);
 
-			switch (playSequence) {
-			case LocalConst.play_seq_normal:
-				notifyView.setInt(R.id.notification_seq, "setText",
-						R.string.play_seq_normal);
-				break;
-			case LocalConst.play_seq_random:
-				notifyView.setInt(R.id.notification_seq, "setText",
-						R.string.play_seq_random);
-				break;
-			case LocalConst.play_seq_single:
-				notifyView.setInt(R.id.notification_seq, "setText",
-						R.string.play_seq_single);
-				break;
-			default:
-				notifyView.setInt(R.id.notification_seq, "setText",
-						R.string.play_seq_normal);
-			}
-
+			/**
+			 * 设置当前播放曲目
+			 */
 			notifyView.setTextViewText(R.id.notification_name,
 					playingFile.getName());
 			notifyView.setImageViewResource(R.id.notification_icon,
 					R.drawable.icon);
 
-			if (playStatus == LocalConst.playing) {
-				notifyView.setViewVisibility(R.id.notification_goto_pause,
-						View.VISIBLE);
-				notifyView.setViewVisibility(R.id.notification_goto_play,
-						View.GONE);
-			} else {
-				notifyView.setViewVisibility(R.id.notification_goto_pause,
-						View.GONE);
-				notifyView.setViewVisibility(R.id.notification_goto_play,
-						View.VISIBLE);
-			}
 
+			/**
+			 * 设置播放和暂停按钮
+			 */
+			if (playStatus == LocalConst.playing) {
+				notifyView.setInt(R.id.notification_goto_pause, "setText",
+						R.string.notification_goto_pause);
+				notifyView.setOnClickPendingIntent(R.id.notification_goto_pause,
+						PendingIntent.getBroadcast(this, 0, new Intent(
+								LocalConst.NOTIFICATION_GOTO_PAUSE),
+								PendingIntent.FLAG_UPDATE_CURRENT));			
+			} else {
+				notifyView.setInt(R.id.notification_goto_pause, "setText",
+						R.string.notification_goto_play);
+				notifyView.setOnClickPendingIntent(R.id.notification_goto_pause,
+						PendingIntent.getBroadcast(this, 0, new Intent(
+								LocalConst.NOTIFICATION_GOTO_PLAY),
+								PendingIntent.FLAG_UPDATE_CURRENT));			
+			}
+			
+			/**
+			 * 设置下一首
+			 */
 			if (playingType == LocalConst.ListPlay) {
-				notifyView.setViewVisibility(R.id.notification_goto_last,
-						View.GONE);
-				notifyView.setViewVisibility(R.id.notification_goto_next,
-						View.VISIBLE);
-				notifyView.setViewVisibility(R.id.notification_seq,
-						View.VISIBLE);
-			} else if (playingType == LocalConst.SinglePlay) {
-				notifyView.setViewVisibility(R.id.notification_goto_last,
-						View.GONE);
-				notifyView.setViewVisibility(R.id.notification_goto_next,
-						View.GONE);
-				notifyView.setViewVisibility(R.id.notification_seq, View.GONE);
+				notifyView.setOnClickPendingIntent(R.id.notification_goto_next,
+						PendingIntent.getBroadcast(this, 0, new Intent(
+								LocalConst.NOTIFICATION_GOTO_NEXT),
+								PendingIntent.FLAG_UPDATE_CURRENT));
+				
+				notifyView.setViewVisibility(R.id.notification_goto_next, View.VISIBLE);
+			} else {
+				notifyView.setViewVisibility(R.id.notification_goto_next, View.GONE);
 			}//是否要考虑playingType == LocalConst.NoPlay？
 
-			notifyView.setOnClickPendingIntent(R.id.notification_goto_pause,
-					PendingIntent.getBroadcast(this, 0, new Intent(
-							LocalConst.NOTIFICATION_GOTO_PAUSE),
-							PendingIntent.FLAG_UPDATE_CURRENT));
-			notifyView.setOnClickPendingIntent(R.id.notification_goto_last,
-					PendingIntent.getBroadcast(this, 0, new Intent(
-							LocalConst.NOTIFICATION_GOTO_LAST),
-							PendingIntent.FLAG_UPDATE_CURRENT));
-			notifyView.setOnClickPendingIntent(R.id.notification_goto_next,
-					PendingIntent.getBroadcast(this, 0, new Intent(
-							LocalConst.NOTIFICATION_GOTO_NEXT),
-							PendingIntent.FLAG_UPDATE_CURRENT));
-			notifyView.setOnClickPendingIntent(R.id.notification_goto_play,
-					PendingIntent.getBroadcast(this, 0, new Intent(
-							LocalConst.NOTIFICATION_GOTO_PLAY),
-							PendingIntent.FLAG_UPDATE_CURRENT));
-			notifyView.setOnClickPendingIntent(R.id.notification_seq,
-					PendingIntent.getBroadcast(this, 0, new Intent(
-							LocalConst.NOTIFICATION_SEQ_SWITCH),
-							PendingIntent.FLAG_UPDATE_CURRENT));
+			/**
+			 * 设置播放次序按钮
+			 */
+			if (playingType == LocalConst.ListPlay){
+				switch (playSequence) {
+				case LocalConst.play_seq_normal:
+					notifyView.setInt(R.id.notification_seq, "setText",
+							R.string.play_seq_normal);
+					break;
+				case LocalConst.play_seq_random:
+					notifyView.setInt(R.id.notification_seq, "setText",
+							R.string.play_seq_random);
+					break;
+				case LocalConst.play_seq_single:
+					notifyView.setInt(R.id.notification_seq, "setText",
+							R.string.play_seq_single);
+					break;
+				default:
+					notifyView.setInt(R.id.notification_seq, "setText",
+							R.string.play_seq_normal);
+				}
+				notifyView.setOnClickPendingIntent(R.id.notification_seq,
+						PendingIntent.getBroadcast(this, 0, new Intent(
+								LocalConst.NOTIFICATION_SEQ_SWITCH),
+								PendingIntent.FLAG_UPDATE_CURRENT));
+
+				notifyView.setViewVisibility(R.id.notification_seq, View.VISIBLE);
+			}else{
+				notifyView.setViewVisibility(R.id.notification_seq, View.GONE);
+			}
+
 
 			NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
 					this)
@@ -452,6 +457,26 @@ public class PlayService extends Service implements MediaPlayerControl {
 			mNotifyMgr.notify(mNotificationId, mBuilder.build());
 
 			// Log.d(LocalConst.TMP, "end of sendNotification()");
+			
+			/**
+			* send to widget
+			*/
+			AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(LocalConst.app);
+			ComponentName thisWidget = new ComponentName(LocalConst.app, 
+					com.maxproj.android.dirplayer.ControllerAppWidgetProvider.class);
+			int[] appWidgetIds = appWidgetManager.getAppWidgetIds(thisWidget);
+			final int N = appWidgetIds.length;
+			
+			Intent intent = new Intent(LocalConst.app, DirPlayerActivity.class);
+			PendingIntent pendingIntent = PendingIntent.getActivity(LocalConst.app, 0,
+					intent, 0);
+			notifyView.setOnClickPendingIntent(R.id.notification_icon, pendingIntent);
+
+			
+			for(int i = 0; i < N; i++){
+				int appWidgetId = appWidgetIds[i]; 
+				appWidgetManager.updateAppWidget(appWidgetId, notifyView);
+			}
 		}
 	}
 

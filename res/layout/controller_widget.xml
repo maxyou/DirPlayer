@@ -7,25 +7,21 @@
     android:orientation="horizontal" >
 
     <ImageView
-        android:id="@+id/notification_icon"
+        android:id="@+id/ctrl_widget_icon"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_gravity="center" />
 
     <LinearLayout
-        android:id="@+id/notification_infor"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical" >
 
         <TextView
-            android:id="@+id/notification_name"
+            android:id="@+id/ctrl_widget_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="2dp"
-            android:textSize="20sp"
-            android:singleLine="true"
-            android:textColor="@color/notepad_text"
             android:text="@string/bottom_about" />
 
         <LinearLayout
@@ -34,20 +30,31 @@
             android:orientation="horizontal" >
 
             <Button
-                android:id="@+id/notification_goto_pause"
+                android:id="@+id/ctrl_widget_goto_last"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/notification_goto_last" />
+
+            <Button
+                android:id="@+id/ctrl_widget_goto_pause"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/notification_goto_pause" />
             
+            <Button
+                android:id="@+id/ctrl_widget_goto_play"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/notification_goto_play" />
             
             <Button
-                android:id="@+id/notification_goto_next"
+                android:id="@+id/ctrl_widget_goto_next"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/notification_goto_next" />
             
             <Button
-                android:id="@+id/notification_seq"
+                android:id="@+id/ctrl_widget_seq"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
 
