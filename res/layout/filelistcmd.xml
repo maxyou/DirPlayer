@@ -76,4 +76,15 @@
         android:layout_height="wrap_content"
         android:text="@string/flc_ibn_mkdir" />
 
+    <Button
+        android:id="@+id/flc_ibn_pause"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/flc_ibn_pause" />
+
+    <SeekBar
+        android:id="@+id/flc_ibn_seekbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
 </LinearLayout>

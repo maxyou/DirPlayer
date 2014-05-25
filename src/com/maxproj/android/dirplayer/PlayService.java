@@ -517,12 +517,13 @@ public class PlayService extends Service implements MediaPlayerControl {
 				mediaPlayer.start();
 				playStatus = LocalConst.playing;
 				sendNotification();
-
+				pleaseUpdatePlayingFlag();
 			} else if (LocalConst.NOTIFICATION_GOTO_PAUSE.equals(action)) {
 				Log.d(LocalConst.TMP, "Pressed pause");
 				mediaPlayer.pause();
 				playStatus = LocalConst.paused;
 				sendNotification();
+				pleaseUpdatePlayingFlag();
 			} else if (LocalConst.NOTIFICATION_SEQ_SWITCH.equals(action)) {
 				Log.d(LocalConst.TMP, "play sequence switch");
 				playSeqSwitch();

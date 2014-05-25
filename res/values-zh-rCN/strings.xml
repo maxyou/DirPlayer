@@ -24,6 +24,8 @@
     <string name="flc_ibn_del">删除所选</string>
     <string name="flc_ibn_mkdir">创建文件夹</string>
     <string name="flc_ibn_rename">改名</string>
+    <string name="flc_ibn_pause">按我暂停</string>
+    <string name="flc_ibn_play">按我播放</string>
     <string name="fl_act1">全选</string>
     <string name="fl_act2">清除</string>
     <string name="fl_act3">反选</string>

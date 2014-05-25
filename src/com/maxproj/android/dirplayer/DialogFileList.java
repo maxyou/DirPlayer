@@ -4,8 +4,10 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -24,6 +26,8 @@ public class DialogFileList  extends DialogFragment {
         void onDialogFileListMkdir(int tab);
         void onDialogFileListDel(int tab);
         void onDialogFileListRename(int tab);
+        void onDialogFileListPause(int tab);
+        void onDialogFileListPlay(int tab);
     }
     private DialogFileListInterface dialogFileListInterface = null;
 
@@ -121,6 +125,43 @@ public class DialogFileList  extends DialogFragment {
 			}
 		});
 
+	    Button flc_ibn_pause = (Button)v.findViewById(R.id.flc_ibn_pause);
+	    showMusicPlayButton(flc_ibn_pause, ((DirPlayerActivity) getActivity()).servicePlaying);
+	    
+	    flc_ibn_pause.setOnClickListener(new OnClickListener() {
+		
+			@Override
+			public void onClick(View v) {
+				Log.d(LocalConst.DTAG,"pressed button, check playing status: "
+						+ ((DirPlayerActivity) getActivity()).servicePlaying);
+			    switch(((DirPlayerActivity) getActivity()).servicePlaying){
+				    case LocalConst.clear:
+				    case(LocalConst.stopped):
+				    	// 什么也不做
+				    	break;
+				    case LocalConst.playing:
+//						LocalBroadcastManager.getInstance(LocalConst.app).
+				    	((DirPlayerActivity) getActivity()).
+							sendBroadcast(new Intent(LocalConst.NOTIFICATION_GOTO_PAUSE));
+				    	showMusicPlayButton((Button)v, LocalConst.paused);
+						Log.d(LocalConst.DTAG,"send pressed pause");
+//				    	dialogFileListInterface.onDialogFileListPause(tab);
+				    	break;
+				    case(LocalConst.paused):
+//						LocalBroadcastManager.getInstance(LocalConst.app).
+				    	((DirPlayerActivity) getActivity()).
+							sendBroadcast(new Intent(LocalConst.NOTIFICATION_GOTO_PLAY));
+				    	showMusicPlayButton((Button)v, LocalConst.playing);
+				    	Log.d(LocalConst.DTAG,"send pressed play");
+//				    	dialogFileListInterface.onDialogFileListPlay(tab);
+				    	break;
+			    }
+			    
+			    
+
+		    }
+		});
+	    
 	    // Inflate and set the layout for the dialog
 	    // Pass null as the parent view because its going in the dialog layout
 	    builder.setTitle(R.string.prompt)
@@ -134,6 +175,22 @@ public class DialogFileList  extends DialogFragment {
 	        	
 	        });
 	    return builder.create();
+	}
+	
+	private void showMusicPlayButton(Button v, int playing){
+	    switch(playing){
+		    case LocalConst.clear:
+		    case(LocalConst.stopped):
+		    	// 不显示控件
+		    	v.setVisibility(View.GONE);
+		    	break;
+		    case LocalConst.playing:
+	    		v.setText(getResources().getText(R.string.flc_ibn_pause));
+		    	break;
+		    case(LocalConst.paused):
+	    		v.setText(getResources().getText(R.string.flc_ibn_play));
+		    	break;
+	    }
 	}
 	
     @Override

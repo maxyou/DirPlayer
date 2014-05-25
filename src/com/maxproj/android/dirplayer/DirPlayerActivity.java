@@ -2821,6 +2821,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 		 * 
 		 */
 		servicePlaying =  intent.getIntExtra(LocalConst.PLAY_STATUS, -1);
+		Log.d(LocalConst.DTAG,"status when pressed: " + servicePlaying);
 		servicePlayType = intent.getIntExtra(LocalConst.PLAY_TYPE, -1);
 		servicePlayPath = intent.getStringExtra(LocalConst.PLAY_PATH);
 		servicePlayPlTab = intent.getIntExtra(LocalConst.PLAY_PL_TAB, -1);
@@ -3039,6 +3040,16 @@ public class DirPlayerActivity extends FragmentActivity implements
 		addCmds(7, tab);
 	}
 
+	@Override
+	public void onDialogFileListPause(int tab) {
+		selectedItems[tab] = generateSelectItems(viewListItems[tab]);
+		addCmds(7, tab);
+	}
+	@Override
+	public void onDialogFileListPlay(int tab) {
+		selectedItems[tab] = generateSelectItems(viewListItems[tab]);
+		addCmds(7, tab);
+	}
 
 	@Override
 	public void onDialogBookMarkAdd2PlayList() {

@@ -24,6 +24,8 @@
     <string name="flc_ibn_del">Del</string>
     <string name="flc_ibn_mkdir">New folder</string>
     <string name="flc_ibn_rename">Rename</string>
+    <string name="flc_ibn_pause">Pause</string>
+    <string name="flc_ibn_play">Play</string>
     <string name="fl_act1">All</string>
     <string name="fl_act2">Clr</string>
     <string name="fl_act3">Rev</string>
