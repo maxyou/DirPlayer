@@ -644,6 +644,20 @@ public class PlayService extends Service implements MediaPlayerControl {
 			return 0;
 	}
 
+	public int getProgress100(){
+		int duration = getDuration();
+		int current = getCurrentPosition(); 
+		
+		if(duration == 0){
+			return 0;
+		}else if(current <= duration){
+			return (current * 100)/duration;
+		}else{
+			return 0;
+		}
+		
+	}
+	
 	@Override
 	public void seekTo(int pos) {
 		// TODO Auto-generated method stub

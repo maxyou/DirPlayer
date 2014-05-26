@@ -806,7 +806,11 @@ public class DirPlayerActivity extends FragmentActivity implements
 		final int currentTab = tab;
 		//mCmdOptions.clear();
 
-		DialogFileList.newInstance(tab).show(getSupportFragmentManager(), "");
+		DialogFileList dfl = DialogFileList.newInstance(tab);
+		dfl.show(getSupportFragmentManager(), "");
+		new musicProgressAsyncTask(this, dfl).execute();
+//		new copySingleFileAsyncTask(this, srcFile.getName())
+//		.execute(srcFile, desFile);
 		
 //		new DialogFragment() {
 //
@@ -1080,6 +1084,62 @@ public class DirPlayerActivity extends FragmentActivity implements
 		}
 	}
 
+	/**
+	 * 单个文件的具体操作，异步进行，假定之前已经做了合法性检查
+	 */
+	private class musicProgressAsyncTask extends
+			AsyncTask<Void, Integer, Void> {
+		String msg;
+		Context context;
+		Fragment dialogFragment;
+
+		public musicProgressAsyncTask(Context context, Fragment fragment) {
+			Log.d(LocalConst.DTAG, "seekbar debug:this("+ this+ ")");
+			this.context = context;
+			this.dialogFragment = fragment;
+		}
+
+		protected Void doInBackground(Void... v) {
+			while(true){
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				// Update the progress bar
+
+              	if((servicePlaying != LocalConst.clear)
+              			&& (mService != null))
+              	{
+              		int progress = mService.getProgress100();
+              		publishProgress(progress);
+              		if(progress >= 100)
+              			break;
+              	}
+			}
+			return null;
+		}
+
+		protected void onProgressUpdate(Integer... progress) {
+			Log.d(LocalConst.DTAG, "seekbar debug:onProgressUpdate(" + progress[0].intValue() + ")"+ this);
+			if (dialogFragment != null) {
+				((DialogFileList)dialogFragment).flc_ibn_seekbar.setProgress(progress[0].intValue());
+				Log.d(LocalConst.DTAG, "seekbar debug:onProgressUpdate executed");
+			}
+		}
+
+		protected void onPreExecute() {
+			Log.d(LocalConst.DTAG, "seekbar debug: onPreExecute()");
+
+		}
+
+		protected void onPostExecute(Long result) {
+			Log.d(LocalConst.DTAG, "seekbar debug: onPostExecute()");
+			
+		}
+	}
 	/**
 	 * 添加音乐文件到播放列表
 	 */

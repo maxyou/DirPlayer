@@ -6,17 +6,24 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.SeekBar;
 
 public class DialogFileList  extends DialogFragment {
 
 	int tab;
-	
+
+
+    SeekBar flc_ibn_seekbar;
+    
 	public interface DialogFileListInterface{
         void onDialogFileListAdd(int tab);
         void onDialogFileListL2rCopy(int tab);
@@ -156,11 +163,16 @@ public class DialogFileList  extends DialogFragment {
 //				    	dialogFileListInterface.onDialogFileListPlay(tab);
 				    	break;
 			    }
-			    
-			    
-
 		    }
 		});
+	    
+	    
+	    flc_ibn_seekbar = (SeekBar)v.findViewById(R.id.flc_ibn_seekbar);
+	    flc_ibn_seekbar.setMax(100);
+	    
+//	    flc_ibn_seekbar.setProgress(80);
+ 
+//	    new LooperThread().start();
 	    
 	    // Inflate and set the layout for the dialog
 	    // Pass null as the parent view because its going in the dialog layout
@@ -176,7 +188,52 @@ public class DialogFileList  extends DialogFragment {
 	        });
 	    return builder.create();
 	}
-	
+//	class LooperThread extends Thread {
+//	      public Handler mHandler;
+//	      int mProgressStatus = 0;
+//	      {
+//	    	  Log.d(LocalConst.DTAG,"while (mProgressStatus < 100) in LooperThread()");
+//	      }
+//	      
+//	      public void run() {
+//	          Looper.prepare();
+//	          Log.d(LocalConst.DTAG,"while (mProgressStatus < 100) in run()");
+//	          mHandler = new Handler() {
+//	              public void handleMessage(Message msg) {
+//	                  // process incoming messages here
+//	              }
+//	          };
+//
+//	          while (mProgressStatus < 100) {
+//              	Log.d(LocalConst.DTAG,"while (mProgressStatus < 100)");
+//              	try {
+//						Thread.sleep(1000);
+//					} catch (InterruptedException e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
+//                  // Update the progress bar
+//                  mHandler.postDelayed((new Runnable() {
+//                      public void run() {
+//                      	if(
+//                      			(((DirPlayerActivity) getActivity()).servicePlaying != LocalConst.clear)
+//                      			&& (((DirPlayerActivity) getActivity()).mService != null)
+//                      			
+//                      			)
+//                      	{
+//                      		mProgressStatus = ((DirPlayerActivity) getActivity()).mService.getProgress100();
+//                      		flc_ibn_seekbar.setProgress(mProgressStatus);
+//                      		Log.d(LocalConst.DTAG,"mProgressStatus: " + mProgressStatus);
+//                      	}
+//                      }
+//                  }), 100);
+//              }
+//	          Log.d(LocalConst.DTAG,"while (mProgressStatus < 100) before loop: " + mProgressStatus);
+//	          Looper.loop();
+//	          Log.d(LocalConst.DTAG,"while (mProgressStatus < 100) after loop: " + mProgressStatus);
+//
+//	      }
+//	  }
 	private void showMusicPlayButton(Button v, int playing){
 	    switch(playing){
 		    case LocalConst.clear:
