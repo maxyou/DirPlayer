@@ -811,8 +811,8 @@ public class DirPlayerActivity extends FragmentActivity implements
 		DialogFileList dfl = DialogFileList.newInstance(tab);
 		dfl.show(getSupportFragmentManager(), "");
 		if(mpat == null){
-			Log.d(LocalConst.DTAG, "AsyncTask: new MusicProgressAsyncTask()");
-			new MusicProgressAsyncTask(this, dfl).execute();
+//			Log.d(LocalConst.DTAG, "AsyncTask: new MusicProgressAsyncTask()");
+//			new MusicProgressAsyncTask(this, dfl).execute();
 		}
 		
 //		new copySingleFileAsyncTask(this, srcFile.getName())
@@ -1091,7 +1091,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	}
 
 	/**
-	 * 单个文件的具体操作，异步进行，假定之前已经做了合法性检查
+	 * 音乐播放进度
 	 */
 	public class MusicProgressAsyncTask extends
 			AsyncTask<Void, Integer, Void> {
@@ -1108,15 +1108,10 @@ public class DirPlayerActivity extends FragmentActivity implements
 		protected Void doInBackground(Void... v) {
 			int progress = 0;
 			while(true){
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				if(isCancelled() == true)
+					break;
 
 				// Update the progress bar
-
               	if(servicePlaying == LocalConst.playing){
               		if(mService != null){
               			progress = mService.getProgress100();
@@ -1127,6 +1122,11 @@ public class DirPlayerActivity extends FragmentActivity implements
               		Log.d(LocalConst.DTAG, "AsyncTask seekbar debug: doInBackground break!("+progress+")");
               		break;
               	}
+              	
+              	/**
+              	 * 延迟200ms作为刷新
+              	 */
+				try {Thread.sleep(200);} catch (InterruptedException e) {e.printStackTrace();}
 			}
 			return null;
 		}

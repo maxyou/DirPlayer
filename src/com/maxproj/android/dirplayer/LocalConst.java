@@ -25,7 +25,7 @@ public class LocalConst {
 	 * 系统相关
 	 */
 	public static Context app = null;
-	public static Context dirPlayerActivity = null;
+	public static DirPlayerActivity dirPlayerActivity = null;
 	
 	public static final String pathRoot = Environment
 			.getExternalStorageDirectory().getPath();
