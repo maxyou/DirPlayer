@@ -232,6 +232,8 @@ public class DirPlayerActivity extends FragmentActivity implements
 //    String fileListPath; //文件播放的路径
     
 //    int playSequence = LocalConst.play_seq_normal;
+
+    MusicProgressAsyncTask mpat = null;
     
     /**
      * 下面两个，放在这里初始化，还是放在onCreate()更好？
@@ -808,7 +810,11 @@ public class DirPlayerActivity extends FragmentActivity implements
 
 		DialogFileList dfl = DialogFileList.newInstance(tab);
 		dfl.show(getSupportFragmentManager(), "");
-		new musicProgressAsyncTask(this, dfl).execute();
+		if(mpat == null){
+			Log.d(LocalConst.DTAG, "AsyncTask: new MusicProgressAsyncTask()");
+			new MusicProgressAsyncTask(this, dfl).execute();
+		}
+		
 //		new copySingleFileAsyncTask(this, srcFile.getName())
 //		.execute(srcFile, desFile);
 		
@@ -907,7 +913,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 						break;
 					case LocalConst.CMD_ADD_PLAY:
 						Log.d(LocalConst.DTAG, "add to playlit");
-						new addToPlayListAsyncTask(new LvRow(fc.src, true, LocalConst.clear), fc.fresh - LocalConst.TAB_PLAYLIST)// 01是左右窗口，2是收藏，3开始是5个播放列表
+						new AddToPlayListAsyncTask(new LvRow(fc.src, true, LocalConst.clear), fc.fresh - LocalConst.TAB_PLAYLIST)// 01是左右窗口，2是收藏，3开始是5个播放列表
 							.execute();
 						break;
 					case LocalConst.CMD_RENAME:
@@ -993,13 +999,13 @@ public class DirPlayerActivity extends FragmentActivity implements
 	/**
 	 * 单个文件的具体操作，异步进行，假定之前已经做了合法性检查
 	 */
-	private class copySingleFileAsyncTask extends
+	private class CopySingleFileAsyncTask extends
 			AsyncTask<File, Integer, Long> {
 		String msg;
 		Context context;
 
-		public copySingleFileAsyncTask(Context context, String msg) {
-			Log.d(LocalConst.DTAG, "dir copy: Handler in copyFileTask()");
+		public CopySingleFileAsyncTask(Context context, String msg) {
+			Log.d(LocalConst.DTAG, "AsyncTask dir copy: Handler in copyFileTask()");
 			this.msg = msg;
 			this.context = context;
 
@@ -1016,7 +1022,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 			OutputStream out;
 
 			Log.d(LocalConst.DTAG,
-					"dir copy: doInBackground(src: "
+					"AsyncTask dir copy: doInBackground(src: "
 							+ files[0].getPath()
 							+ " des:" + files[1].getPath() + ")");
 
@@ -1026,7 +1032,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 				
 				in = new BufferedInputStream(new FileInputStream(files[0]));
 				out = new BufferedOutputStream(new FileOutputStream(files[1]));
-				Log.d(LocalConst.DTAG, "dir copy: before while");
+				Log.d(LocalConst.DTAG, "AsyncTask dir copy: before while");
 
 				while ((b = in.read()) != -1) {
 					out.write(b);
@@ -1054,14 +1060,14 @@ public class DirPlayerActivity extends FragmentActivity implements
 		}
 
 		protected void onProgressUpdate(Integer... progress) {
-			Log.d(LocalConst.DTAG, "dir copy: onProgressUpdate(" + progress + ")");
+			Log.d(LocalConst.DTAG, "AsyncTask dir copy: onProgressUpdate(" + progress + ")");
 			if (dfp != null) {
 				dfp.setProgress(progress[0].intValue());
 			}
 		}
 
 		protected void onPreExecute() {
-			Log.d(LocalConst.DTAG, "dir copy: onPreExecute()");
+			Log.d(LocalConst.DTAG, "AsyncTask dir copy: onPreExecute()");
 			
 			// 启动进度条
 			if (showCopyProcess == true) {
@@ -1075,7 +1081,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 		}
 
 		protected void onPostExecute(Long result) {
-			Log.d(LocalConst.DTAG, "dir copy: onPostExecute()");
+			Log.d(LocalConst.DTAG, "AsyncTask dir copy: onPostExecute()");
 			if (dfp != null) {
 				dfp.dismiss();
 			}
@@ -1087,19 +1093,20 @@ public class DirPlayerActivity extends FragmentActivity implements
 	/**
 	 * 单个文件的具体操作，异步进行，假定之前已经做了合法性检查
 	 */
-	private class musicProgressAsyncTask extends
+	public class MusicProgressAsyncTask extends
 			AsyncTask<Void, Integer, Void> {
 		String msg;
 		Context context;
 		Fragment dialogFragment;
 
-		public musicProgressAsyncTask(Context context, Fragment fragment) {
-			Log.d(LocalConst.DTAG, "seekbar debug:this("+ this+ ")");
+		public MusicProgressAsyncTask(Context context, Fragment fragment) {
+			Log.d(LocalConst.DTAG, "AsyncTask seekbar debug:this("+ this+ ")");
 			this.context = context;
 			this.dialogFragment = fragment;
 		}
 
 		protected Void doInBackground(Void... v) {
+			int progress = 0;
 			while(true){
 				try {
 					Thread.sleep(1000);
@@ -1110,66 +1117,70 @@ public class DirPlayerActivity extends FragmentActivity implements
 
 				// Update the progress bar
 
-              	if((servicePlaying != LocalConst.clear)
-              			&& (mService != null))
-              	{
-              		int progress = mService.getProgress100();
-              		publishProgress(progress);
-              		if(progress >= 100)
-              			break;
+              	if(servicePlaying == LocalConst.playing){
+              		if(mService != null){
+              			progress = mService.getProgress100();
+              			publishProgress(progress);
+              			Log.d(LocalConst.DTAG, "AsyncTask seekbar debug: doInBackground("+progress+")");
+              		}
+              	}else{
+              		Log.d(LocalConst.DTAG, "AsyncTask seekbar debug: doInBackground break!("+progress+")");
+              		break;
               	}
 			}
 			return null;
 		}
 
 		protected void onProgressUpdate(Integer... progress) {
-			Log.d(LocalConst.DTAG, "seekbar debug:onProgressUpdate(" + progress[0].intValue() + ")"+ this);
+			Log.d(LocalConst.DTAG, "AsyncTask seekbar debug:onProgressUpdate(" + progress[0].intValue() + ")"+ this);
 			if (dialogFragment != null) {
 				((DialogFileList)dialogFragment).flc_ibn_seekbar.setProgress(progress[0].intValue());
-				Log.d(LocalConst.DTAG, "seekbar debug:onProgressUpdate executed");
+				Log.d(LocalConst.DTAG, "AsyncTask seekbar debug:onProgressUpdate executed");
 			}
 		}
 
 		protected void onPreExecute() {
-			Log.d(LocalConst.DTAG, "seekbar debug: onPreExecute()");
+			Log.d(LocalConst.DTAG, "AsyncTask seekbar debug: onPreExecute()");
 
 		}
 
 		protected void onPostExecute(Long result) {
-			Log.d(LocalConst.DTAG, "seekbar debug: onPostExecute()");
+			Log.d(LocalConst.DTAG, "AsyncTask seekbar debug: onPostExecute()");
 			
 		}
 	}
 	/**
 	 * 添加音乐文件到播放列表
 	 */
-	private class addToPlayListAsyncTask extends
+	private class AddToPlayListAsyncTask extends
 			AsyncTask<Void, Integer, Long> {
 		LvRow lr;
 		int plTab;
 //		Context context;
 
-		public addToPlayListAsyncTask(LvRow lr, int plTab) {
+		public AddToPlayListAsyncTask(LvRow lr, int plTab) {
 			this.lr = lr;
 			this.plTab = plTab;
 //			this.context = context;
-			Log.d(LocalConst.DTAG, "addToPlayListAsyncTask() constructed");
+			Log.d(LocalConst.DTAG, "AsyncTask addToPlayListAsyncTask() constructed");
 		}
 
 		protected Long doInBackground(Void... vs) {
 			long count = 0;
 			addToPlayList(lr, plTab);
-
+			Log.d(LocalConst.DTAG, "AsyncTask addToPlayListAsyncTask() doInBackground");
 			return count;
 		}
 
 		protected void onProgressUpdate(Integer... progress) {
+			Log.d(LocalConst.DTAG, "AsyncTask addToPlayListAsyncTask() onProgressUpdate");
 //			if (dfp != null) {
 //				dfp.setProgress(progress[0].intValue());
 //			}
 		}
 
 		protected void onPreExecute() {
+			Log.d(LocalConst.DTAG, "AsyncTask addToPlayListAsyncTask() onPreExecute");
 			// 启动进度条
 //			if (showCopyProcess == true) {
 //				dfp = DialogFragmentProgress.newInstance();
@@ -1187,7 +1198,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 //			}
 			// 重新启动Handler
 			cmdHandler.sendEmptyMessage(1);
-			Log.d(LocalConst.DTAG, "addToPlayListAsyncTask().onPostExecute()");
+			Log.d(LocalConst.DTAG, "AsyncTask addToPlayListAsyncTask() onPostExecute");
 		}
 	}
 	/*
@@ -1312,7 +1323,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 			Log.d(LocalConst.DTAG, "dir copy: srcFile.isFile()");
 
 			//添加拷贝任务
-			new copySingleFileAsyncTask(this, srcFile.getName())
+			new CopySingleFileAsyncTask(this, srcFile.getName())
 			.execute(srcFile, desFile);
 			
 			// 在AsyncTask里面激活Handler，这里不用激活
