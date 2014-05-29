@@ -116,13 +116,23 @@ public class PlayService extends Service implements MediaPlayerControl {
 	OnCompletionListener singlePlayListener = new OnCompletionListener() {
 		@Override
 		public void onCompletion(MediaPlayer mp) {
-			updatePlayingFlag(playingType, LocalConst.clear,
+			
+			/**
+			 * 倒回到进度0
+			 * 处于暂停状态
+			 * 更新按钮为“按我播放”
+			 */
+			
+			if (mediaPlayer != null)
+				mediaPlayer.seekTo(0);
+
+			playingType = LocalConst.SinglePlay;
+			playStatus = LocalConst.paused;
+//			playingFile = null;
+			
+			updatePlayingFlag(playingType, LocalConst.paused,
 					playingFile.getPath(), playingPlTab);
 			
-			//clear record
-			playingType = LocalConst.NoPlay;
-			playStatus = LocalConst.clear;
-			playingFile = null;
 		}
 		
 	};
@@ -260,7 +270,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 			//clear record
 			playingType = LocalConst.NoPlay;
 			playStatus = LocalConst.clear;
-			playingFile = null;
+//			playingFile = null;
 		}
 	}
 
@@ -602,7 +612,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 		//clear record
 		playingType = LocalConst.NoPlay;
 		playStatus = LocalConst.clear;
-		playingFile = null;
+//		playingFile = null;
 	}
 	private void clearLastMusicPlaying() {
 		// TODO Auto-generated method stub
