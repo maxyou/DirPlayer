@@ -137,49 +137,58 @@ public class DialogFileList  extends DialogFragment {
 		});
 
 	    Button flc_ibn_pause = (Button)v.findViewById(R.id.flc_ibn_pause);
-	    showMusicPlayButton(flc_ibn_pause, ((DirPlayerActivity) getActivity()).servicePlaying);
-	    
-	    flc_ibn_pause.setOnClickListener(new OnClickListener() {
-		
-			@Override
-			public void onClick(View v) {
-				Log.d(LocalConst.DTAG,"pressed button, check playing status: "
-						+ ((DirPlayerActivity) getActivity()).servicePlaying);
-			    switch(((DirPlayerActivity) getActivity()).servicePlaying){
-				    case LocalConst.clear:
-				    case(LocalConst.stopped):
-				    	// 什么也不做
-				    	break;
-				    case LocalConst.playing:
-//						LocalBroadcastManager.getInstance(LocalConst.app).
-				    	((DirPlayerActivity) getActivity()).
-							sendBroadcast(new Intent(LocalConst.NOTIFICATION_GOTO_PAUSE));
-				    	showMusicPlayButton((Button)v, LocalConst.paused);
-						Log.d(LocalConst.DTAG,"send pressed pause");
-//				    	dialogFileListInterface.onDialogFileListPause(tab);
-				    	break;
-				    case(LocalConst.paused):
-//						LocalBroadcastManager.getInstance(LocalConst.app).
-				    	((DirPlayerActivity) getActivity()).
-							sendBroadcast(new Intent(LocalConst.NOTIFICATION_GOTO_PLAY));
-				    	showMusicPlayButton((Button)v, LocalConst.playing);
-				    	Log.d(LocalConst.DTAG,"send pressed play");
-//				    	dialogFileListInterface.onDialogFileListPlay(tab);
-				    	break;
-			    }
-		    }
-		});
-	    
-	    
 	    flc_ibn_seekbar = (SeekBar)v.findViewById(R.id.flc_ibn_seekbar);
-	    flc_ibn_seekbar.setMax(100);
 	    
-		if(mpat == null){
+	    int playStatus = ((DirPlayerActivity) getActivity()).servicePlaying;
+	    int playType =  ((DirPlayerActivity) getActivity()).servicePlayType;
+	    
+	    if((playType == LocalConst.SinglePlay)
+	    	&& (playStatus != LocalConst.clear)	)
+	    {
+		    showMusicPlayButton(flc_ibn_pause, ((DirPlayerActivity) getActivity()).servicePlaying);
+		    
+		    flc_ibn_pause.setOnClickListener(new OnClickListener() {
+			
+				@Override
+				public void onClick(View v) {
+					Log.d(LocalConst.DTAG,"pressed button, check playing status: "
+							+ ((DirPlayerActivity) getActivity()).servicePlaying);
+				    switch(((DirPlayerActivity) getActivity()).servicePlaying){
+					    case LocalConst.clear:
+					    case(LocalConst.stopped):
+					    	// 什么也不做
+					    	break;
+					    case LocalConst.playing:
+//							LocalBroadcastManager.getInstance(LocalConst.app).
+					    	((DirPlayerActivity) getActivity()).
+								sendBroadcast(new Intent(LocalConst.NOTIFICATION_GOTO_PAUSE));
+					    	showMusicPlayButton((Button)v, LocalConst.paused);
+							Log.d(LocalConst.DTAG,"send pressed pause");
+//					    	dialogFileListInterface.onDialogFileListPause(tab);
+					    	break;
+					    case(LocalConst.paused):
+//							LocalBroadcastManager.getInstance(LocalConst.app).
+					    	((DirPlayerActivity) getActivity()).
+								sendBroadcast(new Intent(LocalConst.NOTIFICATION_GOTO_PLAY));
+					    	showMusicPlayButton((Button)v, LocalConst.playing);
+					    	Log.d(LocalConst.DTAG,"send pressed play");
+//					    	dialogFileListInterface.onDialogFileListPlay(tab);
+					    	break;
+				    }
+			    }
+			});
+		    
+		    flc_ibn_seekbar.setMax(100);
+		    
 			Log.d(LocalConst.DTAG, "AsyncTask: fragment - new MusicProgressAsyncTask()");
-//			DirPlayerActivity dpa = (DirPlayerActivity) LocalConst.dirPlayerActivity;
 			mpat = LocalConst.dirPlayerActivity.new MusicProgressAsyncTask(LocalConst.app, this);
 			mpat.execute();
-		}
+	    	
+	    }else{
+	    	flc_ibn_pause.setVisibility(View.GONE);
+	    	flc_ibn_seekbar.setVisibility(View.GONE);
+	    } 
+	
 	    // Inflate and set the layout for the dialog
 	    // Pass null as the parent view because its going in the dialog layout
 	    builder.setTitle(R.string.prompt)

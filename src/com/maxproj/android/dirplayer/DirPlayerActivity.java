@@ -810,32 +810,10 @@ public class DirPlayerActivity extends FragmentActivity implements
 
 		DialogFileList dfl = DialogFileList.newInstance(tab);
 		dfl.show(getSupportFragmentManager(), "");
-		if(mpat == null){
+//		if(mpat == null){
 //			Log.d(LocalConst.DTAG, "AsyncTask: new MusicProgressAsyncTask()");
 //			new MusicProgressAsyncTask(this, dfl).execute();
-		}
-		
-//		new copySingleFileAsyncTask(this, srcFile.getName())
-//		.execute(srcFile, desFile);
-		
-//		new DialogFragment() {
-//
-//			@Override
-//			public Dialog onCreateDialog(Bundle savedInstanceState) {
-//				AlertDialog.Builder builder = new AlertDialog.Builder(
-//						getActivity());
-//				builder.setTitle(R.string.prompt)
-//						.setItems(R.array.cmdList,
-//								new DialogInterface.OnClickListener() {
-//									public void onClick(DialogInterface dialog,
-//											int cmdIndex) {
-//										addCmds(cmdIndex, currentTab);
-//									}
-//								})
-//							.setNegativeButton(R.string.negative, null);
-//				return builder.create();
-//			}
-//		}.show(getSupportFragmentManager(), "");
+//		}
 
 		Log.d(LocalConst.DTAG, "after show Operation Dialogcon");
 
@@ -1108,8 +1086,10 @@ public class DirPlayerActivity extends FragmentActivity implements
 		protected Void doInBackground(Void... v) {
 			int progress = 0;
 			while(true){
-				if(isCancelled() == true)
+				if(isCancelled() == true){
+					Log.d(LocalConst.DTAG, "AsyncTask seekbar debug: cancelled!");
 					break;
+				}
 
 				// Update the progress bar
               	if(servicePlaying == LocalConst.playing){
@@ -1118,15 +1098,13 @@ public class DirPlayerActivity extends FragmentActivity implements
               			publishProgress(progress);
               			Log.d(LocalConst.DTAG, "AsyncTask seekbar debug: doInBackground("+progress+")");
               		}
-              	}else{
-              		Log.d(LocalConst.DTAG, "AsyncTask seekbar debug: doInBackground break!("+progress+")");
-              		break;
               	}
               	
+              	Log.d(LocalConst.DTAG, "AsyncTask seekbar debug: doInBackground loop!");
               	/**
               	 * 延迟200ms作为刷新
               	 */
-				try {Thread.sleep(200);} catch (InterruptedException e) {e.printStackTrace();}
+				try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
 			}
 			return null;
 		}
@@ -1141,7 +1119,11 @@ public class DirPlayerActivity extends FragmentActivity implements
 
 		protected void onPreExecute() {
 			Log.d(LocalConst.DTAG, "AsyncTask seekbar debug: onPreExecute()");
-
+			if(mService != null){
+      			int progress = mService.getProgress100();
+      			publishProgress(progress);
+      			Log.d(LocalConst.DTAG, "AsyncTask seekbar debug: doInBackground("+progress+")");
+      		}
 		}
 
 		protected void onPostExecute(Long result) {
