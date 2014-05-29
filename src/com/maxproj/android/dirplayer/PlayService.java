@@ -354,6 +354,14 @@ public class PlayService extends Service implements MediaPlayerControl {
 
 	}
 
+	/**
+	 * Service在操作媒体播放器之后将状态发送给remoteView相关类
+	 * 
+	 * 		包括下拉的系统信息栏中的播放按钮Widget
+	 * 		包括系统屏幕上的播放按钮Widget
+	 * 		但是不包括Activity和Fragment中的控制按钮
+	 * 
+	 */
 	public void sendNotification() {
 
 		if (playingFile != null) {
@@ -497,6 +505,13 @@ public class PlayService extends Service implements MediaPlayerControl {
 		mNotifyMgr.cancelAll();
 	}
 
+	/**
+	 * 接收控制媒体播放的Intent，并做相应控制
+	 *
+	 *		操作完成后，两件事
+	 *			发送Notification给RemoteView
+	 *			发送Intent给主Activity，更新其内部相关状态变量
+	 */
 	private class NotificationInforReceiver extends BroadcastReceiver {
 		private NotificationInforReceiver() { // Prevents instantiation
 		}

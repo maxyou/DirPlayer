@@ -1,12 +1,17 @@
 package com.maxproj.android.dirplayer;
 
+import java.io.File;
+
 import com.maxproj.android.dirplayer.DirPlayerActivity.MusicProgressAsyncTask;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,13 +24,15 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 public class DialogFileList  extends DialogFragment {
 
 	int tab;
 
 	MusicProgressAsyncTask mpat;
-	
+	TextView fl_playing_name;
+	Button flc_ibn_pause;	
     SeekBar flc_ibn_seekbar;
     
 	public interface DialogFileListInterface{
@@ -136,7 +143,8 @@ public class DialogFileList  extends DialogFragment {
 			}
 		});
 
-	    Button flc_ibn_pause = (Button)v.findViewById(R.id.flc_ibn_pause);
+	    fl_playing_name = (TextView)v.findViewById(R.id.fl_playing_name);
+	    flc_ibn_pause = (Button)v.findViewById(R.id.flc_ibn_pause);
 	    flc_ibn_seekbar = (SeekBar)v.findViewById(R.id.flc_ibn_seekbar);
 	    
 	    int playStatus = ((DirPlayerActivity) getActivity()).servicePlaying;
@@ -145,6 +153,10 @@ public class DialogFileList  extends DialogFragment {
 	    if((playType == LocalConst.SinglePlay)
 	    	&& (playStatus != LocalConst.clear)	)
 	    {
+	    	String s = ((DirPlayerActivity) getActivity()).servicePlayPath;
+	    	File f = new File(s);
+	    	fl_playing_name.setText(f.getName());
+	    	
 		    showMusicPlayButton(flc_ibn_pause, ((DirPlayerActivity) getActivity()).servicePlaying);
 		    
 		    flc_ibn_pause.setOnClickListener(new OnClickListener() {
@@ -162,7 +174,7 @@ public class DialogFileList  extends DialogFragment {
 //							LocalBroadcastManager.getInstance(LocalConst.app).
 					    	((DirPlayerActivity) getActivity()).
 								sendBroadcast(new Intent(LocalConst.NOTIFICATION_GOTO_PAUSE));
-					    	showMusicPlayButton((Button)v, LocalConst.paused);
+//					    	showMusicPlayButton((Button)v, LocalConst.paused);
 							Log.d(LocalConst.DTAG,"send pressed pause");
 //					    	dialogFileListInterface.onDialogFileListPause(tab);
 					    	break;
@@ -170,7 +182,7 @@ public class DialogFileList  extends DialogFragment {
 //							LocalBroadcastManager.getInstance(LocalConst.app).
 					    	((DirPlayerActivity) getActivity()).
 								sendBroadcast(new Intent(LocalConst.NOTIFICATION_GOTO_PLAY));
-					    	showMusicPlayButton((Button)v, LocalConst.playing);
+//					    	showMusicPlayButton((Button)v, LocalConst.playing);
 					    	Log.d(LocalConst.DTAG,"send pressed play");
 //					    	dialogFileListInterface.onDialogFileListPlay(tab);
 					    	break;
@@ -215,10 +227,20 @@ public class DialogFileList  extends DialogFragment {
 			mpat.execute();
 	    	
 	    }else{
+	    	fl_playing_name.setVisibility(View.GONE);
 	    	flc_ibn_pause.setVisibility(View.GONE);
 	    	flc_ibn_seekbar.setVisibility(View.GONE);
 	    } 
 	
+		IntentFilter mIntentFilter = new IntentFilter(LocalConst.BROADCAST_SERVICE_STATUS);
+		DialogFileListReceiver dialogFileListReceiver = new DialogFileListReceiver();
+		/**
+		 * 注意，使用LocalBroadcastManager注册的receiver只能接收本app内部的intent
+		 * 但notification在本app之外 所以这里需要直接使用registerReceiver来注册
+		 */
+		LocalBroadcastManager.getInstance(LocalConst.dirPlayerActivity).registerReceiver(dialogFileListReceiver, mIntentFilter);
+	    
+	    
 	    // Inflate and set the layout for the dialog
 	    // Pass null as the parent view because its going in the dialog layout
 	    builder.setTitle(R.string.prompt)
@@ -234,6 +256,44 @@ public class DialogFileList  extends DialogFragment {
 	    return builder.create();
 	}
 
+
+	/**
+	 * 接收控制媒体播放的Intent，并做相应显示变动
+	 */
+	private class DialogFileListReceiver extends BroadcastReceiver {
+		private DialogFileListReceiver() { // Prevents instantiation
+		}
+
+		// Called when the BroadcastReceiver gets an Intent it's registered to
+		// receive
+		@Override
+		public void onReceive(Context context, Intent intent) {
+
+			/**
+			 * 接收如下信息 播放、暂停
+			 */
+
+			String action = intent.getAction();
+			if (LocalConst.BROADCAST_SERVICE_STATUS.equals(action)){
+				int servicePlaying =  intent.getIntExtra(LocalConst.PLAY_STATUS, -1);
+				int servicePlayType = intent.getIntExtra(LocalConst.PLAY_TYPE, -1);
+				String servicePlayPath = intent.getStringExtra(LocalConst.PLAY_PATH);
+				
+				if(servicePlayType == LocalConst.SinglePlay){
+					if(servicePlaying == LocalConst.playing){
+						showMusicPlayButton(flc_ibn_pause, LocalConst.playing);
+					}else if(servicePlaying == LocalConst.paused){
+						showMusicPlayButton(flc_ibn_pause, LocalConst.paused);						
+					}
+				}
+				File f = new File(servicePlayPath);
+				if(f != null){
+					fl_playing_name.setText(f.getName());
+				}
+			}
+		}
+	}
+	
 	@Override
 	public void onDestroy() {
 		// TODO Auto-generated method stub
@@ -246,6 +306,9 @@ public class DialogFileList  extends DialogFragment {
 	}
 
 	private void showMusicPlayButton(Button v, int playing){
+		if(v == null)
+			return;
+		
 	    switch(playing){
 		    case LocalConst.clear:
 		    case(LocalConst.stopped):
@@ -253,10 +316,10 @@ public class DialogFileList  extends DialogFragment {
 		    	v.setVisibility(View.GONE);
 		    	break;
 		    case LocalConst.playing:
-	    		v.setText(getResources().getText(R.string.flc_ibn_pause));
+	    		v.setText(R.string.flc_ibn_pause);
 		    	break;
 		    case(LocalConst.paused):
-	    		v.setText(getResources().getText(R.string.flc_ibn_play));
+	    		v.setText(R.string.flc_ibn_play);
 		    	break;
 	    }
 	}

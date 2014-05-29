@@ -75,6 +75,24 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/flc_ibn_mkdir" />
+    
+	<LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+     	android:layout_marginTop="5dp"
+     	android:layout_marginBottom="5dp"
+        android:background="@color/notepad_paper"
+        android:orientation="vertical" >
+	
+    <TextView
+        android:id="@+id/fl_playing_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="2dp"
+        android:singleLine="true"
+        android:text="@string/bottom_about"
+        android:textColor="@color/notepad_text"
+        android:textSize="20sp" />
 
     <Button
         android:id="@+id/flc_ibn_pause"
@@ -86,5 +104,5 @@
         android:id="@+id/flc_ibn_seekbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
-
+	</LinearLayout>
 </LinearLayout>
