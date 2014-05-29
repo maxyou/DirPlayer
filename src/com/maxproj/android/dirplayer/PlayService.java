@@ -644,7 +644,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 			return 0;
 	}
 
-	public int getProgress100(){
+	public int getProgressPercentage(){
 		int duration = getDuration();
 		int current = getCurrentPosition(); 
 		
@@ -664,7 +664,13 @@ public class PlayService extends Service implements MediaPlayerControl {
 		if (mediaPlayer != null)
 			mediaPlayer.seekTo(pos);
 	}
-
+	
+	public void seekToPercentage(int perc) {
+		int duration = getDuration();
+		
+		if (mediaPlayer != null)
+			mediaPlayer.seekTo((perc * duration)/100);
+	}
 	@Override
 	public boolean isPlaying() {
 		// TODO Auto-generated method stub

@@ -1077,6 +1077,8 @@ public class DirPlayerActivity extends FragmentActivity implements
 		Context context;
 		Fragment dialogFragment;
 
+		public boolean usrAdjust = false;
+		
 		public MusicProgressAsyncTask(Context context, Fragment fragment) {
 			Log.d(LocalConst.DTAG, "AsyncTask seekbar debug:this("+ this+ ")");
 			this.context = context;
@@ -1092,13 +1094,15 @@ public class DirPlayerActivity extends FragmentActivity implements
 				}
 
 				// Update the progress bar
-              	if(servicePlaying == LocalConst.playing){
-              		if(mService != null){
-              			progress = mService.getProgress100();
-              			publishProgress(progress);
-              			Log.d(LocalConst.DTAG, "AsyncTask seekbar debug: doInBackground("+progress+")");
-              		}
-              	}
+				if(usrAdjust == false){
+	              	if(servicePlaying == LocalConst.playing){
+	              		if(mService != null){
+	              			progress = mService.getProgressPercentage();
+	              			publishProgress(progress);
+	              			Log.d(LocalConst.DTAG, "AsyncTask seekbar debug: doInBackground("+progress+")");
+	              		}
+	              	}
+				}
               	
               	Log.d(LocalConst.DTAG, "AsyncTask seekbar debug: doInBackground loop!");
               	/**
@@ -1120,7 +1124,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 		protected void onPreExecute() {
 			Log.d(LocalConst.DTAG, "AsyncTask seekbar debug: onPreExecute()");
 			if(mService != null){
-      			int progress = mService.getProgress100();
+      			int progress = mService.getProgressPercentage();
       			publishProgress(progress);
       			Log.d(LocalConst.DTAG, "AsyncTask seekbar debug: doInBackground("+progress+")");
       		}

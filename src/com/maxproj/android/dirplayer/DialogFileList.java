@@ -179,6 +179,36 @@ public class DialogFileList  extends DialogFragment {
 			});
 		    
 		    flc_ibn_seekbar.setMax(100);
+		    flc_ibn_seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+				
+				@Override
+				public void onStopTrackingTouch(SeekBar seekBar) {
+					// TODO Auto-generated method stub
+					if(mpat != null){
+						mpat.usrAdjust = false;
+					}
+				}
+				
+				@Override
+				public void onStartTrackingTouch(SeekBar seekBar) {
+					// TODO Auto-generated method stub
+					if(mpat != null){
+						mpat.usrAdjust = true;
+					}
+				}
+				
+				@Override
+				public void onProgressChanged(SeekBar seekBar, int progress,
+						boolean fromUser) {
+					// TODO Auto-generated method stub
+					if(fromUser == true){
+						if(((DirPlayerActivity) getActivity()).mService != null){
+							((DirPlayerActivity) getActivity()).mService.seekToPercentage(progress);
+							seekBar.setProgress(progress);
+						}
+					}
+				}
+			});
 		    
 			Log.d(LocalConst.DTAG, "AsyncTask: fragment - new MusicProgressAsyncTask()");
 			mpat = LocalConst.dirPlayerActivity.new MusicProgressAsyncTask(LocalConst.app, this);
