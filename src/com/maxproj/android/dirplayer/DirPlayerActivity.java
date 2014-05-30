@@ -29,8 +29,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.Collator;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Locale;
@@ -1834,11 +1836,20 @@ public class DirPlayerActivity extends FragmentActivity implements
 		}
 		Log.d(LocalConst.DTAG, "fillList loop end 1");
 
-		Collections.sort(dirList[tab]);
-		Collections.sort(fileList[tab]);
+		Collections.sort(dirList[tab], new Comparator<File>() {
+	         @Override
+	         public int compare(File o1, File o2) {
+	             return Collator.getInstance().compare(o1.getName(), o2.getName());
+	         }
+	     });
+		Collections.sort(fileList[tab], new Comparator<File>() {
+	         @Override
+	         public int compare(File o1, File o2) {
+	             return Collator.getInstance().compare(o1.getName(), o2.getName());
+	         }
+	     });
 
 	}
-
 	/**
 	 * 初始化左右窗口的view list items
 	 */
