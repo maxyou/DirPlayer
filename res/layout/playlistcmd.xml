@@ -16,21 +16,51 @@
         android:layout_height="wrap_content"
         android:text="@string/plc_ibn_del" />
 
-<LinearLayout 
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal" >
-    <TextView
-        android:id="@+id/plc_ibn_seq_prompt"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/plc_ibn_seq" />
-    
-    <Button
-        android:id="@+id/plc_ibn_seq"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/play_seq_normal" />
-    
-</LinearLayout>
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"
+        android:background="@color/notepad_paper"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/pl_playing_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="2dp"
+            android:singleLine="true"
+            android:text="@string/bottom_about"
+            android:textColor="@color/notepad_text"
+            android:textSize="20sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/plc_ibn_pause"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/notification_goto_pause" />
+
+            <Button
+                android:id="@+id/plc_ibn_next"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/notification_goto_next" />
+            <Button
+                android:id="@+id/plc_ibn_seq"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/play_seq_normal" />
+        </LinearLayout>
+
+        <SeekBar
+            android:id="@+id/plc_ibn_seekbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
 </LinearLayout>

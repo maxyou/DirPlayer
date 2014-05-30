@@ -187,6 +187,7 @@ public class LocalConst {
 		public static final String PLAY_TYPE = "PLAY_TYPE";
 		public static final String PLAY_STATUS = "PLAY_STATUS";
 		public static final String PLAY_PATH = "PLAY_PATH";
+		public static final String PLAY_SEQUENCE = "PLAY_SEQUENCE";
 		public static final String PLAY_PL_TAB = "PLAY_PL_TAB";
 		public static final String PLAY_LIST_INDEX = "PLAY_LIST_INDEX";
 	

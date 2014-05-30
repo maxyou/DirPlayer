@@ -131,7 +131,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 //			playingFile = null;
 			
 			updatePlayingFlag(playingType, LocalConst.paused,
-					playingFile.getPath(), playingPlTab);
+					playingFile.getPath(), playingPlTab, playSequence);
 			
 		}
 		
@@ -265,7 +265,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 			}
 		} else if (playingType == LocalConst.SinglePlay) {
 			updatePlayingFlag(playingType, LocalConst.clear,
-					playingFile.getPath(), playingPlTab);
+					playingFile.getPath(), playingPlTab, playSequence);
 			
 			//clear record
 			playingType = LocalConst.NoPlay;
@@ -334,7 +334,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 			 */
 
 			updatePlayingFlag(playingType, LocalConst.playing,
-					playingFile.getPath(), playingPlTab);
+					playingFile.getPath(), playingPlTab, playSequence);
 			sendNotification();
 
 			if(mediaPlayer.isPlaying()){
@@ -355,11 +355,10 @@ public class PlayService extends Service implements MediaPlayerControl {
 	}
 
 	/**
-	 * Service在操作媒体播放器之后将状态发送给remoteView相关类
-	 * 
-	 * 		包括下拉的系统信息栏中的播放按钮Widget
-	 * 		包括系统屏幕上的播放按钮Widget
-	 * 		但是不包括Activity和Fragment中的控制按钮
+	 * Service将媒体播放器状态发送给remoteView相关类
+	 * 		包括下拉的系统信息栏notification
+	 * 		包括系统屏幕的Widget
+	 * 		但是不包括Activity和Fragment中的控制按钮，这个用pleaseUpdatePlayingFlag()通知
 	 * 
 	 */
 	public void sendNotification() {
@@ -477,7 +476,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 			// Log.d(LocalConst.TMP, "end of sendNotification()");
 			
 			/**
-			* send to widget
+			* 发送给屏幕widget
 			*/
 			AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(LocalConst.app);
 			ComponentName thisWidget = new ComponentName(LocalConst.app, 
@@ -553,6 +552,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 				Log.d(LocalConst.TMP, "play sequence switch");
 				playSeqSwitch();
 				sendNotification();
+				pleaseUpdatePlayingFlag();
 			}
 
 		}
@@ -594,10 +594,10 @@ public class PlayService extends Service implements MediaPlayerControl {
 	public void pleaseUpdatePlayingFlag(){
 		if(playingFile != null){
 			updatePlayingFlag(playingType, playStatus, playingFile.getPath(),
-				playingPlTab);
+				playingPlTab, playSequence);
 		}else{
 			updatePlayingFlag(playingType, playStatus, null,
-					playingPlTab);
+					playingPlTab, playSequence);
 		}
 		
 	}
@@ -605,7 +605,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 	 * 这里不太好 只需要发送： 路径是什么 点亮什么 熄灭什么
 	 */
 	public void updatePlayingFlag(int playType, int playing, String playPath,
-			int playPlTab) {
+			int playPlTab, int playSequence) {
 		/**
 		 * 需要发送item位置，如果有多个列表的话，需要发送列表编号
 		 */
@@ -614,6 +614,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 				.putExtra(LocalConst.PLAY_TYPE, playType)
 				.putExtra(LocalConst.PLAY_STATUS, playing)
 				.putExtra(LocalConst.PLAY_PATH, playPath)
+				.putExtra(LocalConst.PLAY_SEQUENCE, playSequence)
 				.putExtra(LocalConst.PLAY_LIST_INDEX, playListItemIndex)
 				.putExtra(LocalConst.PLAY_PL_TAB, playPlTab);
 		
@@ -635,7 +636,7 @@ public class PlayService extends Service implements MediaPlayerControl {
 		if (mediaPlayer != null) {
 			if (playingFile != null) {
 				updatePlayingFlag(playingType, LocalConst.clear,
-						playingFile.getPath(), playingPlTab);
+						playingFile.getPath(), playingPlTab, playSequence);
 			}
 			cancelNotification();
 

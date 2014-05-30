@@ -86,6 +86,7 @@ import android.widget.LinearLayout;
 import android.widget.MediaController;
 import android.widget.RadioButton;
 import android.widget.MediaController.MediaPlayerControl;
+import android.widget.SeekBar;
 import android.widget.ShareActionProvider;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -1075,14 +1076,16 @@ public class DirPlayerActivity extends FragmentActivity implements
 			AsyncTask<Void, Integer, Void> {
 		String msg;
 		Context context;
-		Fragment dialogFragment;
+		SeekBar sb;
+//		Fragment dialogFragment;
 
 		public boolean usrAdjust = false;
 		
-		public MusicProgressAsyncTask(Context context, Fragment fragment) {
+		public MusicProgressAsyncTask(Context context, SeekBar sb) {
 			Log.d(LocalConst.DTAG, "AsyncTask seekbar debug:this("+ this+ ")");
 			this.context = context;
-			this.dialogFragment = fragment;
+			this.sb = sb;
+//			this.dialogFragment = fragment;
 		}
 
 		protected Void doInBackground(Void... v) {
@@ -1115,8 +1118,8 @@ public class DirPlayerActivity extends FragmentActivity implements
 
 		protected void onProgressUpdate(Integer... progress) {
 			Log.d(LocalConst.DTAG, "AsyncTask seekbar debug:onProgressUpdate(" + progress[0].intValue() + ")"+ this);
-			if (dialogFragment != null) {
-				((DialogFileList)dialogFragment).flc_ibn_seekbar.setProgress(progress[0].intValue());
+			if (sb != null) {
+				sb.setProgress(progress[0].intValue());
 				Log.d(LocalConst.DTAG, "AsyncTask seekbar debug:onProgressUpdate executed");
 			}
 		}

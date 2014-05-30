@@ -223,7 +223,7 @@ public class DialogFileList  extends DialogFragment {
 			});
 		    
 			Log.d(LocalConst.DTAG, "AsyncTask: fragment - new MusicProgressAsyncTask()");
-			mpat = LocalConst.dirPlayerActivity.new MusicProgressAsyncTask(LocalConst.app, this);
+			mpat = LocalConst.dirPlayerActivity.new MusicProgressAsyncTask(LocalConst.app, flc_ibn_seekbar);
 			mpat.execute();
 	    	
 	    }else{
@@ -286,9 +286,11 @@ public class DialogFileList  extends DialogFragment {
 						showMusicPlayButton(flc_ibn_pause, LocalConst.paused);						
 					}
 				}
-				File f = new File(servicePlayPath);
-				if(f != null){
-					fl_playing_name.setText(f.getName());
+				if(servicePlayPath != null){
+					File f = new File(servicePlayPath);
+					if(f != null){
+						fl_playing_name.setText(f.getName());
+					}
 				}
 			}
 		}
