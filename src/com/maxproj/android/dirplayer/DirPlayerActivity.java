@@ -2312,7 +2312,11 @@ public class DirPlayerActivity extends FragmentActivity implements
 					{
 						Log.d(LocalConst.DTAG,"onScroll() find scroll from bottom!");
 						if(mediaController != null){
-							mediaController.show();
+							/**
+							 * 暂时不用系统自带的，因为色彩风格不匹配
+							 * 并且导致“播放/暂停”的切换和其他控制面板不吻合
+							 */
+//							mediaController.show();
 						}else{
 							Toast.makeText(LocalConst.dirPlayerActivity, "mediaController is null!", Toast.LENGTH_SHORT).show();
 						}

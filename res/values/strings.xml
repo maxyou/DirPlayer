@@ -81,7 +81,7 @@
     <string name="notification_goto_pause">Pause</string>
     <string name="notification_goto_play">Play</string>
     <string name="notification_back_msg">Back to player</string>
-    <string name="mediacontroller_prompt">屏幕顶部消息栏有播放按钮，或从状态栏往上滑出播放按钮</string>
+    <string name="mediacontroller_prompt">屏幕顶部消息栏有播放控制按钮</string>
 
 
 <!--     	设置相关 -->
