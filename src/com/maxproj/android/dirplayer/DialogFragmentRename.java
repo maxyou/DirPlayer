@@ -73,7 +73,7 @@ public class DialogFragmentRename extends DialogFragment {
 	        		if(!mf.renameTo(new File(mf.getParentFile(), newName))){
 	        			Toast.makeText(
 	    	        			getActivity(),
-	    	        			"由于某种原因，"+mf.getName()+"改名失败",
+	    	        			mf.getName() + getResources().getString(R.string.rename_fail_notice),
 	    	        			Toast.LENGTH_LONG)
 	    	        			.show();
 	        		}

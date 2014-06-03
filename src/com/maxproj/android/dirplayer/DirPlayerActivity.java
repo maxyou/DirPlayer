@@ -360,7 +360,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 		LvRow lr = bookMarkItems.get(i);
 		File f = lr.getFile();
 		if(f.exists() == false){
-			Toast.makeText(this, "该路径不存在，可能被移走或删除了 " + pathTrim4Show(lr.getPath()), Toast.LENGTH_LONG).show();
+			Toast.makeText(this, getResources().getString(R.string.bm_act_err) + pathTrim4Show(lr.getPath()), Toast.LENGTH_LONG).show();
 			return;
 		}
 		
@@ -725,7 +725,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 		Log.d(LocalConst.DTAG, "Button4 clicked in fragment " + tab);
 		// 向上
 		if ((currentPath[tab].equals(LocalConst.pathRoot))){
-			Toast.makeText(this, "只能到这一层啦",
+			Toast.makeText(this, getResources().getString(R.string.fl_err_notice1),
 					Toast.LENGTH_LONG).show();			
 		}
 		else{// 如果已经到顶层了，什么也不做
@@ -759,7 +759,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 			 */
 			Log.d(LocalConst.DTAG, "Button5 add current directory");
 			
-			Toast.makeText(this, "您添加了收藏： " + pathTrim4Show(currentPath[tab]), Toast.LENGTH_LONG).show();
+			Toast.makeText(this, getResources().getString(R.string.bm_act_notice) + pathTrim4Show(currentPath[tab]), Toast.LENGTH_LONG).show();
 			
 //			File f = new File(currentPath[tab]);
 			
@@ -786,7 +786,9 @@ public class DirPlayerActivity extends FragmentActivity implements
 //				}
 			}
 			
-			Toast.makeText(this, "您添加了收藏： " + pathTrim4Show(selectedItems[tab].getFirst().getPath())+"等等", Toast.LENGTH_LONG).show();
+			Toast.makeText(this, getResources().getString(R.string.bm_act_notice)
+					+ pathTrim4Show(selectedItems[tab].getFirst().getPath())
+					+ getResources().getString(R.string.bm_act_notice2), Toast.LENGTH_LONG).show();
 
 		}
 		Log.d(LocalConst.DTAG, "total bookMarkItems: " + bookMarkItems.size());
@@ -964,7 +966,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 			        			Log.d(LocalConst.DTAG, "mkdir get exception");
 			        			Toast.makeText(
 			        			getActivity(),
-			        			"由于某种原因，比如目录名不合法，本次创建文件夹失败",
+			        			getResources().getString(R.string.fl_err_notice2),
 			        			Toast.LENGTH_LONG)
 			        			.show();
 			        		}
@@ -2552,7 +2554,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 	    if (keyCode == KeyEvent.KEYCODE_BACK) {
 	    	Log.d(LocalConst.DTAG, "back key found!");
-	    	Toast.makeText(this, "连按两次回退键可以退出程序", Toast.LENGTH_SHORT).show();
+	    	Toast.makeText(this, getResources().getString(R.string.sys_notice), Toast.LENGTH_SHORT).show();
 	    	
 	        if (backPressed == true) {
 	        	Log.d(LocalConst.DTAG, "back key twice! close app!");
@@ -3145,8 +3147,8 @@ public class DirPlayerActivity extends FragmentActivity implements
 		 */
 		bookMarkSelectedItems = generateSelectItems(bookMarkItems);
 		addCmds(9, LocalConst.TAB_BOOKMARK);
-		Toast.makeText(this, "从收藏拷贝到左窗口!",
-				Toast.LENGTH_LONG).show();
+//		Toast.makeText(this, "从收藏拷贝到左窗口!",
+//				Toast.LENGTH_LONG).show();
 	}
 
 
@@ -3154,8 +3156,8 @@ public class DirPlayerActivity extends FragmentActivity implements
 	public void onDialogBookMarkCopy2Right() {
 		bookMarkSelectedItems = generateSelectItems(bookMarkItems);
 		addCmds(10, LocalConst.TAB_BOOKMARK);
-		Toast.makeText(this, "从收藏拷贝到右窗口!",
-				Toast.LENGTH_LONG).show();
+//		Toast.makeText(this, "从收藏拷贝到右窗口!",
+//				Toast.LENGTH_LONG).show();
 	}
 
 	@Override
@@ -3195,7 +3197,9 @@ public class DirPlayerActivity extends FragmentActivity implements
 			bookMarkItems.add(lr);			
 		}
 		
-		Toast.makeText(this, "您添加了收藏： " + pathTrim4Show(selectedItems.getFirst().getPath())+"等等", Toast.LENGTH_LONG).show();
+		Toast.makeText(this, getResources().getString(R.string.bm_act_notice)
+				+ pathTrim4Show(selectedItems.getFirst().getPath())
+				+ getResources().getString(R.string.bm_act_notice2), Toast.LENGTH_LONG).show();
 		
 		bookMarkArrayAdapter.notifyDataSetChanged();		
 	}

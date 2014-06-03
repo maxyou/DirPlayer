@@ -13,6 +13,7 @@
     <string name="title_section2">Right</string>
     <string name="title_section3">BookMark</string>
     <string name="title_section4">Play</string>
+    <string name="sys_notice">Press twice to exit</string>
     
 <!--     	左右文件浏览窗口操作命令 -->
     <string name="prompt">What to do?</string>
@@ -46,7 +47,9 @@
     <string name="rename_negative">Cancel</string>
     <string name="rename_neutral">Cancel all</string>
     <string name="rename_positive">OK</string>
-    <string name="rename_fail_notice">Rename failed</string>
+    <string name="rename_fail_notice">Rename failed.</string>
+    <string name="fl_err_notice1">Here is the toppest layer.</string>
+    <string name="fl_err_notice2">Create directory failed for some problem.</string>
 
 <!--     	收藏窗口操作命令 -->
     <string name="bookmark_prompt">What to do?</string>
@@ -62,6 +65,9 @@
     <string name="bm_act4">Up</string>
     <string name="bm_act5">Down</string>
     <string name="bm_act6">Op</string>
+    <string name="bm_act_err">The path is not exist now.</string>
+    <string name="bm_act_notice">You add favority:  </string>
+    <string name="bm_act_notice2"> etc.</string>
     
 <!--     	播放窗口操作命令 -->
     <string name="plc_ibn_add">Add to bookmark</string>
@@ -81,7 +87,7 @@
     <string name="notification_goto_pause">Pause</string>
     <string name="notification_goto_play">Play</string>
     <string name="notification_back_msg">Back to player</string>
-    <string name="mediacontroller_prompt">屏幕顶部消息栏有播放控制按钮</string>
+    <string name="mediacontroller_prompt">System notification has media controller</string>
 
 
 <!--     	设置相关 -->

@@ -13,6 +13,7 @@
     <string name="title_section2">右窗口</string>
     <string name="title_section3">收藏</string>
     <string name="title_section4">播放</string>
+    <string name="sys_notice">连按两次回退键可以退出程序</string>
     
 <!--     	左右文件浏览窗口操作命令 -->
     <string name="prompt">怎样操作？</string>
@@ -47,6 +48,8 @@
     <string name="rename_neutral">取消所有</string>
     <string name="rename_positive">确定</string>
     <string name="rename_fail_notice">由于某种原因，本次改名失败</string>
+    <string name="fl_err_notice1">只能到这一层啦</string>
+    <string name="fl_err_notice2">由于某种原因，比如目录名不合法，本次创建文件夹失败</string>
 
 <!--     	收藏窗口操作命令 -->
     <string name="bookmark_prompt">怎样操作？</string>
@@ -62,6 +65,10 @@
     <string name="bm_act4">上移</string>
     <string name="bm_act5">下移</string>
     <string name="bm_act6">操作</string>
+    <string name="bm_act_err">该路径不存在，可能被移走或删除了</string>
+    <string name="bm_act_notice">您添加了收藏： </string>
+    <string name="bm_act_notice2">等等</string>
+    
     
 <!--     	播放窗口操作命令 -->
     <string name="plc_ibn_add">添加到收藏列表</string>
