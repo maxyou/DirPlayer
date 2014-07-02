@@ -1966,6 +1966,14 @@ public class DirPlayerActivity extends FragmentActivity implements
 		{
 			for (int i = 0; i < LocalConst.plCount; i++) {
 				playListItems[i] = new LinkedList<LvRow>();
+				
+				/**
+				 * 注意
+				 * 		1，下面new MyArrayAdapter()的第二个参数可能错了，需要检查一下
+				 * 		2，可能后续有其他初始化，所以这里的错误没有产生影响
+				 * 
+				 * 20140703
+				 */
 				playListArrayAdapter[i] = new MyArrayAdapter(this, R.layout.fragment_playlist, null, LocalConst.TAB_PLAYLIST+i);
 			}
 			for (int i = 0; i < LocalConst.tabCount; i++) {
