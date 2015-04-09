@@ -1,5 +1,8 @@
 DirPlayer说明
 
+![pic][1]
+[1]: https://raw.githubusercontent.com/maxyou/DirPlayer/master/ezgif.com-resize.gif
+
 设计目标
 
      (1)一个文件管理器，一个音视频播放器
