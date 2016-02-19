@@ -1,3 +1,6 @@
+[demo apk][2]
+[2]: https://github.com/maxyou/DirPlayer/raw/master/com.maxproj.android.dirplayer.encryptedsignedAligned.apk
+
 DirPlayer说明
 
 ![pic][1]
