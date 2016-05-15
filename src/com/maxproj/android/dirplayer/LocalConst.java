@@ -29,14 +29,35 @@ public class LocalConst {
 	
 	public static final String pathRoot = Environment
 			.getExternalStorageDirectory().getPath();
-	public static LinkedList<File> roots;
+	public static class RootsVirName{
+		File file;
+		String virtualName;
+		
+		public RootsVirName(File file, String virtualName){
+			this.file = file;
+			this.virtualName = virtualName;
+		}
+	}
+	public static LinkedList<RootsVirName> roots;
 	public static final String rootVirtual = "/";
 	public static final String time_format = "yyyy-MM-dd";
 
+	public static String getVirtualRootsName(File file){
+		
+		for(RootsVirName f:roots){
+			if(f.file.getAbsolutePath().equals(file.getAbsolutePath())){
+				return f.virtualName;
+			}
+		}
+		
+		return file.getName();
+		
+	}
+
 	public static boolean isVirtualRoots(String path){
 		
-		for(File f:roots){
-			if(f.getAbsolutePath().equals(path)){
+		for(RootsVirName f:roots){
+			if(f.file.getAbsolutePath().equals(path)){
 				return true;
 			}
 		}
@@ -68,7 +89,7 @@ public class LocalConst {
 	if(path.equals(rootVirtual)){
 		File[] files = new File[roots.size()];
 		for(int i = 0; i < roots.size(); i++){
-			files[i] = roots.get(i);
+			files[i] = roots.get(i).file;
 		}
 		return files;
 	}else{			

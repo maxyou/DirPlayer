@@ -14,7 +14,11 @@
     <string name="title_section3">BookMark</string>
     <string name="title_section4">Play</string>
     <string name="sys_notice">Press twice to exit</string>
-    
+    <string name="sys_external_storage">sys_external_storage</string>
+    <string name="sys_sdcard">sdcard</string>
+    <string name="sys_music">sys_music</string>
+    <string name="sys_movie">sys_movie</string>
+        
 <!--     	左右文件浏览窗口操作命令 -->
     <string name="prompt">What to do?</string>
     <string name="flc_ibn_add">Add to playlist</string>

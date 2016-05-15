@@ -14,6 +14,10 @@
     <string name="title_section3">收藏</string>
     <string name="title_section4">播放</string>
     <string name="sys_notice">连按两次回退键可以退出程序</string>
+    <string name="sys_external_storage">系统内置存储器</string>
+    <string name="sys_sdcard">SD卡</string>
+    <string name="sys_music">系统音乐目录</string>
+    <string name="sys_movie">系统视频目录</string>
     
 <!--     	左右文件浏览窗口操作命令 -->
     <string name="prompt">怎样操作？</string>

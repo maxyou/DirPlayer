@@ -3,6 +3,8 @@ package com.maxproj.android.dirplayer;
 import java.io.File;
 import java.util.LinkedList;
 
+import com.maxproj.android.dirplayer.LocalConst.RootsVirName;
+
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Application;
@@ -24,27 +26,34 @@ public class MyApplication extends Application {
     	
     	Context context = getApplicationContext();
     	
-    	LocalConst.roots = new LinkedList<File>();
+    	LocalConst.roots = new LinkedList<RootsVirName>();
 
     	/**
     	 * 不可拆卸外存
     	 * 可拆卸外存(SD卡)
     	 * 只需要根目录
     	 */
-    	LocalConst.roots.add(Environment.getExternalStorageDirectory());
+    	LocalConst.roots.add(new RootsVirName(Environment.getExternalStorageDirectory(),
+    			getResources().getString(R.string.sys_external_storage)));
     	
     	if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
         	File files[] = context.getExternalFilesDirs(null);
             for(int i = 1; i < files.length; i++) {
-                LocalConst.roots.add(files[i].getParentFile().getParentFile().getParentFile().getParentFile());
+            	
+                LocalConst.roots.add(new RootsVirName(files
+                		[i].getParentFile().getParentFile().getParentFile().getParentFile(),
+                		getResources().getString(R.string.sys_sdcard)+i
+                		));
             }
     	}
         
         /**
          * 公共媒体目录
          */
-        LocalConst.roots.add(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC));
-        LocalConst.roots.add(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES));
+        LocalConst.roots.add(new RootsVirName(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC),
+        		getResources().getString(R.string.sys_music)));
+        LocalConst.roots.add(new RootsVirName(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES),
+        		getResources().getString(R.string.sys_movie)));
 //        
 //        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
 //	        /**
@@ -60,8 +69,8 @@ public class MyApplication extends Application {
 //	        }
 //        }
         
-        for(File f : LocalConst.roots){
-        	Log.d(LocalConst.DTAG, "updateFileInfor: roots "+f.getAbsolutePath());
+        for(RootsVirName r : LocalConst.roots){
+        	Log.d(LocalConst.DTAG, "updateFileInfor: roots "+r.file.getAbsolutePath());
         }
     }
 }

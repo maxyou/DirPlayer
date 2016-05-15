@@ -42,7 +42,7 @@ public class MyArrayAdapter extends ArrayAdapter<LvRow>{
 
         
         TextView name = (TextView)fileView.findViewById(R.id.text1);
-        String fileName = lr.getName(); 
+        String fileName = LocalConst.getVirtualRootsName(lr.getFile()); 
         name.setText(fileName);
 
         ImageView iv = (ImageView)fileView.findViewById(R.id.fileicon);
