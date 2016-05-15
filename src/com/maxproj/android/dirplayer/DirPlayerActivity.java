@@ -93,6 +93,8 @@ import android.widget.ShareActionProvider;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
+
+
 import com.maxproj.android.dirplayer.PlayService.LocalBinder;
 //import android.widget.MediaController;
 
@@ -1725,9 +1727,10 @@ public class DirPlayerActivity extends FragmentActivity implements
 			try {
 				updateFileInfor(f, tab);
 			} catch (Exception e) {
-				if (e.getMessage().equals(LocalConst.pathRoot)) {
-					updateDirInfor(LocalConst.pathRoot, tab);
-				}
+				Log.d(LocalConst.DTAG, "updateDirInfor exception: " + e.getMessage());
+//				if (e.getMessage().equals(LocalConst.pathRoot)) {
+//					updateDirInfor(LocalConst.pathRoot, tab);
+//				}
 			}
 		} else {
 			// NullPointerException
@@ -1738,22 +1741,26 @@ public class DirPlayerActivity extends FragmentActivity implements
 	private void updateFileInfor(File f, int tab) throws Exception {
 		File files[];
 
-		Log.d(LocalConst.DTAG, "xtab "+tab+" goto this directory: " + f.getPath());
+		Log.d(LocalConst.DTAG, "updateFileInfor: xtab "+tab+" goto this directory: " + f.getPath());
 		try {
 			files = f.listFiles();
 			if (files == null) {
-				Log.d(LocalConst.DTAG, "sorry, xtab "+tab+" can't update to this directory: " +
+				Log.d(LocalConst.DTAG, "updateFileInfor: sorry, xtab "+tab+" can't update to this directory: " +
 				 currentPath);
 				Toast.makeText(this, "Failed to this directory!",
 						Toast.LENGTH_SHORT).show();
 				return;
 			}
 			// update to new directory
-			Log.d(LocalConst.DTAG, "xtab "+tab+" get currentPath and praentPath");
 			currentPath[tab] = f.getPath();
-			parentPath[tab] = f.getParent(); // 如果f是根目录会怎样？
+			Log.d(LocalConst.DTAG, "updateFileInfor: xtab "+tab+" get currentPath");
+			Log.d(LocalConst.DTAG, "updateFileInfor: xtab "+tab+" 1 getpath" + f.getPath());
+			Log.d(LocalConst.DTAG, "updateFileInfor: xtab "+tab+" 2 getprarentpath"+ f.getParent());
+//			parentPath[tab] = f.getParent(); // 如果f是根目录会怎样？
+			parentPath[tab] = LocalConst.getParentVirtual(f); // 如果f是根目录会怎样？
+			Log.d(LocalConst.DTAG, "updateFileInfor: xtab "+tab+" get praentPath");
 
-			Log.d(LocalConst.DTAG, "xtab "+tab+" save currentPath");
+			Log.d(LocalConst.DTAG, "updateFileInfor: xtab "+tab+" save currentPath");
 			if (tab == 0) {
 				prefEditor.putString(getString(R.string.left_window_path),
 						currentPath[tab]);
@@ -1770,7 +1777,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 
 			myArrayAdapter[tab] = new MyArrayAdapter(this, R.layout.file_row,
 					viewListItems[tab], LocalConst.TAB_LEFT + tab);
-			Log.d(LocalConst.FRAGMENT_LIFE, "after new MyArrayAdapter");
+			Log.d(LocalConst.FRAGMENT_LIFE, "updateFileInfor: after new MyArrayAdapter");
 
 			if (fragmentListview[tab] != null) {
 				fragmentListview[tab].setListviewAdapter(myArrayAdapter[tab],
@@ -1780,18 +1787,18 @@ public class DirPlayerActivity extends FragmentActivity implements
 					updateBottomStatus(pathTrim4Show(currentPath[tab]));
 				}
 				Log.d(LocalConst.LIFECYCLE,
-						"DirPlayerActivity.updateFileInfor()!"+" "+fragmentListview[tab]+" "+myArrayAdapter);
+						"updateFileInfor: DirPlayerActivity.updateFileInfor()!"+" "+fragmentListview[tab]+" "+myArrayAdapter);
 			} else {
-				Log.d(LocalConst.FRAGMENT_LIFE, "fragmentListview is null!");
+				Log.d(LocalConst.FRAGMENT_LIFE, "updateFileInfor: fragmentListview is null!");
 			}
 		} catch (Exception e) {
-			Log.d(LocalConst.FRAGMENT_LIFE, "xtab path: " + f.getPath() + "Exception e: " + e.toString());
+			Log.d(LocalConst.FRAGMENT_LIFE, "updateFileInfor: xtab path: " + f.getPath() + "Exception e: " + e.toString());
 			e.printStackTrace();
 
 			throw new Exception(LocalConst.pathRoot);
 			// return;
 		} finally {
-			Log.d(LocalConst.FRAGMENT_LIFE, "xtab " + tab + " finally " + currentPath[tab]);
+			Log.d(LocalConst.FRAGMENT_LIFE, "updateFileInfor: xtab " + tab + " finally " + currentPath[tab]);
 			// return;
 		}
 
@@ -1812,7 +1819,8 @@ public class DirPlayerActivity extends FragmentActivity implements
 		if(path.equals(LocalConst.pathRoot)){
 			return "/";
 		}else{
-			return path.substring(LocalConst.pathRoot.length());
+			return "/";
+//			return path.substring(LocalConst.pathRoot.length());
 		}
 	}
 	

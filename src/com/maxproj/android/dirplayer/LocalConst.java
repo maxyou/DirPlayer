@@ -29,7 +29,104 @@ public class LocalConst {
 	
 	public static final String pathRoot = Environment
 			.getExternalStorageDirectory().getPath();
+	public static LinkedList<File> roots;
+	public static final String rootVirtual = "/";
 	public static final String time_format = "yyyy-MM-dd";
+
+	public static boolean isVirtualRoots(String path){
+		
+		for(File f:roots){
+			if(f.getAbsolutePath().equals(path)){
+				return true;
+			}
+		}
+		
+		return false;
+		
+	}
+	
+
+	public static String getParentVirtual(File file) {
+		return getParentVirtual(file.getAbsolutePath());
+	}
+	
+	public static String getParentVirtual(String path) {
+		if(isVirtualRoots(path)){
+			Log.d(LocalConst.DTAG, "updateFileInfor: get praentPath in virtual file");
+			return rootVirtual;
+		}else{
+			Log.d(LocalConst.DTAG, "updateFileInfor: get praentPath");
+			return new File(path).getParent();
+		}
+	}
+
+
+	public File[] listFilesVirtual(String path) {
+	if(path.equals(rootVirtual)){
+		File[] files = new File[roots.size()];
+		for(int i = 0; i < roots.size(); i++){
+			files[i] = roots.get(i);
+		}
+		return files;
+	}else{			
+		return new File(path).listFiles();
+	}
+}
+//	
+//	public static class MyVirtualFile extends File{
+//		
+//		String path;
+//
+//		public MyVirtualFile(String path) {
+//			super(path);
+//			// TODO Auto-generated constructor stub
+//			
+//			this.path = path;
+//		}
+//
+//		public MyVirtualFile(File f) {
+//			super(f.getAbsolutePath());
+//			
+//			this.path = f.getAbsolutePath();
+//		}
+//
+//		/* (non-Javadoc)
+//		 * @see java.io.File#getPath()
+//		 */
+//		@Override
+//		public String getPath() {
+//			// TODO Auto-generated method stub
+//			Log.d(LocalConst.DTAG, "updateFileInfor: getPath()");
+//			return path;
+//		}
+//
+//		@Override
+//		public String getParent() {
+//			if(isVirtualRoots(new File(path))){
+//				Log.d(LocalConst.DTAG, "updateFileInfor: get praentPath in virtual file");
+//				return root;
+//			}else{
+//				Log.d(LocalConst.DTAG, "updateFileInfor: get praentPath");
+//				return super.getParent();
+//			}
+//		}
+//
+//		@Override
+//		public MyVirtualFile[] listFiles() {
+//			if(path.equals("/")){
+//				MyVirtualFile[] files = new MyVirtualFile[roots.size()];
+//				for(int i = 0; i < roots.size(); i++){
+//					files[i] = roots.get(i);
+//				}
+//				return files;
+//			}else{			
+//				return (MyVirtualFile[])super.listFiles();
+//			}
+//		}
+//		
+//		
+//		
+//	}
 	
 	/**
 	 * tab相关
