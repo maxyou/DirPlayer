@@ -1,3 +1,6 @@
+[demo apk][2]
+[2]: https://github.com/maxyou/DirPlayer/raw/master/com.maxproj.android.dirplayer.encryptedsignedAligned.apk
+
 DirPlayer说明
 
 ![pic][1]
@@ -48,4 +51,7 @@ DirPlayer说明
      五、其他
           (1)在左右窗口长按可以发送文件
 
+
+## License<br>
+under [MIT License](http://www.opensource.org/licenses/MIT).
 
