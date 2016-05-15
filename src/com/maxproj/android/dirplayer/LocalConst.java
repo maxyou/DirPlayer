@@ -61,7 +61,10 @@ public class LocalConst {
 	}
 
 
-	public File[] listFilesVirtual(String path) {
+	public static File[] listFilesVirtual(File f) {
+		return listFilesVirtual(f.getAbsolutePath());
+	}
+	public static File[] listFilesVirtual(String path) {
 	if(path.equals(rootVirtual)){
 		File[] files = new File[roots.size()];
 		for(int i = 0; i < roots.size(); i++){

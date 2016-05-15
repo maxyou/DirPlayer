@@ -1743,7 +1743,8 @@ public class DirPlayerActivity extends FragmentActivity implements
 
 		Log.d(LocalConst.DTAG, "updateFileInfor: xtab "+tab+" goto this directory: " + f.getPath());
 		try {
-			files = f.listFiles();
+//			files = f.listFiles();
+			files = LocalConst.listFilesVirtual(f);
 			if (files == null) {
 				Log.d(LocalConst.DTAG, "updateFileInfor: sorry, xtab "+tab+" can't update to this directory: " +
 				 currentPath);
@@ -1869,7 +1870,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 
 		// viewListFiles.clear();
 		viewListItems[tab].clear();
-		if (!currentPath[tab].equals(LocalConst.pathRoot)) {
+		if (!currentPath[tab].equals(LocalConst.rootVirtual)) {
 			Log.d(LocalConst.DTAG, "add parentPath: " + parentPath[tab]);
 			// viewListFiles.add(new File(parentPath));
 			LvRow lr = LvRow.lvRowParaent(parentPath[tab], false, LocalConst.clear);
