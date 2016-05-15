@@ -42,6 +42,27 @@ public class LocalConst {
 	public static final String rootVirtual = "/";
 	public static final String time_format = "yyyy-MM-dd";
 
+	
+	public static String withVirtualRootsName(String path){
+		
+		if(path == null){
+			return "";
+		}
+		
+		if(path.equals(LocalConst.rootVirtual)){
+			return path;
+		}
+				 
+		for(RootsVirName f:roots){
+			if(path.startsWith(f.file.getAbsolutePath())){
+				return LocalConst.rootVirtual + f.virtualName + path.substring(f.file.getAbsolutePath().length());
+			}
+		}
+		
+		return path;
+		
+	}
+
 	public static String getVirtualRootsName(File file){
 		
 		for(RootsVirName f:roots){

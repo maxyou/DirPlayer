@@ -495,8 +495,8 @@ public class DirPlayerActivity extends FragmentActivity implements
 			try {
 				updateFileInfor(f, tab);
 			} catch (Exception e) {
-				if (e.getMessage().equals(LocalConst.pathRoot)) {
-					updateDirInfor(LocalConst.pathRoot, tab);
+				if (e.getMessage().equals(LocalConst.rootVirtual)) {
+					updateDirInfor(LocalConst.rootVirtual, tab);
 				}
 			}
 		} else {
@@ -726,7 +726,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 	public void onFragmentButton4(int tab) {
 		Log.d(LocalConst.DTAG, "Button4 clicked in fragment " + tab);
 		// 向上
-		if ((currentPath[tab].equals(LocalConst.pathRoot))){
+		if ((currentPath[tab].equals(LocalConst.rootVirtual))){
 			Toast.makeText(this, getResources().getString(R.string.fl_err_notice1),
 					Toast.LENGTH_LONG).show();			
 		}
@@ -1796,7 +1796,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 			Log.d(LocalConst.FRAGMENT_LIFE, "updateFileInfor: xtab path: " + f.getPath() + "Exception e: " + e.toString());
 			e.printStackTrace();
 
-			throw new Exception(LocalConst.pathRoot);
+			throw new Exception(LocalConst.rootVirtual);
 			// return;
 		} finally {
 			Log.d(LocalConst.FRAGMENT_LIFE, "updateFileInfor: xtab " + tab + " finally " + currentPath[tab]);
@@ -1813,14 +1813,11 @@ public class DirPlayerActivity extends FragmentActivity implements
 		 *	如果path等于rootPath，返回“/”
 		 *	否则去掉pathRoot
 		 */
-		if(path == null){//可能在初始状态会得到null
-			Log.d(LocalConst.DTAG, "pathTrim4Show() get path: " + path);
-			return "/";
-		}
-		if(path.equals(LocalConst.pathRoot)){
-			return "/";
+		if(path == null){
+			return "";
 		}else{
-			return "/";
+			
+			return LocalConst.withVirtualRootsName(path);
 //			return path.substring(LocalConst.pathRoot.length());
 		}
 	}
@@ -1945,6 +1942,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 
 		// Set up the ViewPager with the sections adapter.
 		mViewPager = (ViewPager) findViewById(R.id.pager);
+		mViewPager.setOffscreenPageLimit(4);
 		mViewPager.setAdapter(mSectionsPagerAdapter);
 
 		// When swiping between different sections, select the corresponding
@@ -1990,7 +1988,7 @@ public class DirPlayerActivity extends FragmentActivity implements
 				selectedItems[i] = new LinkedList<LvRow>();
 				dirList[i] = new LinkedList<File>();
 				fileList[i] = new LinkedList<File>();
-				currentPath[i] = LocalConst.pathRoot;
+				currentPath[i] = LocalConst.rootVirtual;
 				parentPath[i] = null;
 				if(sysAttachFragment == 0){ // 正常启动，而不是系统帮忙恢复
 					fragmentListview[i] = FragmentListview.newInstance(i);
@@ -2069,11 +2067,11 @@ public class DirPlayerActivity extends FragmentActivity implements
 		prefEditor = sharedPref.edit();
 		
 		String lwp = sharedPref.getString(getString(R.string.left_window_path),
-				LocalConst.pathRoot);
+				LocalConst.rootVirtual);
 		String rwp = sharedPref.getString(
-				getString(R.string.right_window_path), LocalConst.pathRoot);
+				getString(R.string.right_window_path), LocalConst.rootVirtual);
 		Log.d(LocalConst.FRAGMENT_LIFE,
-				"lwp: " + lwp + " rwp:" + rwp + " LocalConst.pathRoot: " + LocalConst.pathRoot);
+				"lwp: " + lwp + " rwp:" + rwp + " LocalConst.pathRoot: " + LocalConst.rootVirtual);
 		updateDirInfor(lwp, 0);
 		updateDirInfor(rwp, 1);
 
