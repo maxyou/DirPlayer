@@ -29,14 +29,15 @@ public class MyApplication extends Application {
     	/**
     	 * 不可拆卸外存
     	 * 可拆卸外存(SD卡)
+    	 * 只需要根目录
     	 */
+    	LocalConst.roots.add(Environment.getExternalStorageDirectory());
+    	
     	if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
         	File files[] = context.getExternalFilesDirs(null);
-            for(int i = 0; i < files.length; i++) {
-                LocalConst.roots.add(files[i]);
+            for(int i = 1; i < files.length; i++) {
+                LocalConst.roots.add(files[i].getParentFile().getParentFile().getParentFile().getParentFile());
             }
-    	}else{
-    		LocalConst.roots.add(context.getExternalFilesDir(null));
     	}
         
         /**
@@ -44,19 +45,23 @@ public class MyApplication extends Application {
          */
         LocalConst.roots.add(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC));
         LocalConst.roots.add(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES));
+//        
+//        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
+//	        /**
+//	         * app媒体目录
+//	         */
+//	        File files2[] = context.getExternalFilesDirs(Environment.DIRECTORY_MUSIC);
+//	        for(int i = 0; i < files2.length; i++) {
+//	            LocalConst.roots.add(files2[i]);
+//	        }
+//	        File files3[] = context.getExternalFilesDirs(Environment.DIRECTORY_MOVIES);
+//	        for(int i = 0; i < files3.length; i++) {
+//	            LocalConst.roots.add(files2[i]);
+//	        }
+//        }
         
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
-	        /**
-	         * app媒体目录
-	         */
-	        File files2[] = context.getExternalFilesDirs(Environment.DIRECTORY_MUSIC);
-	        for(int i = 0; i < files2.length; i++) {
-	            LocalConst.roots.add(files2[i]);
-	        }
-	        File files3[] = context.getExternalFilesDirs(Environment.DIRECTORY_MOVIES);
-	        for(int i = 0; i < files3.length; i++) {
-	            LocalConst.roots.add(files2[i]);
-	        }
+        for(File f : LocalConst.roots){
+        	Log.d(LocalConst.DTAG, "updateFileInfor: roots "+f.getAbsolutePath());
         }
     }
 }
