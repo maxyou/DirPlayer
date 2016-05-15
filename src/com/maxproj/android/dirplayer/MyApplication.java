@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import com.maxproj.android.dirplayer.LocalConst.RootsVirName;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
+
 import android.app.Application;
 import android.content.Context;
 import android.os.Build;

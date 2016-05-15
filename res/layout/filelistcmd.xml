@@ -81,7 +81,7 @@
         android:layout_height="wrap_content"
      	android:layout_marginTop="5dp"
      	android:layout_marginBottom="5dp"
-        android:background="@color/notepad_paper"
+        android:background="@color/dirplayer_notify_background"
         android:orientation="vertical" >
 	
     <TextView
@@ -91,7 +91,7 @@
         android:padding="2dp"
         android:singleLine="true"
         android:text="@string/bottom_about"
-        android:textColor="@color/notepad_text"
+        android:textColor="@color/dirplayer_notify_background"
         android:textSize="20sp" />
 
     <Button

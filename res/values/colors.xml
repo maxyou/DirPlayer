@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="notepad_paper">#EEF8E0A0</color>
-    <color name="notepad_lines">#FF0000FF</color>
-    <color name="notepad_margin">#90FF0000</color>
-    <color name="notepad_text">#AA0000FF</color>
+    <color name="dirplayer_notify_text">#FF182020</color>
+    <color name="dirplayer_notify_background">#EEF8E0A0</color>
+    <color name="dirplayer_notify_button_background">#EEc8b070</color>
+    <color name="dirplayer_blue">#FF0000FF</color>
+    <color name="dirplayer_red_2">#90FF0000</color>
+    <color name="dirplayer_blue_2">#AA0000FF</color>
+
 </resources>
