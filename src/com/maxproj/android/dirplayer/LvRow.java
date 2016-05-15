@@ -16,6 +16,7 @@ public class LvRow{
     // 永久不变，不需更新的，也可以保存
     // 所以保存type、mime
     private String name;
+    private String virtualName;
     private String lengthStr;
     private String dateStr;
     private String mime;
@@ -59,6 +60,9 @@ public class LvRow{
     }
     public String getName(){
         return this.name;
+    }
+    public String getVirtualName(){
+        return this.virtualName;
     }
     public void setName(String name) {
         this.name = name;
@@ -119,6 +123,7 @@ public class LvRow{
     	this.file = f;
     	
         this.name = f.getName();
+        this.virtualName = LocalConst.getVirtualRootsName(f);
         this.lengthStr = f.isDirectory()?"":"" + LocalConst.byteConvert(f.length());
         this.dateStr = "" + new SimpleDateFormat(LocalConst.time_format).format(f.lastModified());
         this.selected = selected;
@@ -133,6 +138,7 @@ public class LvRow{
     	this.file = f;
     	
         this.name = f.getName();
+        this.virtualName = LocalConst.getVirtualRootsName(f);
         this.lengthStr = f.isDirectory()?"":"" + LocalConst.byteConvert(f.length());
         this.dateStr = "" + new SimpleDateFormat(LocalConst.time_format).format(f.lastModified());
         this.selected = selected;
@@ -150,6 +156,7 @@ public class LvRow{
     	LvRow lr = new LvRow(path, false, LocalConst.clear);
     	lr.type = LocalConst.TYPE_PARAENT;
     	lr.name = LocalConst.PARAENT_NAME;
+    	lr.virtualName = LocalConst.PARAENT_NAME;
     	lr.selected = false;
     	lr.dateStr = "";
     	
