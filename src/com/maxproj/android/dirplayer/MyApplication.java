@@ -38,13 +38,32 @@ public class MyApplication extends Application {
     	
     	if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
         	File files[] = context.getExternalFilesDirs(null);
-            for(int i = 1; i < files.length; i++) {
-            	
-                LocalConst.roots.add(new RootsVirName(files
-                		[i].getParentFile().getParentFile().getParentFile().getParentFile(),
-                		getResources().getString(R.string.sys_sdcard)+i
-                		));
-            }
+        	
+        	/**
+        	 * getExternalFilesDirs() return:
+        	 * 	/storage/emulated/0/Android/data/com.maxproj.android.dirplayer/files
+			 * 	/storage/sdcard1/Android/data/com.maxproj.android.dirplayer/files
+			 * 从第二项开始是sd卡
+        	 */
+        	
+        	if(files.length > 1){
+        		
+	            for(int i = 1; i < files.length; i++) {
+	            	if(files[i] != null){
+	            		if(files[i].getParentFile() != null){
+	            			if(files[i].getParentFile().getParentFile() != null){
+	            				if(files[i].getParentFile().getParentFile().getParentFile() != null){
+	            					LocalConst.roots.add(new RootsVirName(files
+	            	                		[i].getParentFile().getParentFile().getParentFile().getParentFile(),
+	            	                		getResources().getString(R.string.sys_sdcard)+i
+	            	                		));
+	            				}
+	            			}
+	            		}
+	            	}
+	                
+	            }
+        	}
     	}
         
         /**
