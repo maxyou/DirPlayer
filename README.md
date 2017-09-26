@@ -6,7 +6,8 @@ DirPlayer
 
 **DirPlayer** is a file manager, a music and video player.
 
-[demo apk](https://github.com/maxyou/DirPlayer/blob/master/DirPlayer.apk)
+[demo apk](https://github.com/maxyou/DirPlayer/blob/master/DirPlayer.apk?raw=true)
+[demo apk](https://github.com/maxyou/DirPlayer/raw/master/DirPlayer.apk)
 
 ![pic][1]
 
