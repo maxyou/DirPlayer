@@ -18,7 +18,6 @@ ScreenShots
   <img src="./screenshots/788.png" width="256" height="455">
   <img src="./screenshots/712.png" width="256" height="455">
   <img src="./screenshots/007.png" width="256" height="455">
-  <img src="./screenshots/505.png" width="256" height="455">
   <img src="./screenshots/758.png" width="256" height="455">
   <img src="./screenshots/728.png" width="256" height="455">
   <img src="./screenshots/529.png" width="256" height="455">
